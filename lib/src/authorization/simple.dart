@@ -1,4 +1,3 @@
-import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/authorization/scheme.dart';
 
@@ -16,7 +15,7 @@ class UploadcareAuthSchemeSimple extends UploadcareAuthScheme {
         );
 
   @override
-  injectAuthorizationData(MultipartRequest request) {
+  injectAuthorizationData(request) {
     request.headers.addAll(Map.fromEntries([
       acceptHeader,
       MapEntry('Authorization', '$_name $publicKey:$privateKey'),

@@ -1,4 +1,3 @@
-import 'package:http/http.dart' show MultipartRequest;
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
@@ -15,5 +14,5 @@ abstract class UploadcareAuthScheme {
   final String privateKey;
   final MapEntry<String, String> acceptHeader;
 
-  void injectAuthorizationData(MultipartRequest request);
+  void injectAuthorizationData(BaseRequest request);
 }

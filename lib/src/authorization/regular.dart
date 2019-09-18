@@ -19,23 +19,31 @@ class UploadcareAuthSchemeRegular extends UploadcareAuthScheme {
         );
 
   @override
-  void injectAuthorizationData(MultipartRequest request) {
+  void injectAuthorizationData(request) {
     final String isoDate = DateTime.now().toUtc().toString();
 
     request.headers.addAll(Map.fromEntries([
-      MapEntry('Content-Type', 'application/json'),
       acceptHeader,
-      MapEntry('Date', isoDate),
-      MapEntry('Authorization',
-          '$_name $publicKey:${_buildSignature(request, isoDate)}'),
+      MapEntry(
+        'Date',
+        isoDate,
+      ),
+      MapEntry(
+        'Authorization',
+        '$_name $publicKey:${_buildSignature(request, isoDate)}',
+      ),
     ]));
   }
 
-  String _buildSignature(MultipartRequest request, String isoDate) {
+  String _buildSignature(BaseRequest request, String isoDate) {
+    final fields = jsonEncode(request is MultipartRequest
+        ? request.fields
+        : request is Request ? request.bodyFields : {});
+
     final String signString = [
       request.method,
-      md5.convert(JsonCodec().encode(request.fields).codeUnits).toString(),
-      'application/json',
+      md5.convert(fields.codeUnits).toString(),
+      request.headers['Content-Type'],
       isoDate,
       '${request.url.path}?${request.url.query}'
     ].join('\n');
