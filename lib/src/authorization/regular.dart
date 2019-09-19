@@ -5,6 +5,31 @@ import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/authorization/scheme.dart';
 
+const List<String> _kMonthNames = const [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+const List<String> _kDayNames = const [
+  'Sun',
+  'Mon',
+  'Tue',
+  'Wed',
+  'Thu',
+  'Fri',
+  'Sat'
+];
+
 class UploadcareAuthSchemeRegular extends UploadcareAuthScheme {
   static const String _name = 'Uploadcare';
 
@@ -19,8 +44,8 @@ class UploadcareAuthSchemeRegular extends UploadcareAuthScheme {
         );
 
   @override
-  void injectAuthorizationData(request) {
-    final String isoDate = DateTime.now().toUtc().toString();
+  void authorizeRequest(request) {
+    final String isoDate = _formatToRFC822Date(DateTime.now());
 
     request.headers.addAll(Map.fromEntries([
       acceptHeader,
@@ -35,17 +60,25 @@ class UploadcareAuthSchemeRegular extends UploadcareAuthScheme {
     ]));
   }
 
+  String _formatToRFC822Date(DateTime now) {
+    final date = now.toUtc();
+    final dayName = _kDayNames[date.weekday - 1];
+    final monthName = _kMonthNames[date.month - 1];
+
+    return '$dayName, ${date.day} $monthName ${date.year} ${date.hour}:${date.minute}:${date.second} GMT';
+  }
+
   String _buildSignature(BaseRequest request, String isoDate) {
-    final fields = jsonEncode(request is MultipartRequest
-        ? request.fields
-        : request is Request ? request.bodyFields : {});
+    final fields = request is MultipartRequest
+        ? jsonEncode(request.fields)
+        : request is Request ? request.body : '';
 
     final String signString = [
       request.method,
       md5.convert(fields.codeUnits).toString(),
       request.headers['Content-Type'],
       isoDate,
-      '${request.url.path}?${request.url.query}'
+      request.url.path,
     ].join('\n');
 
     return Hmac(sha1, privateKey.codeUnits)

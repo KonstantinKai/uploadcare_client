@@ -15,7 +15,7 @@ class UploadcareAuthSchemeSimple extends UploadcareAuthScheme {
         );
 
   @override
-  injectAuthorizationData(request) {
+  authorizeRequest(request) {
     request.headers.addAll(Map.fromEntries([
       acceptHeader,
       MapEntry('Authorization', '$_name $publicKey:$privateKey'),

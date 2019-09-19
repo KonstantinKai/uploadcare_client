@@ -8,24 +8,24 @@ import 'package:uploadcare_client/src/transport.dart';
 mixin UploadcareTransportHelperMixin on UploadcareOptionsShortcutsMixin {
   UploadcareMultipartRequest createMultipartRequest(
     String method,
-    String url, [
+    Uri uri, [
     bool authorizeRequest = true,
   ]) =>
       UploadcareMultipartRequest(
         scheme: authorizeRequest ? options.authorizationScheme : null,
         method: method,
-        uri: Uri.parse('$url'),
+        uri: uri,
       );
 
   UploadcareRequest createRequest(
     String method,
-    String url, [
+    Uri uri, [
     bool authorizeRequest = true,
   ]) =>
       UploadcareRequest(
         scheme: authorizeRequest ? options.authorizationScheme : null,
         method: method,
-        uri: Uri.parse('$url'),
+        uri: uri,
       );
 
   Future<Response> _resolveResponseStatusCode(FutureOr<Response> resp) async {
@@ -55,4 +55,12 @@ mixin UploadcareTransportHelperMixin on UploadcareOptionsShortcutsMixin {
   Future<Map<String, dynamic>> resolveStreamedResponse(
           FutureOr<StreamedResponse> streamedResponse) =>
       _resolveResponse(resolveStreamedResponseStatusCode(streamedResponse));
+
+  Uri buildUri(String url, [Map<String, dynamic> params = const {}]) {
+    final uri = Uri.parse(url);
+
+    if (params.isEmpty) return uri;
+
+    return uri.replace(queryParameters: params);
+  }
 }

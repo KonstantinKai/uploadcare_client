@@ -16,7 +16,7 @@ class UploadcareMultipartRequest extends MultipartRequest {
 
   @override
   Future<StreamedResponse> send() {
-    if (_scheme != null) _scheme.injectAuthorizationData(this);
+    if (_scheme != null) _scheme.authorizeRequest(this);
 
     return super.send();
   }
@@ -36,7 +36,7 @@ class UploadcareRequest extends Request {
 
   @override
   Future<StreamedResponse> send() {
-    if (_scheme != null) _scheme.injectAuthorizationData(this);
+    if (_scheme != null) _scheme.authorizeRequest(this);
 
     return super.send();
   }

@@ -14,5 +14,5 @@ abstract class UploadcareAuthScheme {
   final String privateKey;
   final MapEntry<String, String> acceptHeader;
 
-  void injectAuthorizationData(BaseRequest request);
+  void authorizeRequest(BaseRequest request);
 }
