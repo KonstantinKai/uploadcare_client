@@ -9,9 +9,13 @@ class UploadcareOptions {
     @required this.authorizationScheme,
     this.uploadApiUrl = _kDefaultUploadEndpoint,
     this.requestApiUrl = _kDefaultRequestEndpoint,
+    this.useSignedUploads = false,
+    this.signedUploadsSignatureLifetime = const Duration(minutes: 30),
   });
 
   final String uploadApiUrl;
   final String requestApiUrl;
   final UploadcareAuthScheme authorizationScheme;
+  final bool useSignedUploads;
+  final Duration signedUploadsSignatureLifetime;
 }

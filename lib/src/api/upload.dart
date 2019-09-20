@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:meta/meta.dart';
 import 'package:mime_type/mime_type.dart';
+import 'package:uploadcare_client/src/concurrent_runner.dart';
 import 'package:uploadcare_client/src/entities/progress.dart';
 import 'package:uploadcare_client/src/entities/url_response.dart';
 import 'package:uploadcare_client/src/options_shortcuts_mixin.dart';
@@ -52,6 +54,7 @@ class UploadcareApiUpload
     final params = {
       'UPLOADCARE_PUB_KEY': publicKey,
       'UPLOADCARE_STORE': _resolveStoreModeParam(storeMode),
+      if (options.useSignedUploads) ..._signUpload(),
     };
 
     final client =
@@ -83,23 +86,22 @@ class UploadcareApiUpload
       throw RangeError(
           'Minimum file size to use with Multipart Uploads is 10MB');
 
-    final params = {
-      'UPLOADCARE_PUB_KEY': publicKey,
-      'UPLOADCARE_STORE': _resolveStoreModeParam(storeMode),
-      'filename': filename,
-      'size': filesize.toString(),
-      'content_type': mimeType,
-    };
-
     final startTransaction = createMultipartRequest(
         'POST', buildUri('$uploadUrl/multipart/start/'), false)
-      ..fields.addAll(params);
+      ..fields.addAll({
+        'UPLOADCARE_PUB_KEY': publicKey,
+        'UPLOADCARE_STORE': _resolveStoreModeParam(storeMode),
+        'filename': filename,
+        'size': filesize.toString(),
+        'content_type': mimeType,
+        if (options.useSignedUploads) ..._signUpload(),
+      });
 
     final map = await resolveStreamedResponse(startTransaction.send());
     final urls = (map['parts'] as List).cast<String>();
     final uuid = map['uuid'] as String;
 
-    final readyRequests = await Future.wait(List.generate(urls.length, (index) {
+    final actions = await Future.wait(List.generate(urls.length, (index) {
       final url = urls[index];
       final offset = index * _kChunkSize;
       final diff = filesize - offset;
@@ -113,50 +115,19 @@ class UploadcareApiUpload
             ..bodyBytes = bytes
             ..headers.addAll({
               'Content-Type': mimeType,
-            }));
+            }))
+          .then((request) =>
+              () => resolveStreamedResponseStatusCode(request.send()));
     }));
 
-    await Future.wait(List.generate(maxConcurrentChunkRequests, (index) {
-      final int maxInchunk = (urls.length / maxConcurrentChunkRequests).ceil();
-      final start = index * maxInchunk;
-      int end = start + maxInchunk;
-
-      if (index == maxConcurrentChunkRequests - 1) end -= end - urls.length;
-
-      return readyRequests.sublist(start, end).fold(
-          Future.value(),
-          (prev, next) => prev.then((_) {
-                print('run -> ${next.url.queryParameters['partNumber']}');
-                return resolveStreamedResponseStatusCode(next.send());
-              }));
-    }));
-
-    // await Future.wait(List.generate(urls.length, (index) {
-    //   final url = urls[index];
-    //   final offset = index * _kChunkSize;
-    //   final diff = filesize - offset;
-    //   final bytesToRead = _kChunkSize < diff ? _kChunkSize : diff;
-
-    //   return file
-    //       .openRead(offset, offset + bytesToRead)
-    //       .toList()
-    //       .then((bytesList) => bytesList.expand((list) => list).toList())
-    //       .then((bytes) {
-    //     final chunkTransport = createRequest('PUT', buildUri(url), false)
-    //       ..bodyBytes = bytes
-    //       ..headers.addAll({
-    //         'Content-Type': mimeType,
-    //       });
-
-    //     return resolveStreamedResponseStatusCode(chunkTransport.send());
-    //   });
-    // }));
+    await ConcurrentRunner(maxConcurrentChunkRequests, actions).run();
 
     final finishTransaction = createMultipartRequest(
         'POST', buildUri('$uploadUrl/multipart/complete/'), false)
       ..fields.addAll({
         'UPLOADCARE_PUB_KEY': publicKey,
         'uuid': uuid,
+        if (options.useSignedUploads) ..._signUpload(),
       });
 
     await resolveStreamedResponse(finishTransaction.send());
@@ -178,6 +149,7 @@ class UploadcareApiUpload
         'pub_key': publicKey,
         'store': _resolveStoreModeParam(storeMode),
         'source_url': url,
+        if (options.useSignedUploads) ..._signUpload(),
       });
 
     final token =
@@ -229,24 +201,18 @@ class UploadcareApiUpload
 
   String _resolveStoreModeParam(bool storeMode) =>
       storeMode != null ? storeMode ? '1' : '0' : 'auto';
-}
 
-typedef Future ConcurrentAction();
+  Map<String, String> _signUpload() {
+    final expire = DateTime.now()
+            .add(options.signedUploadsSignatureLifetime)
+            .millisecondsSinceEpoch ~/
+        1000;
 
-class ConcurrentRunner<T> {
-  ConcurrentRunner(
-    this.limit,
-  ) : _pendings = Set();
+    final signature = md5.convert('$privateKey$expire'.codeUnits).toString();
 
-  final int limit;
-  final Set<Future> _pendings;
-
-  run(List<ConcurrentAction> actions) async {
-    while (_pendings.length < limit) {
-      final f = actions.removeLast()();
-      _pendings.add(f.then((_) => _pendings.remove(f)));
-    }
-
-    Future.any(_pendings).then((_) => run(actions));
+    return {
+      'signature': signature,
+      'expire': expire.toString(),
+    };
   }
 }
