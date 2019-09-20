@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/entities/file_info.dart';
+import 'package:uploadcare_client/src/mixins/mixins.dart';
 import 'package:uploadcare_client/src/options.dart';
-import 'package:uploadcare_client/src/options_shortcuts_mixin.dart';
-import 'package:uploadcare_client/src/transport_helper_mixin.dart';
 
 class UploadcareApiManager
     with UploadcareOptionsShortcutsMixin, UploadcareTransportHelperMixin {

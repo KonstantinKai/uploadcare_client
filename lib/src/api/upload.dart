@@ -9,8 +9,7 @@ import 'package:mime_type/mime_type.dart';
 import 'package:uploadcare_client/src/concurrent_runner.dart';
 import 'package:uploadcare_client/src/entities/progress.dart';
 import 'package:uploadcare_client/src/entities/url_response.dart';
-import 'package:uploadcare_client/src/options_shortcuts_mixin.dart';
-import 'package:uploadcare_client/src/transport_helper_mixin.dart';
+import 'package:uploadcare_client/src/mixins/mixins.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
 const int _kChunkSize = 5242880;
@@ -53,7 +52,7 @@ class UploadcareApiUpload
 
     final params = {
       'UPLOADCARE_PUB_KEY': publicKey,
-      'UPLOADCARE_STORE': _resolveStoreModeParam(storeMode),
+      'UPLOADCARE_STORE': resolveStoreModeParam(storeMode),
       if (options.useSignedUploads) ..._signUpload(),
     };
 
@@ -90,7 +89,7 @@ class UploadcareApiUpload
         'POST', buildUri('$uploadUrl/multipart/start/'), false)
       ..fields.addAll({
         'UPLOADCARE_PUB_KEY': publicKey,
-        'UPLOADCARE_STORE': _resolveStoreModeParam(storeMode),
+        'UPLOADCARE_STORE': resolveStoreModeParam(storeMode),
         'filename': filename,
         'size': filesize.toString(),
         'content_type': mimeType,
@@ -147,7 +146,7 @@ class UploadcareApiUpload
       false,
     )..fields.addAll({
         'pub_key': publicKey,
-        'store': _resolveStoreModeParam(storeMode),
+        'store': resolveStoreModeParam(storeMode),
         'source_url': url,
         if (options.useSignedUploads) ..._signUpload(),
       });
@@ -198,9 +197,6 @@ class UploadcareApiUpload
       if (response.status != UrlUploadStatus.Progress) break;
     }
   }
-
-  String _resolveStoreModeParam(bool storeMode) =>
-      storeMode != null ? storeMode ? '1' : '0' : 'auto';
 
   Map<String, String> _signUpload() {
     final expire = DateTime.now()

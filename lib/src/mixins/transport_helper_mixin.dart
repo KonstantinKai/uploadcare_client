@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart';
-import 'package:uploadcare_client/src/options_shortcuts_mixin.dart';
+import 'package:meta/meta.dart';
+import 'package:uploadcare_client/src/mixins/mixins.dart';
 import 'package:uploadcare_client/src/transport.dart';
 
 mixin UploadcareTransportHelperMixin on UploadcareOptionsShortcutsMixin {
+  @protected
   UploadcareMultipartRequest createMultipartRequest(
     String method,
     Uri uri, [
@@ -17,6 +19,7 @@ mixin UploadcareTransportHelperMixin on UploadcareOptionsShortcutsMixin {
         uri: uri,
       );
 
+  @protected
   UploadcareRequest createRequest(
     String method,
     Uri uri, [
@@ -48,14 +51,17 @@ mixin UploadcareTransportHelperMixin on UploadcareOptionsShortcutsMixin {
     }
   }
 
+  @protected
   Future<Response> resolveStreamedResponseStatusCode(
           FutureOr<StreamedResponse> streamedResponse) async =>
       _resolveResponseStatusCode(Response.fromStream(await streamedResponse));
 
+  @protected
   Future<Map<String, dynamic>> resolveStreamedResponse(
           FutureOr<StreamedResponse> streamedResponse) =>
       _resolveResponse(resolveStreamedResponseStatusCode(streamedResponse));
 
+  @protected
   Uri buildUri(String url, [Map<String, dynamic> params = const {}]) {
     final uri = Uri.parse(url);
 
@@ -63,4 +69,8 @@ mixin UploadcareTransportHelperMixin on UploadcareOptionsShortcutsMixin {
 
     return uri.replace(queryParameters: params);
   }
+
+  @protected
+  String resolveStoreModeParam(bool storeMode) =>
+      storeMode != null ? storeMode ? '1' : '0' : 'auto';
 }
