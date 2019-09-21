@@ -1,9 +1,9 @@
 import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/options.dart';
 
-mixin UploadcareOptionsShortcutsMixin {
+mixin OptionsShortcutMixin {
   @protected
-  UploadcareOptions get options;
+  ClientOptions get options;
 
   @protected
   String get publicKey => options.authorizationScheme.publicKey;
@@ -11,9 +11,9 @@ mixin UploadcareOptionsShortcutsMixin {
   String get privateKey => options.authorizationScheme.privateKey;
 
   @protected
-  String get uploadUrl => options.uploadApiUrl;
+  String get uploadUrl => options.uploadUrl;
   @protected
-  String get requestUrl => options.requestApiUrl;
+  String get apiUrl => options.apiUrl;
   @protected
-  String get cdnUrl => options.cdnApiUrl;
+  String get cdnUrl => options.cdnUrl;
 }

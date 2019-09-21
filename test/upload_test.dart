@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dotenv/dotenv.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
 void main() {
@@ -14,8 +14,8 @@ void main() {
     load();
 
     client = UploadcareClient(
-      options: UploadcareOptions(
-        authorizationScheme: UploadcareAuthSchemeRegular(
+      options: ClientOptions(
+        authorizationScheme: AuthSchemeRegular(
           apiVersion: 'v0.5',
           publicKey: env['UPLOADCARE_PUBLIC_KEY'],
           privateKey: env['UPLOADCARE_PRIVATE_KEY'],
@@ -24,8 +24,8 @@ void main() {
     );
 
     clientSigned = UploadcareClient(
-      options: UploadcareOptions(
-        authorizationScheme: UploadcareAuthSchemeRegular(
+      options: ClientOptions(
+        authorizationScheme: AuthSchemeRegular(
           apiVersion: 'v0.5',
           publicKey: env['UPLOADCARE_PUBLIC_KEY_SIGNED'],
           privateKey: env['UPLOADCARE_PRIVATE_KEY_SIGNED'],
@@ -36,8 +36,8 @@ void main() {
   });
 
   tearDownAll(() async {
-    if (ids.isNotEmpty) await client.manager.removeFiles(ids);
-    if (signedIds.isNotEmpty) await clientSigned.manager.removeFiles(signedIds);
+    if (ids.isNotEmpty) await client.files.remove(ids);
+    if (signedIds.isNotEmpty) await clientSigned.files.remove(signedIds);
   });
 
   test('Simple base upload', () async {

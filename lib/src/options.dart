@@ -5,20 +5,20 @@ const String _kDefaultUploadEndpoint = 'https://upload.uploadcare.com';
 const String _kDefaultRequestEndpoint = 'https://api.uploadcare.com';
 const String _kDefaultCdnEndpoint = 'https://ucarecdn.com';
 
-class UploadcareOptions {
-  const UploadcareOptions({
+class ClientOptions {
+  final String uploadUrl;
+  final String apiUrl;
+  final String cdnUrl;
+  final AuthScheme authorizationScheme;
+  final bool useSignedUploads;
+  final Duration signedUploadsSignatureLifetime;
+
+  const ClientOptions({
     @required this.authorizationScheme,
-    this.uploadApiUrl = _kDefaultUploadEndpoint,
-    this.requestApiUrl = _kDefaultRequestEndpoint,
-    this.cdnApiUrl = _kDefaultCdnEndpoint,
+    this.uploadUrl = _kDefaultUploadEndpoint,
+    this.apiUrl = _kDefaultRequestEndpoint,
+    this.cdnUrl = _kDefaultCdnEndpoint,
     this.useSignedUploads = false,
     this.signedUploadsSignatureLifetime = const Duration(minutes: 30),
   });
-
-  final String uploadApiUrl;
-  final String requestApiUrl;
-  final String cdnApiUrl;
-  final UploadcareAuthScheme authorizationScheme;
-  final bool useSignedUploads;
-  final Duration signedUploadsSignatureLifetime;
 }

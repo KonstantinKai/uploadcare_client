@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:dotenv/dotenv.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:uploadcare_client/src/client.dart';
 import 'package:uploadcare_client/src/transformations/common.dart';
 import 'package:uploadcare_client/src/transformations/image.dart';
@@ -15,8 +15,8 @@ void main() {
     load();
 
     client = UploadcareClient(
-        options: UploadcareOptions(
-      authorizationScheme: UploadcareAuthSchemeSimple(
+        options: ClientOptions(
+      authorizationScheme: AuthSchemeSimple(
         apiVersion: 'v0.5',
         publicKey: env['UPLOADCARE_PUBLIC_KEY'],
         privateKey: env['UPLOADCARE_PRIVATE_KEY'],

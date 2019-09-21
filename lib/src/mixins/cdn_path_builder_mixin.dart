@@ -1,17 +1,15 @@
 import 'package:meta/meta.dart';
-import 'package:uploadcare_client/src/entities/cdn_entity.dart';
+import 'package:uploadcare_client/src/entities/cdn.dart';
 import 'package:uploadcare_client/src/mixins/mixins.dart';
-import 'package:uploadcare_client/src/transformations/common.dart';
+import 'package:uploadcare_client/src/transformations/base.dart';
+import 'package:uploadcare_client/src/transformations/path_transformer.dart';
 
 mixin CdnPathBuilderMixin<T extends Transformation>
-    on UploadcareOptionsShortcutsMixin, CndEntity {
-  PathTransformer _pathTransformer;
-
+    on OptionsShortcutMixin, CndEntity {
   @protected
-  void initPathTransformer() => _pathTransformer = PathTransformer(id);
+  PathTransformer<T> get pathTransformer;
 
-  Uri get uri => Uri.parse(cdnUrl).replace(path: '/${_pathTransformer.path}');
+  Uri get uri => Uri.parse(cdnUrl).replace(path: '/${pathTransformer.path}');
 
-  void transform(T transformation) =>
-      _pathTransformer.transform(transformation);
+  void transform(T transformation) => pathTransformer.transform(transformation);
 }

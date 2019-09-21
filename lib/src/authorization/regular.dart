@@ -30,10 +30,10 @@ const List<String> _kDayNames = const [
   'Sat'
 ];
 
-class UploadcareAuthSchemeRegular extends UploadcareAuthScheme {
+class AuthSchemeRegular extends AuthScheme {
   static const String _name = 'Uploadcare';
 
-  UploadcareAuthSchemeRegular({
+  AuthSchemeRegular({
     @required String publicKey,
     @required String privateKey,
     @required String apiVersion,
@@ -78,7 +78,8 @@ class UploadcareAuthSchemeRegular extends UploadcareAuthScheme {
       md5.convert(fields.codeUnits).toString(),
       request.headers['Content-Type'],
       isoDate,
-      request.url.path,
+      request.url.path +
+          (request.url.query.isNotEmpty ? '?${request.url.query}' : ''),
     ].join('\n');
 
     return Hmac(sha1, privateKey.codeUnits)

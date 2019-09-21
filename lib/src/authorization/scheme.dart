@@ -1,8 +1,8 @@
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
-abstract class UploadcareAuthScheme {
-  UploadcareAuthScheme({
+abstract class AuthScheme {
+  AuthScheme({
     @required this.publicKey,
     @required this.privateKey,
     @required String apiVersion,

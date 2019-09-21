@@ -2,17 +2,17 @@ import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/authorization/scheme.dart';
 
-class UploadcareMultipartRequest extends MultipartRequest {
-  UploadcareMultipartRequest({
+class UcMultipartRequest extends MultipartRequest {
+  UcMultipartRequest({
     @required String method,
     @required Uri uri,
-    UploadcareAuthScheme scheme,
+    AuthScheme scheme,
   })  : this._scheme = scheme,
         super(method, uri) {
     headers.addAll({'Content-Type': 'application/x-www-form-urlencoded'});
   }
 
-  final UploadcareAuthScheme _scheme;
+  final AuthScheme _scheme;
 
   @override
   Future<StreamedResponse> send() {
@@ -22,17 +22,17 @@ class UploadcareMultipartRequest extends MultipartRequest {
   }
 }
 
-class UploadcareRequest extends Request {
-  UploadcareRequest({
+class UcRequest extends Request {
+  UcRequest({
     @required String method,
     @required Uri uri,
-    UploadcareAuthScheme scheme,
+    AuthScheme scheme,
   })  : _scheme = scheme,
         super(method, uri) {
     headers.addAll({'Content-Type': 'application/json'});
   }
 
-  final UploadcareAuthScheme _scheme;
+  final AuthScheme _scheme;
 
   @override
   Future<StreamedResponse> send() {

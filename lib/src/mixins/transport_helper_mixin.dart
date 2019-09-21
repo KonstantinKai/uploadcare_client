@@ -6,26 +6,26 @@ import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/mixins/mixins.dart';
 import 'package:uploadcare_client/src/transport.dart';
 
-mixin UploadcareTransportHelperMixin on UploadcareOptionsShortcutsMixin {
+mixin TransportHelperMixin on OptionsShortcutMixin {
   @protected
-  UploadcareMultipartRequest createMultipartRequest(
+  UcMultipartRequest createMultipartRequest(
     String method,
     Uri uri, [
     bool authorizeRequest = true,
   ]) =>
-      UploadcareMultipartRequest(
+      UcMultipartRequest(
         scheme: authorizeRequest ? options.authorizationScheme : null,
         method: method,
         uri: uri,
       );
 
   @protected
-  UploadcareRequest createRequest(
+  UcRequest createRequest(
     String method,
     Uri uri, [
     bool authorizeRequest = true,
   ]) =>
-      UploadcareRequest(
+      UcRequest(
         scheme: authorizeRequest ? options.authorizationScheme : null,
         method: method,
         uri: uri,

@@ -8,22 +8,21 @@ import 'package:meta/meta.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:uploadcare_client/src/concurrent_runner.dart';
 import 'package:uploadcare_client/src/entities/progress.dart';
-import 'package:uploadcare_client/src/entities/url_response.dart';
+import 'package:uploadcare_client/src/entities/url.dart';
 import 'package:uploadcare_client/src/mixins/mixins.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
 const int _kChunkSize = 5242880;
-const int _kMaxFilesizeForBaseUpload = 10000000;
+const int _kRecomendedMaxFilesizeForBaseUpload = 10000000;
 
-typedef void ProgressListener(UploadcareProgress progress);
+typedef void ProgressListener(ProgressEntity progress);
 
-class UploadcareApiUpload
-    with UploadcareOptionsShortcutsMixin, UploadcareTransportHelperMixin {
-  UploadcareApiUpload({
+class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
+  ApiUpload({
     @required this.options,
   }) : assert(options != null);
 
-  final UploadcareOptions options;
+  final ClientOptions options;
 
   Future<String> auto(
     File file, {
@@ -31,7 +30,7 @@ class UploadcareApiUpload
   }) async {
     final filesize = await file.length();
 
-    if (filesize > _kMaxFilesizeForBaseUpload)
+    if (filesize > _kRecomendedMaxFilesizeForBaseUpload)
       return multipart(
         file,
         storeMode: storeMode,
@@ -46,6 +45,7 @@ class UploadcareApiUpload
   Future<String> base(
     File file, {
     bool storeMode,
+    ProgressListener onProgress,
   }) async {
     final filename = Uri.parse(file.path).pathSegments.last;
     final filesize = await file.length();
@@ -56,13 +56,29 @@ class UploadcareApiUpload
       if (options.useSignedUploads) ..._signUpload(),
     };
 
+    ProgressEntity progress = ProgressEntity(0, filesize);
+
     final client =
         createMultipartRequest('POST', buildUri('$uploadUrl/base/'), false)
           ..fields.addAll(params)
           ..files.add(
             MultipartFile(
               'file',
-              file.openRead(),
+              file.openRead().transform(
+                    StreamTransformer.fromHandlers(
+                      handleData: (data, sink) {
+                        final next = progress.copyWith(
+                            uploaded: progress.uploaded + data.length);
+                        final shouldCall = next.value > progress.value;
+                        progress = next;
+
+                        if (onProgress != null && shouldCall)
+                          onProgress(progress);
+                        sink.add(data);
+                      },
+                      handleDone: (sink) => sink.close(),
+                    ),
+                  ),
               filesize,
               filename: filename,
               contentType: MediaType.parse(mime(filename)),
@@ -75,15 +91,15 @@ class UploadcareApiUpload
   Future<String> multipart(
     File file, {
     bool storeMode,
+    ProgressListener onProgress,
     int maxConcurrentChunkRequests = 3,
   }) async {
     final filename = Uri.parse(file.path).pathSegments.last;
     final filesize = await file.length();
     final mimeType = mime(filename);
 
-    if (filesize < _kMaxFilesizeForBaseUpload)
-      throw RangeError(
-          'Minimum file size to use with Multipart Uploads is 10MB');
+    assert(filesize > _kRecomendedMaxFilesizeForBaseUpload,
+        'Minimum file size to use with Multipart Uploads is 10MB');
 
     final startTransaction = createMultipartRequest(
         'POST', buildUri('$uploadUrl/multipart/start/'), false)
@@ -100,6 +116,8 @@ class UploadcareApiUpload
     final urls = (map['parts'] as List).cast<String>();
     final uuid = map['uuid'] as String;
 
+    ProgressEntity progress = ProgressEntity(0, urls.length);
+
     final actions = await Future.wait(List.generate(urls.length, (index) {
       final url = urls[index];
       final offset = index * _kChunkSize;
@@ -115,8 +133,15 @@ class UploadcareApiUpload
             ..headers.addAll({
               'Content-Type': mimeType,
             }))
-          .then((request) =>
-              () => resolveStreamedResponseStatusCode(request.send()));
+          .then((request) => () =>
+              resolveStreamedResponseStatusCode(request.send())
+                  .then((response) {
+                if (onProgress != null)
+                  onProgress(progress = progress.copyWith(
+                    uploaded: progress.uploaded + 1,
+                  ));
+                return response;
+              }));
     }));
 
     await ConcurrentRunner(maxConcurrentChunkRequests, actions).run();
@@ -156,12 +181,12 @@ class UploadcareApiUpload
 
     String fileId;
 
-    await for (UrlUploadStatusResponse response
-        in _uploadStatusStream(token, checkInterval)) {
-      if (response.status == UrlUploadStatus.Error)
+    await for (UrlUploadStatusEntity response
+        in _urlUploadStatusAsStream(token, checkInterval)) {
+      if (response.status == UrlUploadStatusValue.Error)
         throw ClientException(response.errorMessage);
 
-      if (response.status == UrlUploadStatus.Success)
+      if (response.status == UrlUploadStatusValue.Success)
         fileId = response.fileInfo.id;
 
       if (response.progress != null && onProgress != null)
@@ -171,13 +196,13 @@ class UploadcareApiUpload
     return fileId;
   }
 
-  Stream<UrlUploadStatusResponse> _uploadStatusStream(
+  Stream<UrlUploadStatusEntity> _urlUploadStatusAsStream(
     String token,
     Duration checkInterval,
   ) async* {
     while (true) {
       sleep(checkInterval);
-      final response = UrlUploadStatusResponse.fromJson(
+      final response = UrlUploadStatusEntity.fromJson(
         await resolveStreamedResponse(
           createRequest(
             'GET',
@@ -194,7 +219,7 @@ class UploadcareApiUpload
 
       yield response;
 
-      if (response.status != UrlUploadStatus.Progress) break;
+      if (response.status != UrlUploadStatusValue.Progress) break;
     }
   }
 

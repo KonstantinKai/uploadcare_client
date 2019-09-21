@@ -1,29 +1,45 @@
 import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/api/cdn_image.dart';
 import 'package:uploadcare_client/src/api/cdn_video.dart';
-import 'package:uploadcare_client/src/api/manager.dart';
+import 'package:uploadcare_client/src/api/files.dart';
 import 'package:uploadcare_client/src/api/upload.dart';
 import 'package:uploadcare_client/src/api/video_encoding.dart';
 import 'package:uploadcare_client/src/options.dart';
+import 'package:uploadcare_client/uploadcare_client.dart';
 
 class UploadcareClient {
+  final ClientOptions options;
+  final ApiUpload upload;
+  final ApiFiles files;
+  final ApiVideoEncoding videoEncoding;
+
   UploadcareClient({
     @required this.options,
-  })  : upload = UploadcareApiUpload(options: options),
-        manager = UploadcareApiManager(options: options),
-        videoEncoding = UploadcareApiVideoEncoding(options: options);
+  })  : upload = ApiUpload(options: options),
+        files = ApiFiles(options: options),
+        videoEncoding = ApiVideoEncoding(options: options);
 
-  final UploadcareOptions options;
-  final UploadcareApiUpload upload;
-  final UploadcareApiManager manager;
-  final UploadcareApiVideoEncoding videoEncoding;
+  factory UploadcareClient.withSimpleAuth(
+    String publicKey,
+    String privateKey,
+    String apiVersion,
+  ) =>
+      UploadcareClient(
+        options: ClientOptions(
+          authorizationScheme: AuthSchemeSimple(
+            apiVersion: apiVersion,
+            publicKey: publicKey,
+            privateKey: privateKey,
+          ),
+        ),
+      );
 
-  UploadcareCdnImage createCdnImage(String id) => UploadcareCdnImage(
+  CdnImage createCdnImage(String id) => CdnImage(
         options: options,
         id: id,
       );
 
-  UploadcareCdnVideo createCdnVideo(String id) => UploadcareCdnVideo(
+  CdnVideo createCdnVideo(String id) => CdnVideo(
         options: options,
         id: id,
       );

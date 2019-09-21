@@ -1,10 +1,10 @@
 import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/authorization/scheme.dart';
 
-class UploadcareAuthSchemeSimple extends UploadcareAuthScheme {
+class AuthSchemeSimple extends AuthScheme {
   static const String _name = 'Uploadcare.Simple';
 
-  UploadcareAuthSchemeSimple({
+  AuthSchemeSimple({
     @required String publicKey,
     @required String privateKey,
     @required String apiVersion,

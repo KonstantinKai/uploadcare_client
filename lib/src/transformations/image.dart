@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:uploadcare_client/src/transformations/base.dart';
 import 'package:uploadcare_client/src/transformations/common.dart';
 
 enum ImageFormatTValue {

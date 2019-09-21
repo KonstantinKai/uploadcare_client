@@ -1,5 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:test/test.dart';
 import 'package:uploadcare_client/src/concurrent_runner.dart';
 
 class _TestConcurrentActions {

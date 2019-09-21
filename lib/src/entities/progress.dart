@@ -1,16 +1,14 @@
-class UploadcareProgress {
+class ProgressEntity {
   final int total;
   final int uploaded;
 
-  const UploadcareProgress({
-    this.total,
-    this.uploaded,
-  });
+  const ProgressEntity(this.uploaded, this.total);
 
-  factory UploadcareProgress.fromJson(Map<String, dynamic> json) =>
-      UploadcareProgress(total: json['total'], uploaded: json['done']);
+  factory ProgressEntity.fromJson(Map<String, dynamic> json) =>
+      ProgressEntity(json['done'], json['total']);
 
-  double get progress => uploaded / total;
+  double get value => double.parse((uploaded / total).toStringAsFixed(2));
 
-  int get progressPercent => (progress * 100).ceil();
+  ProgressEntity copyWith({int uploaded, int total}) =>
+      ProgressEntity(uploaded ?? this.uploaded, total ?? this.total);
 }
