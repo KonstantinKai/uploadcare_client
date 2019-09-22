@@ -11,5 +11,7 @@ mixin CdnPathBuilderMixin<T extends Transformation>
 
   Uri get uri => Uri.parse(cdnUrl).replace(path: '/${pathTransformer.path}');
 
+  bool get hasTransformations => pathTransformer.hasTransformations;
+
   void transform(T transformation) => pathTransformer.transform(transformation);
 }

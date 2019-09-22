@@ -7,10 +7,9 @@ import 'package:http_parser/http_parser.dart';
 import 'package:meta/meta.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:uploadcare_client/src/concurrent_runner.dart';
-import 'package:uploadcare_client/src/entities/progress.dart';
-import 'package:uploadcare_client/src/entities/url.dart';
+import 'package:uploadcare_client/src/entities/entities.dart';
 import 'package:uploadcare_client/src/mixins/mixins.dart';
-import 'package:uploadcare_client/uploadcare_client.dart';
+import 'package:uploadcare_client/src/options.dart';
 
 const int _kChunkSize = 5242880;
 const int _kRecomendedMaxFilesizeForBaseUpload = 10000000;
@@ -18,11 +17,11 @@ const int _kRecomendedMaxFilesizeForBaseUpload = 10000000;
 typedef void ProgressListener(ProgressEntity progress);
 
 class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
+  final ClientOptions options;
+
   ApiUpload({
     @required this.options,
   }) : assert(options != null);
-
-  final ClientOptions options;
 
   Future<String> auto(
     File file, {

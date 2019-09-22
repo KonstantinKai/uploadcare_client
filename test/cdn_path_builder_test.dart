@@ -52,4 +52,33 @@ void main() {
         equals(
             '/some-long-id/video/-/resize/512x384/-/cut/000:01:49/000:00:30/'));
   });
+
+  test('test #3', () {
+    final image = client.createCdnImage('some-long-id');
+
+    expect(image.pathTransformer.path, equals('/some-long-id/'));
+  });
+
+  test('test #4', () {
+    final group = client.createCdnGroup('some-long-group-id~2');
+
+    expect(group.pathTransformer.path, equals('some-long-group-id~2/'));
+
+    final image = group.getImage(0)
+      ..transform(ImageResizeTransformation(Size.square(66)));
+
+    expect(
+        image.url,
+        equals(
+            'https://ucarecdn.com/some-long-group-id~2/nth/0/-/resize/66x66/'));
+  });
+
+  test('test #5', () {
+    final group = client.createCdnGroup('some-long-group-id~2')
+      ..transform(ArchiveTransformation(ArchiveTValue.Tar, 'archive.tar'))
+      ..transform(ArchiveTransformation(ArchiveTValue.Zip, 'archive.zip'));
+
+    expect(group.pathTransformer.path,
+        equals('some-long-group-id~2/archive/tar/archive.tar/'));
+  });
 }

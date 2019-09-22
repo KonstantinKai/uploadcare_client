@@ -111,3 +111,17 @@ class CutTransformation extends Transformation implements VideoTransformation {
           length != null ? _formatDuration(length) : 'end',
       ];
 }
+
+class VideoThumbsGenerateTransformation extends Transformation
+    implements VideoTransformation {
+  final int amount;
+
+  VideoThumbsGenerateTransformation([this.amount = 1])
+      : assert(amount > 0 && amount <= 50, 'Should be in 1..50 range');
+
+  @override
+  String get operation => 'thumbs~$amount';
+
+  @override
+  List<String> get params => [];
+}

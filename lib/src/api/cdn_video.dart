@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:uploadcare_client/src/api/cdn_image.dart';
 import 'package:uploadcare_client/src/entities/cdn.dart';
 import 'package:uploadcare_client/src/mixins/cdn_path_builder_mixin.dart';
 import 'package:uploadcare_client/src/mixins/options_shortcuts_mixin.dart';
@@ -18,6 +19,5 @@ class CdnVideo extends CndEntity
         pathTransformer = PathTransformer('$id/video'),
         super(id);
 
-  @override
-  String toString() => uri.toString();
+  String get url => uri.toString();
 }

@@ -4,11 +4,18 @@ abstract class Transformation {
 
   @override
   String toString() => [operation, ...params].join('/');
+
+  bool operator ==(dynamic other) => runtimeType == other.runtimeType;
+
+  @override
+  int get hashCode => runtimeType.hashCode;
 }
 
 abstract class ImageTransformation implements Transformation {}
 
 abstract class VideoTransformation implements Transformation {}
+
+abstract class GroupTransformation implements Transformation {}
 
 abstract class EnumTransformation<T> extends Transformation {
   final T value;
