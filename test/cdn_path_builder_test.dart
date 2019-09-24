@@ -5,6 +5,7 @@ import 'package:test/test.dart';
 import 'package:uploadcare_client/src/client.dart';
 import 'package:uploadcare_client/src/transformations/common.dart';
 import 'package:uploadcare_client/src/transformations/image.dart';
+import 'package:uploadcare_client/src/transformations/path_transformer.dart';
 import 'package:uploadcare_client/src/transformations/video.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
@@ -25,7 +26,7 @@ void main() {
   });
 
   test('test #1', () {
-    final image = client.createCdnImage('some-long-id')
+    final image = CdnImage('some-long-id')
       ..transform(ImageResizeTransformation(Size(300, 450)))
       ..transform(QualityTransformation())
       ..transform(ImageFormatTransformation(ImageFormatTValue.Webp))
@@ -38,29 +39,31 @@ void main() {
   });
 
   test('test #2', () {
-    final video = client.createCdnVideo('some-long-id')
+    final video = PathTransformer('some-long-id/video')
       ..transform(VideoResizeTransformation(Size(512, 384)))
+      ..transform(VideoThumbsGenerateTransformation(10))
       ..transform(CutTransformation(
         const Duration(seconds: 109),
         length: Duration(
           seconds: 30,
         ),
-      ));
+      ))
+      ..sort((a, b) => b is VideoThumbsGenerateTransformation ? -1 : 1);
 
     expect(
-        video.uri.path,
+        video.path,
         equals(
-            '/some-long-id/video/-/resize/512x384/-/cut/000:01:49/000:00:30/'));
+            'some-long-id/video/-/cut/000:01:49/000:00:30/-/resize/512x384/-/thumbs~10/'));
   });
 
   test('test #3', () {
-    final image = client.createCdnImage('some-long-id');
+    final image = CdnImage('some-long-id');
 
-    expect(image.pathTransformer.path, equals('/some-long-id/'));
+    expect(image.pathTransformer.path, equals('some-long-id/'));
   });
 
   test('test #4', () {
-    final group = client.createCdnGroup('some-long-group-id~2');
+    final group = CdnGroup('some-long-group-id~2');
 
     expect(group.pathTransformer.path, equals('some-long-group-id~2/'));
 
@@ -74,7 +77,7 @@ void main() {
   });
 
   test('test #5', () {
-    final group = client.createCdnGroup('some-long-group-id~2')
+    final group = CdnGroup('some-long-group-id~2')
       ..transform(ArchiveTransformation(ArchiveTValue.Tar, 'archive.tar'))
       ..transform(ArchiveTransformation(ArchiveTValue.Zip, 'archive.zip'));
 

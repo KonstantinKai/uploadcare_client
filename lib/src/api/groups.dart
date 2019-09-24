@@ -23,7 +23,7 @@ class ApiGroups with OptionsShortcutMixin, TransportHelperMixin {
 
   Future<GroupInfoEntity> create(
       Map<String, List<ImageTransformation>> files) async {
-    assert(files.length <= 1000, 'Should be less or equal 1000 files');
+    assert(files.length <= 1000, 'Should be in 1..1000 range');
 
     final entries = files.entries.toList();
     final request =

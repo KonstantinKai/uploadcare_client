@@ -112,7 +112,7 @@ class CutTransformation extends Transformation implements VideoTransformation {
       ];
 }
 
-class VideoThumbsGenerateTransformation extends Transformation
+class VideoThumbsGenerateTransformation extends NullParamTransformation
     implements VideoTransformation {
   final int amount;
 
@@ -121,7 +121,4 @@ class VideoThumbsGenerateTransformation extends Transformation
 
   @override
   String get operation => 'thumbs~$amount';
-
-  @override
-  List<String> get params => [];
 }

@@ -24,21 +24,35 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   }) : assert(options != null);
 
   Future<String> auto(
-    File file, {
+    dynamic res, {
     bool storeMode,
+    ProgressListener onProgress,
   }) async {
-    final filesize = await file.length();
+    if (res is File) {
+      final file = res;
+      final filesize = await file.length();
 
-    if (filesize > _kRecomendedMaxFilesizeForBaseUpload)
-      return multipart(
+      if (filesize > _kRecomendedMaxFilesizeForBaseUpload)
+        return multipart(
+          file,
+          storeMode: storeMode,
+          onProgress: onProgress,
+        );
+
+      return base(
         file,
         storeMode: storeMode,
+        onProgress: onProgress,
       );
+    } else if (res is String && res.isNotEmpty) {
+      return fromUrl(
+        res,
+        storeMode: storeMode,
+        onProgress: onProgress,
+      );
+    }
 
-    return base(
-      file,
-      storeMode: storeMode,
-    );
+    throw Exception('Make sure you passed File or URL string');
   }
 
   Future<String> base(
@@ -49,17 +63,15 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     final filename = Uri.parse(file.path).pathSegments.last;
     final filesize = await file.length();
 
-    final params = {
-      'UPLOADCARE_PUB_KEY': publicKey,
-      'UPLOADCARE_STORE': resolveStoreModeParam(storeMode),
-      if (options.useSignedUploads) ..._signUpload(),
-    };
-
     ProgressEntity progress = ProgressEntity(0, filesize);
 
     final client =
         createMultipartRequest('POST', buildUri('$uploadUrl/base/'), false)
-          ..fields.addAll(params)
+          ..fields.addAll({
+            'UPLOADCARE_PUB_KEY': publicKey,
+            'UPLOADCARE_STORE': resolveStoreModeParam(storeMode),
+            if (options.useSignedUploads) ..._signUpload(),
+          })
           ..files.add(
             MultipartFile(
               'file',
@@ -91,8 +103,10 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     File file, {
     bool storeMode,
     ProgressListener onProgress,
-    int maxConcurrentChunkRequests = 3,
+    int maxConcurrentChunkRequests,
   }) async {
+    maxConcurrentChunkRequests ??= options.multipartMaxConcurrentChunkRequests;
+
     final filename = Uri.parse(file.path).pathSegments.last;
     final filesize = await file.length();
     final mimeType = mime(filename);
@@ -195,31 +209,47 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     return fileId;
   }
 
+  Future<void> _statusTimerCallback(
+    String token,
+    Duration checkInterval,
+    StreamController<UrlUploadStatusEntity> controller,
+  ) async {
+    final response = UrlUploadStatusEntity.fromJson(
+      await resolveStreamedResponse(
+        createRequest(
+          'GET',
+          buildUri(
+            '$uploadUrl/from_url/status/',
+            {
+              'token': token,
+            },
+          ),
+          false,
+        ).send(),
+      ),
+    );
+
+    controller.add(response);
+
+    if (response.status == UrlUploadStatusValue.Progress) {
+      return Timer(checkInterval,
+          () => _statusTimerCallback(token, checkInterval, controller));
+    }
+
+    controller.close();
+  }
+
   Stream<UrlUploadStatusEntity> _urlUploadStatusAsStream(
     String token,
     Duration checkInterval,
-  ) async* {
-    while (true) {
-      sleep(checkInterval);
-      final response = UrlUploadStatusEntity.fromJson(
-        await resolveStreamedResponse(
-          createRequest(
-            'GET',
-            buildUri(
-              '$uploadUrl/from_url/status/',
-              {
-                'token': token,
-              },
-            ),
-            false,
-          ).send(),
-        ),
-      );
+  ) {
+    final StreamController<UrlUploadStatusEntity> controller =
+        StreamController();
 
-      yield response;
+    Timer(checkInterval,
+        () => _statusTimerCallback(token, checkInterval, controller));
 
-      if (response.status != UrlUploadStatusValue.Progress) break;
-    }
+    return controller.stream;
   }
 
   Map<String, String> _signUpload() {

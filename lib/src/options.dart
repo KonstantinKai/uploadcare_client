@@ -1,9 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/authorization/scheme.dart';
-
-const String _kDefaultUploadEndpoint = 'https://upload.uploadcare.com';
-const String _kDefaultRequestEndpoint = 'https://api.uploadcare.com';
-const String _kDefaultCdnEndpoint = 'https://ucarecdn.com';
+import 'package:uploadcare_client/src/constants.dart';
 
 class ClientOptions {
   final String uploadUrl;
@@ -12,13 +9,15 @@ class ClientOptions {
   final AuthScheme authorizationScheme;
   final bool useSignedUploads;
   final Duration signedUploadsSignatureLifetime;
+  final int multipartMaxConcurrentChunkRequests;
 
   const ClientOptions({
     @required this.authorizationScheme,
-    this.uploadUrl = _kDefaultUploadEndpoint,
-    this.apiUrl = _kDefaultRequestEndpoint,
-    this.cdnUrl = _kDefaultCdnEndpoint,
+    this.uploadUrl = kDefaultUploadEndpoint,
+    this.apiUrl = kDefaultRequestEndpoint,
+    this.cdnUrl = kDefaultCdnEndpoint,
     this.useSignedUploads = false,
     this.signedUploadsSignatureLifetime = const Duration(minutes: 30),
+    this.multipartMaxConcurrentChunkRequests = 3,
   });
 }

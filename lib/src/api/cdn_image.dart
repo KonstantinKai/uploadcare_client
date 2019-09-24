@@ -1,22 +1,17 @@
-import 'package:meta/meta.dart';
+import 'package:uploadcare_client/src/constants.dart';
 import 'package:uploadcare_client/src/entities/cdn.dart';
 import 'package:uploadcare_client/src/mixins/cdn_path_builder_mixin.dart';
-import 'package:uploadcare_client/src/mixins/options_shortcuts_mixin.dart';
-import 'package:uploadcare_client/src/options.dart';
 import 'package:uploadcare_client/src/transformations/base.dart';
 import 'package:uploadcare_client/src/transformations/path_transformer.dart';
 
-class CdnImage extends CndEntity
-    with OptionsShortcutMixin, CdnPathBuilderMixin<ImageTransformation> {
-  final ClientOptions options;
+class CdnImage extends CndEntity with CdnPathBuilderMixin<ImageTransformation> {
+  final String cdnUrl;
   final PathTransformer<ImageTransformation> pathTransformer;
 
-  CdnImage({
-    @required this.options,
-    @required String id,
-  })  : assert(options != null),
+  CdnImage(
+    String id, {
+    this.cdnUrl = kDefaultCdnEndpoint,
+  })  : assert(id != null),
         pathTransformer = PathTransformer(id),
         super(id);
-
-  String get url => uri.toString();
 }

@@ -52,7 +52,9 @@ class AutoRotateTransformation extends BooleanTransformation
 
 class RotateTransformation extends IntTransformation
     implements ImageTransformation {
-  RotateTransformation(int value) : super(value);
+  RotateTransformation(int value)
+      : assert(value >= -360 && value <= 360, 'Should be in -360..360 range'),
+        super(value);
 
   @override
   String get operation => 'rotate';

@@ -31,7 +31,7 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
       buildUri('$apiUrl/files/storage/'),
     )..body = jsonEncode(fileIds);
 
-    await resolveStreamedResponse(request.send());
+    await resolveStreamedResponseStatusCode(request.send());
   }
 
   Future<void> store(List<String> fileIds) async {
@@ -40,7 +40,7 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
     final request = createRequest('PUT', buildUri('$apiUrl/files/storage/'))
       ..body = jsonEncode(fileIds);
 
-    await resolveStreamedResponse(request.send());
+    await resolveStreamedResponseStatusCode(request.send());
   }
 
   Future<ListEntity<FileInfoEntity>> list({

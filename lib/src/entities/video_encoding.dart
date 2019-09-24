@@ -51,9 +51,10 @@ class VideoEncodingConvertEntity {
 
   factory VideoEncodingConvertEntity.fromJson(Map<String, dynamic> json) =>
       VideoEncodingConvertEntity(
-        problems: json['problems'],
+        problems: (json['problems'] as Map).cast<String, String>(),
         results: (json['result'] as List)
-            .map((item) => VideoEncodingResultEntity.fromJson(item)),
+            .map((item) => VideoEncodingResultEntity.fromJson(item))
+            .toList(),
       );
 }
 

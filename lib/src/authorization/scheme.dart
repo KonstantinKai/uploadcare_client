@@ -1,13 +1,11 @@
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 
-const String _kDefaultApiVersion = 'v0.5';
-
 abstract class AuthScheme {
   AuthScheme({
     @required this.publicKey,
     @required this.privateKey,
-    String apiVersion = _kDefaultApiVersion,
+    @required String apiVersion,
   })  : assert(publicKey != null && privateKey != null && apiVersion != null),
         acceptHeader =
             MapEntry('Accept', 'application/vnd.uploadcare-$apiVersion+json');
