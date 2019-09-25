@@ -3,13 +3,12 @@ import 'package:uploadcare_client/src/api_sections/api_sections.dart';
 import 'package:uploadcare_client/src/constants.dart';
 import 'package:uploadcare_client/src/transformations/base.dart';
 
-/// Constructs right `Uploadcare CND url` by `id` & provided `transformations` if any
+/// Constructs right `Uploadcare CND url` by `id` and provided `transformations` if any
 ///
 /// Uses [NetworkImage] to fetch image from `Uploadcare CDN`
 /// Example:
 /// ```dart
 /// Image(
-///   fit: BoxFit.contain,
 ///   image: UploadcareImageProvider(
 ///     _fileInfo.id,
 ///     transformations: [
@@ -19,6 +18,7 @@ import 'package:uploadcare_client/src/transformations/base.dart';
 ///       ImageResizeTransformation(Size.square(58))
 ///     ],
 ///   ),
+///   // ... other Image params
 /// )
 /// ```
 class UploadcareImageProvider extends ImageProvider<NetworkImage> {
@@ -42,11 +42,9 @@ class UploadcareImageProvider extends ImageProvider<NetworkImage> {
   final CdnImage _cdnImage;
   NetworkImage _provider;
 
-  /// @nodoc
   @override
   ImageStreamCompleter load(NetworkImage key) => _provider.load(key);
 
-  /// @nodoc
   @override
   Future<NetworkImage> obtainKey(ImageConfiguration configuration) =>
       _provider.obtainKey(configuration);

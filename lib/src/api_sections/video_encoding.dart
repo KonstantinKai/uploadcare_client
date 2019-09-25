@@ -18,11 +18,11 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
   }) : assert(options != null);
 
   /// Run a processing job
+  ///
+  /// [transformers] is a Map with video `id` and list of [VideoTransformation]
+  /// When [storeMode] is set to `false`, the outputs will only be available for 24 hours.
   Future<VideoEncodingConvertEntity> process(
-    /// Map with video `id` and list of [VideoTransformation]
     Map<String, List<VideoTransformation>> transformers, {
-
-    /// When [storeMode] is set to `false`, the outputs will only be available for 24 hours.
     bool storeMode,
   }) async {
     final request = createRequest('POST', buildUri('$apiUrl/convert/video/'))
@@ -43,8 +43,9 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
   }
 
   /// Checking processing job status
+  ///
+  /// [token] from [VideoEncodingConvertEntity.token]
   Future<VideoEncodingJobEntity> status(
-    /// Token from [VideoEncodingConvertEntity.token]
     int token,
   ) async =>
       VideoEncodingJobEntity.fromJson(
@@ -76,11 +77,11 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
   }
 
   /// Returns processing job as `Stream`
+  ///
+  /// [token] from [VideoEncodingConvertEntity.token]
+  /// [checkInterval] check status interval
   Stream<VideoEncodingJobEntity> statusAsStream(
-    /// Token from [VideoEncodingConvertEntity.token]
     int token, {
-
-    /// Check status interval
     Duration checkInterval = const Duration(seconds: 5),
   }) {
     final StreamController<VideoEncodingJobEntity> controller =

@@ -2,10 +2,10 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 enum FilesFilterValue {
-  /// filter by upload date
+  /// Filter by upload date
   DatetimeUploaded,
 
-  /// filter by size
+  /// Filter by size
   Size,
 }
 

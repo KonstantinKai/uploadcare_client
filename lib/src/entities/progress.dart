@@ -3,10 +3,10 @@ import 'package:meta/meta.dart';
 
 /// An object that represents progress data
 class ProgressEntity extends Equatable {
-  /// Total size in bytes
+  /// total size in bytes
   final int total;
 
-  /// Uploaded size in bytes
+  /// uploaded size in bytes
   final int uploaded;
 
   const ProgressEntity(this.uploaded, this.total);

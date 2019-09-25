@@ -59,15 +59,14 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   }
 
   /// Make upload to `/base` endpoint
+  ///
+  /// [storeMode]`=null` - auto store
+  /// [storeMode]`=true` - store file
+  /// [storeMode]`=false` - keep file for 24h in storage
+  /// [onProgress] subscribe to progress event
   Future<String> base(
     File file, {
-
-    /// `null` - auto store
-    /// `true` - store file
-    /// `false` - keep file for 24h in storage
     bool storeMode,
-
-    /// subscribe to progress event
     ProgressListener onProgress,
   }) async {
     final filename = Uri.parse(file.path).pathSegments.last;
@@ -112,13 +111,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   /// Make upload to `/multipart` endpoint
   Future<String> multipart(
     File file, {
-
-    /// `null` - auto store
-    /// `true` - store file
-    /// `false` - keep file for 24h in storage
     bool storeMode,
-
-    /// subscribe to progress event
     ProgressListener onProgress,
     int maxConcurrentChunkRequests,
   }) async {
@@ -192,16 +185,8 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   /// Make upload to `/fromUrl` endpoint
   Future<String> fromUrl(
     String url, {
-
-    /// `null` - auto store
-    /// `true` - store file
-    /// `false` - keep file for 24h in storage
     bool storeMode,
-
-    /// subscribe to progress event
     ProgressListener onProgress,
-
-    /// specify check status interval
     Duration checkInterval = const Duration(seconds: 1),
   }) async {
     final request = createMultipartRequest(

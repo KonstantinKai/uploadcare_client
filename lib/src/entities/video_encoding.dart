@@ -2,29 +2,29 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 enum VideoEncodingJobStatusValue {
-  /// video file is being prepared for conversion.
+  /// Video file is being prepared for conversion.
   Pending,
 
-  /// video file processing is in progress.
+  /// Video file processing is in progress.
   Processing,
 
-  /// we failed to process the video, see [VideoEncodingJobEntity.errorMessage] for details.
+  /// We failed to process the video, see [VideoEncodingJobEntity.errorMessage] for details.
   Failed,
 
-  /// the processing is finished.
+  /// The processing is finished.
   Finished,
 
-  /// video processing was canceled.
+  /// Video processing was canceled.
   Canceled,
 }
 
 /// Provides status data for converting job
 class VideoEncodingJobEntity extends Equatable {
-  /// encoding job status
+  /// Encoding job status
   final VideoEncodingJobStatusValue status;
   final VideoEncodingResultEntity result;
 
-  /// holds a processing error message
+  /// Holds a processing error message
   final String errorMessage;
 
   const VideoEncodingJobEntity({
@@ -65,7 +65,7 @@ class VideoEncodingJobEntity extends Equatable {
 class VideoEncodingConvertEntity extends Equatable {
   final List<VideoEncodingResultEntity> results;
 
-  /// problems related to your processing job, if any.
+  /// Problems related to your processing job, if any.
   final Map<String, String> problems;
 
   const VideoEncodingConvertEntity({
@@ -87,18 +87,18 @@ class VideoEncodingConvertEntity extends Equatable {
   List get props => [results, problems];
 }
 
-/// A converting result representation
+/// Provides converting result data
 class VideoEncodingResultEntity extends Equatable {
-  /// input file identifier including transformations, if present.
+  /// Input file identifier including transformations, if present.
   final String originSourceLocation;
 
-  /// a UUID of your processed video file.
+  /// A UUID of your processed video file.
   final String processedFileId;
 
-  /// a processing job token that can be used to get a job status
+  /// A processing job token that can be used to get a job status
   final int token;
 
-  /// holds `groupId`, a UUID of a file group with thumbnails for an output video, based on the thumbs operation parameters.
+  /// Holds `groupId`, a UUID of a file group with thumbnails for an output video, based on the thumbs operation parameters.
   final String thumbnailsGroupId;
 
   const VideoEncodingResultEntity({

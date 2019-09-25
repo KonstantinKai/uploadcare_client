@@ -50,15 +50,14 @@ class ApiGroups with OptionsShortcutMixin, TransportHelperMixin {
   }
 
   /// Retrieve groups
+  ///
+  /// [limit] a preferred amount of groups in a list for a single response.
+  /// [fromDate] a starting point for filtering group lists.
+  /// [orderDirection] specifies the way groups are sorted in a returned list,
   Future<ListEntity<GroupInfoEntity>> list({
-    /// a preferred amount of groups in a list for a single response.
     int limit = 100,
     int offset,
-
-    /// a starting point for filtering group lists.
     DateTime fromDate,
-
-    /// specifies the way groups are sorted in a returned list,
     OrderDirection orderDirection = OrderDirection.Asc,
   }) async {
     assert(limit > 0 && limit <= 1000, 'Should be in 1..1000 range');

@@ -48,22 +48,19 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   }
 
   /// Retrieve files
+  ///
+  /// [stored] `true` to only include files that were stored, `false` to include temporary ones.
+  /// [removed] `true` to only include removed files in the response, `false` to include existing files.
+  /// [limit] a preferred amount of files in a list for a single response.
+  /// [ordering] specifies the way files are sorted in a returned list
+  /// [fromFilter] a starting point for filtering files. The value depends on your ordering parameter value.
   Future<ListEntity<FileInfoEntity>> list({
-    /// `true` to only include files that were stored, `false` to include temporary ones.
     bool stored = true,
-
-    /// `true` to only include removed files in the response, `false` to include existing files.
     bool removed = false,
-
-    /// a preferred amount of files in a list for a single response.
     int limit = 100,
     int offset,
-
-    /// specifies the way files are sorted in a returned list
     FilesOrdering ordering =
         const FilesOrdering(FilesFilterValue.DatetimeUploaded),
-
-    /// a starting point for filtering files. The value depends on your ordering parameter value.
     dynamic fromFilter,
   }) async {
     assert(limit > 0 && limit <= 1000, 'Should be in 1..1000 range');
