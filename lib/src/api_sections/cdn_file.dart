@@ -1,6 +1,7 @@
 import 'package:uploadcare_client/src/constants.dart';
 import 'package:uploadcare_client/src/entities/cdn.dart';
 
+/// Provides a simple way to work with [Transformation]
 class CdnFile extends CndEntity {
   final String cdnUrl;
 

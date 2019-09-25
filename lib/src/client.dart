@@ -1,11 +1,11 @@
 import 'package:meta/meta.dart';
-import 'package:uploadcare_client/src/api/files.dart';
-import 'package:uploadcare_client/src/api/groups.dart';
-import 'package:uploadcare_client/src/api/upload.dart';
-import 'package:uploadcare_client/src/api/video_encoding.dart';
+import 'package:uploadcare_client/src/api_sections/api_sections.dart';
 import 'package:uploadcare_client/src/options.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
+/// Provides centralized access to `Uploadcare API`
+///
+/// Feel free to use every section separately, don't forget to pass [ClientOptions] to them
 class UploadcareClient {
   final ClientOptions options;
   final ApiUpload upload;
@@ -20,18 +20,31 @@ class UploadcareClient {
         videoEncoding = ApiVideoEncoding(options: options),
         groups = ApiGroups(options: options);
 
-  factory UploadcareClient.withSimpleAuth({
+  UploadcareClient.withSimpleAuth({
     @required String publicKey,
     @required String privateKey,
     @required String apiVersion,
-  }) =>
-      UploadcareClient(
-        options: ClientOptions(
-          authorizationScheme: AuthSchemeSimple(
-            apiVersion: apiVersion,
-            publicKey: publicKey,
-            privateKey: privateKey,
+  }) : this(
+          options: ClientOptions(
+            authorizationScheme: AuthSchemeSimple(
+              apiVersion: apiVersion,
+              publicKey: publicKey,
+              privateKey: privateKey,
+            ),
           ),
-        ),
-      );
+        );
+
+  UploadcareClient.withRegularAuth({
+    @required String publicKey,
+    @required String privateKey,
+    @required String apiVersion,
+  }) : this(
+          options: ClientOptions(
+            authorizationScheme: AuthSchemeRegular(
+              apiVersion: apiVersion,
+              publicKey: publicKey,
+              privateKey: privateKey,
+            ),
+          ),
+        );
 }

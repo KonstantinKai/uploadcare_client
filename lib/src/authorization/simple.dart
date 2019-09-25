@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/authorization/scheme.dart';
 
+/// Provides `Uploadcare.Simple` auth scheme
 class AuthSchemeSimple extends AuthScheme {
   static const String _name = 'Uploadcare.Simple';
 
@@ -14,6 +15,7 @@ class AuthSchemeSimple extends AuthScheme {
           privateKey: privateKey,
         );
 
+  @protected
   @override
   authorizeRequest(request) {
     request.headers.addAll(Map.fromEntries([

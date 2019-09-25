@@ -30,6 +30,7 @@ const List<String> _kDayNames = const [
   'Sat'
 ];
 
+/// Provides `Uploadcare` (regular) auth scheme
 class AuthSchemeRegular extends AuthScheme {
   static const String _name = 'Uploadcare';
 
@@ -43,6 +44,7 @@ class AuthSchemeRegular extends AuthScheme {
           privateKey: privateKey,
         );
 
+  @protected
   @override
   void authorizeRequest(request) {
     final String isoDate = _formatToRFC822Date(DateTime.now());

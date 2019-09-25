@@ -7,6 +7,7 @@ import 'package:uploadcare_client/src/transformations/base.dart';
 import 'package:uploadcare_client/src/transformations/path_transformer.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
+/// Provides API for working with groups
 class ApiGroups with OptionsShortcutMixin, TransportHelperMixin {
   final ClientOptions options;
 
@@ -14,15 +15,19 @@ class ApiGroups with OptionsShortcutMixin, TransportHelperMixin {
     @required this.options,
   }) : assert(options != null);
 
+  /// Retrieve group by [id]
   Future<GroupInfoEntity> group(String id) async =>
       GroupInfoEntity.fromJson(await resolveStreamedResponse(
           createRequest('GET', buildUri('$apiUrl/groups/$id/')).send()));
 
+  /// Mark all files in a group as stored
   Future<void> storeFiles(String id) => resolveStreamedResponseStatusCode(
       createRequest('PUT', buildUri('$apiUrl/groups/$id/storage/')).send());
 
+  /// Create a group
   Future<GroupInfoEntity> create(
-      Map<String, List<ImageTransformation>> files) async {
+    Map<String, List<ImageTransformation>> files,
+  ) async {
     assert(files.length <= 1000, 'Should be in 1..1000 range');
 
     final entries = files.entries.toList();
@@ -44,10 +49,16 @@ class ApiGroups with OptionsShortcutMixin, TransportHelperMixin {
         await resolveStreamedResponse(request.send()));
   }
 
+  /// Retrieve groups
   Future<ListEntity<GroupInfoEntity>> list({
+    /// a preferred amount of groups in a list for a single response.
     int limit = 100,
     int offset,
+
+    /// a starting point for filtering group lists.
     DateTime fromDate,
+
+    /// specifies the way groups are sorted in a returned list,
     OrderDirection orderDirection = OrderDirection.Asc,
   }) async {
     assert(limit > 0 && limit <= 1000, 'Should be in 1..1000 range');

@@ -1,8 +1,26 @@
 import 'package:flutter/painting.dart';
-import 'package:uploadcare_client/src/api/cdn_image.dart';
+import 'package:uploadcare_client/src/api_sections/api_sections.dart';
 import 'package:uploadcare_client/src/constants.dart';
 import 'package:uploadcare_client/src/transformations/base.dart';
 
+/// Constructs right `Uploadcare CND url` by `id` & provided `transformations` if any
+///
+/// Uses [NetworkImage] to fetch image from `Uploadcare CDN`
+/// Example:
+/// ```dart
+/// Image(
+///   fit: BoxFit.contain,
+///   image: UploadcareImageProvider(
+///     _fileInfo.id,
+///     transformations: [
+///       BlurTransformation(50),
+///       GrayscaleTransformation(),
+///       InvertTransformation(),
+///       ImageResizeTransformation(Size.square(58))
+///     ],
+///   ),
+/// )
+/// ```
 class UploadcareImageProvider extends ImageProvider<NetworkImage> {
   UploadcareImageProvider(
     String id, {
@@ -24,9 +42,11 @@ class UploadcareImageProvider extends ImageProvider<NetworkImage> {
   final CdnImage _cdnImage;
   NetworkImage _provider;
 
+  /// @nodoc
   @override
   ImageStreamCompleter load(NetworkImage key) => _provider.load(key);
 
+  /// @nodoc
   @override
   Future<NetworkImage> obtainKey(ImageConfiguration configuration) =>
       _provider.obtainKey(configuration);

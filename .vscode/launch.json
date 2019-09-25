@@ -8,7 +8,7 @@
       "name": "Run flutter example",
       "request": "launch",
       "type": "dart",
-      "program": "example/flutter/lib/main.dart",
+      "program": "example/lib/main.dart",
       "flutterMode": "debug",
     }
   ]

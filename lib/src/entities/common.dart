@@ -1,5 +1,11 @@
+import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
+
 enum FilesFilterValue {
+  /// filter by upload date
   DatetimeUploaded,
+
+  /// filter by size
   Size,
 }
 
@@ -8,7 +14,9 @@ enum OrderDirection {
   Desc,
 }
 
-class FilesOrdering {
+/// Provides a way to order files
+class FilesOrdering extends Equatable {
+  /// Order by field
   final FilesFilterValue field;
   final OrderDirection direction;
 
@@ -24,6 +32,11 @@ class FilesOrdering {
   }
 
   String get _directionAsString => direction == OrderDirection.Desc ? '-' : '';
+
+  /// @nodoc
+  @protected
+  @override
+  List get props => [field, direction];
 
   @override
   String toString() {

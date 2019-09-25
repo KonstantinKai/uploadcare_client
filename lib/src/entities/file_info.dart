@@ -1,16 +1,38 @@
-class FileInfoEntity {
-  final bool isStored;
-  final String id;
-  final String filename;
-  final String mimeType;
-  final bool isReady;
-  final int size;
-  final DateTime datetimeUploaded;
-  final DateTime datetimeStored;
-  final DateTime datetimeRemoved;
-  final ImageInfoEntity imageInfo;
+import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
 
-  FileInfoEntity({
+/// Base object to hold Uploadcare file data
+class FileInfoEntity extends Equatable {
+  final bool isStored;
+
+  /// File UUID.
+  final String id;
+
+  /// Original name of an uploaded file.
+  final String filename;
+
+  /// File MIME type.
+  final String mimeType;
+
+  /// If a file is ready and not deleted, it is available on CDN.
+  final bool isReady;
+
+  /// File size in bytes.
+  final int size;
+
+  /// Date and time when a file was uploaded.
+  final DateTime datetimeUploaded;
+
+  /// Date and time of the last store request, if any.
+  final DateTime datetimeStored;
+
+  /// Date and time when a file was removed, if any.
+  final DateTime datetimeRemoved;
+
+  /// Image meta (if a file is an image): Width and height Orientation Geolocation, from EXIF Original datetime, from EXIF Format Resolution, DPI
+  final Map<String, dynamic> imageInfo;
+
+  const FileInfoEntity({
     this.isStored,
     this.id,
     this.filename,
@@ -39,28 +61,27 @@ class FileInfoEntity {
         datetimeUploaded: json['datetime_uploaded'] != null
             ? DateTime.parse(json['datetime_uploaded'])
             : null,
-        imageInfo: ImageInfoEntity.fromJson(json['image_info']),
+        imageInfo: (json['image_info'] as Map).cast<String, dynamic>(),
       );
 
+  /// if your file is an image and can be processed via Image Processing, Please note, our processing engine does not treat all image files as such.
+  /// Some of those may not be supported due to file sizes, resolutions or formats.
+  /// In the case, the flag is set to false. false otherwise.
   bool get isImage => imageInfo != null;
-}
 
-class ImageInfoEntity {
-  final String format;
-  final int width;
-  final int height;
-
-  ImageInfoEntity({
-    this.format,
-    this.width,
-    this.height,
-  });
-
-  factory ImageInfoEntity.fromJson(Map<String, dynamic> json) => json != null
-      ? ImageInfoEntity(
-          format: json['format'],
-          width: json['width'],
-          height: json['height'],
-        )
-      : null;
+  /// @nodoc
+  @protected
+  @override
+  List get props => [
+        isStored,
+        id,
+        filename,
+        mimeType,
+        isReady,
+        size,
+        datetimeRemoved,
+        datetimeStored,
+        datetimeUploaded,
+        imageInfo,
+      ];
 }

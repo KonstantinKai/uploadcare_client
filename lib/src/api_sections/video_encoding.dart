@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/entities/video_encoding.dart';
 import 'package:uploadcare_client/src/mixins/mixins.dart';
@@ -10,6 +9,7 @@ import 'package:uploadcare_client/src/transformations/base.dart';
 import 'package:uploadcare_client/src/transformations/path_transformer.dart';
 import 'package:uploadcare_client/src/transformations/video.dart';
 
+/// Provides API for working with video encoding
 class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
   final ClientOptions options;
 
@@ -17,8 +17,12 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
     @required this.options,
   }) : assert(options != null);
 
+  /// Run a processing job
   Future<VideoEncodingConvertEntity> process(
+    /// Map with video `id` and list of [VideoTransformation]
     Map<String, List<VideoTransformation>> transformers, {
+
+    /// When [storeMode] is set to `false`, the outputs will only be available for 24 hours.
     bool storeMode,
   }) async {
     final request = createRequest('POST', buildUri('$apiUrl/convert/video/'))
@@ -38,7 +42,11 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
     );
   }
 
-  Future<VideoEncodingJobEntity> status(int token) async =>
+  /// Checking processing job status
+  Future<VideoEncodingJobEntity> status(
+    /// Token from [VideoEncodingConvertEntity.token]
+    int token,
+  ) async =>
       VideoEncodingJobEntity.fromJson(
         await resolveStreamedResponse(
           createRequest(
@@ -55,9 +63,6 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
   ) async {
     final response = await status(token);
 
-    if (response.status == VideoEncodingJobStatusValue.Failed)
-      return controller.addError(ClientException(response.errorMessage));
-
     controller.add(response);
 
     if ([
@@ -70,12 +75,16 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
     controller.close();
   }
 
+  /// Returns processing job as `Stream`
   Stream<VideoEncodingJobEntity> statusAsStream(
+    /// Token from [VideoEncodingConvertEntity.token]
     int token, {
+
+    /// Check status interval
     Duration checkInterval = const Duration(seconds: 5),
   }) {
     final StreamController<VideoEncodingJobEntity> controller =
-        StreamController();
+        StreamController.broadcast();
 
     Timer(checkInterval,
         () => _statusTimerCallback(token, checkInterval, controller));

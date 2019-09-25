@@ -16,6 +16,7 @@ const int _kRecomendedMaxFilesizeForBaseUpload = 10000000;
 
 typedef void ProgressListener(ProgressEntity progress);
 
+/// Provides API for uploading files
 class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   final ClientOptions options;
 
@@ -23,6 +24,8 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     @required this.options,
   }) : assert(options != null);
 
+  /// Upload file [res] according to type
+  /// if `String` makes [fromUrl] upload, otherwise make an `File` request according to size
   Future<String> auto(
     dynamic res, {
     bool storeMode,
@@ -55,9 +58,16 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     throw Exception('Make sure you passed File or URL string');
   }
 
+  /// Make upload to `/base` endpoint
   Future<String> base(
     File file, {
+
+    /// `null` - auto store
+    /// `true` - store file
+    /// `false` - keep file for 24h in storage
     bool storeMode,
+
+    /// subscribe to progress event
     ProgressListener onProgress,
   }) async {
     final filename = Uri.parse(file.path).pathSegments.last;
@@ -99,9 +109,16 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     return (await resolveStreamedResponse(client.send()))['file'] as String;
   }
 
+  /// Make upload to `/multipart` endpoint
   Future<String> multipart(
     File file, {
+
+    /// `null` - auto store
+    /// `true` - store file
+    /// `false` - keep file for 24h in storage
     bool storeMode,
+
+    /// subscribe to progress event
     ProgressListener onProgress,
     int maxConcurrentChunkRequests,
   }) async {
@@ -172,10 +189,19 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     return uuid;
   }
 
+  /// Make upload to `/fromUrl` endpoint
   Future<String> fromUrl(
     String url, {
+
+    /// `null` - auto store
+    /// `true` - store file
+    /// `false` - keep file for 24h in storage
     bool storeMode,
+
+    /// subscribe to progress event
     ProgressListener onProgress,
+
+    /// specify check status interval
     Duration checkInterval = const Duration(seconds: 1),
   }) async {
     final request = createMultipartRequest(
@@ -244,7 +270,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     Duration checkInterval,
   ) {
     final StreamController<UrlUploadStatusEntity> controller =
-        StreamController();
+        StreamController.broadcast();
 
     Timer(checkInterval,
         () => _statusTimerCallback(token, checkInterval, controller));
