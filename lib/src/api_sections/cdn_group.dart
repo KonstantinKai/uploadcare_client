@@ -1,8 +1,8 @@
-import 'package:flutter_uploadcare_client/src/api_sections/api_sections.dart';
-import 'package:flutter_uploadcare_client/src/entities/cdn.dart';
-import 'package:flutter_uploadcare_client/src/mixins/cdn_path_builder_mixin.dart';
-import 'package:flutter_uploadcare_client/src/transformations/base.dart';
-import 'package:flutter_uploadcare_client/src/transformations/path_transformer.dart';
+import 'package:uploadcare_client/src/api_sections/api_sections.dart';
+import 'package:uploadcare_client/src/entities/cdn.dart';
+import 'package:uploadcare_client/src/mixins/cdn_path_builder_mixin.dart';
+import 'package:uploadcare_client/src/transformations/base.dart';
+import 'package:uploadcare_client/src/transformations/path_transformer.dart';
 
 /// Provides a simple way to work with [GroupTransformation]
 class CdnGroup extends CndEntity with CdnPathBuilderMixin<GroupTransformation> {

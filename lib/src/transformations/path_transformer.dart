@@ -1,4 +1,4 @@
-import 'package:flutter_uploadcare_client/src/transformations/base.dart';
+import 'package:uploadcare_client/src/transformations/base.dart';
 
 /// Provides API to collect destination URL with transformation according to Uploadcare CDN API
 class PathTransformer<T extends Transformation> {

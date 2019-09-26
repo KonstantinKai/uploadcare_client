@@ -1,7 +1,7 @@
 // import 'package:dotenv/dotenv.dart';
 import 'package:test/test.dart';
-// import 'package:flutter_uploadcare_client/src/transformations/video.dart';
-// import 'package:flutter_uploadcare_client/flutter_uploadcare_client.dart';
+// import 'package:uploadcare_client/src/transformations/video.dart';
+// import 'package:uploadcare_client/uploadcare_client.dart';
 
 void main() {
   // UploadcareClient client;

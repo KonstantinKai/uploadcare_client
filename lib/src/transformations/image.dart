@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:flutter_uploadcare_client/src/transformations/base.dart';
-import 'package:flutter_uploadcare_client/src/transformations/common.dart';
+import 'package:uploadcare_client/src/transformations/base.dart';
+import 'package:uploadcare_client/src/transformations/common.dart';
 
 enum ImageFormatTValue {
   /// convert an image to JPEG.

@@ -1,4 +1,4 @@
-library flutter_uploadcare_client;
+library uploadcare_client;
 
 export 'src/client.dart';
 export 'src/options.dart';

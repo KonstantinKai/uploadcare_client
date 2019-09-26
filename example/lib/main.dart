@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_uploadcare_client/flutter_uploadcare_client.dart';
+import 'package:uploadcare_client/uploadcare_client.dart';
 
 void main() async {
   await DotEnv().load('.env');

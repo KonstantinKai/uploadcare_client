@@ -1,4 +1,4 @@
-import 'package:flutter_uploadcare_client/src/transformations/base.dart';
+import 'package:uploadcare_client/src/transformations/base.dart';
 
 enum ArchiveTValue {
   /// `zip` archive

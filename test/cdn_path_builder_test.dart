@@ -1,11 +1,11 @@
 import 'dart:ui';
 
 import 'package:test/test.dart';
-import 'package:flutter_uploadcare_client/src/transformations/common.dart';
-import 'package:flutter_uploadcare_client/src/transformations/image.dart';
-import 'package:flutter_uploadcare_client/src/transformations/path_transformer.dart';
-import 'package:flutter_uploadcare_client/src/transformations/video.dart';
-import 'package:flutter_uploadcare_client/flutter_uploadcare_client.dart';
+import 'package:uploadcare_client/src/transformations/common.dart';
+import 'package:uploadcare_client/src/transformations/image.dart';
+import 'package:uploadcare_client/src/transformations/path_transformer.dart';
+import 'package:uploadcare_client/src/transformations/video.dart';
+import 'package:uploadcare_client/uploadcare_client.dart';
 
 void main() {
   test('Image transformations', () {

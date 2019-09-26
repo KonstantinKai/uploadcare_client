@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-import 'package:flutter_uploadcare_client/src/authorization/scheme.dart';
+import 'package:uploadcare_client/src/authorization/scheme.dart';
 
 /// Provides `Uploadcare.Simple` auth scheme
 class AuthSchemeSimple extends AuthScheme {

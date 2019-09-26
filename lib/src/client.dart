@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
-import 'package:flutter_uploadcare_client/src/api_sections/api_sections.dart';
-import 'package:flutter_uploadcare_client/src/options.dart';
-import 'package:flutter_uploadcare_client/flutter_uploadcare_client.dart';
+import 'package:uploadcare_client/src/api_sections/api_sections.dart';
+import 'package:uploadcare_client/src/options.dart';
+import 'package:uploadcare_client/uploadcare_client.dart';
 
 /// Provides centralized access to `Uploadcare API`
 ///

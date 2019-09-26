@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:dotenv/dotenv.dart';
 import 'package:test/test.dart';
-import 'package:flutter_uploadcare_client/src/entities/file_info.dart';
-import 'package:flutter_uploadcare_client/src/entities/list.dart';
-import 'package:flutter_uploadcare_client/flutter_uploadcare_client.dart';
+import 'package:uploadcare_client/src/entities/file_info.dart';
+import 'package:uploadcare_client/src/entities/list.dart';
+import 'package:uploadcare_client/uploadcare_client.dart';
 
 void main() {
   UploadcareClient client;

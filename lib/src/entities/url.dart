@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:flutter_uploadcare_client/src/entities/file_info.dart';
-import 'package:flutter_uploadcare_client/src/entities/progress.dart';
+import 'package:uploadcare_client/src/entities/file_info.dart';
+import 'package:uploadcare_client/src/entities/progress.dart';
 
 enum UrlUploadStatusValue {
   /// progress, upload is in progress.
