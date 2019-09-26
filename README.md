@@ -4,7 +4,7 @@
 Uploadcare is a complete file handling platform that helps you ship products faster and focus on your business goals, not files. With Uploadcare, you can build an infrastructure, optimize content, conversions, load times, traffic, and user experience. [Read more...](https://uploadcare.com/docs/)
 
 #### Implemented features:
-- athorization
+- authorization
   - simple, [read more](https://uploadcare.com/docs/api_reference/rest/requests_auth/#auth-simple)
   - regular, [read more](https://uploadcare.com/docs/api_reference/rest/requests_auth/#auth-uploadcare)
 - upload, [read more](https://uploadcare.com/docs/api_reference/upload/)
