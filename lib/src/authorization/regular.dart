@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
-import 'package:uploadcare_client/src/authorization/scheme.dart';
+import 'package:flutter_uploadcare_client/src/authorization/scheme.dart';
 
 const List<String> _kMonthNames = const [
   'Jan',

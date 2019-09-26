@@ -1,7 +1,7 @@
 import 'package:flutter/painting.dart';
-import 'package:uploadcare_client/src/api_sections/api_sections.dart';
-import 'package:uploadcare_client/src/constants.dart';
-import 'package:uploadcare_client/src/transformations/base.dart';
+import 'package:flutter_uploadcare_client/src/api_sections/api_sections.dart';
+import 'package:flutter_uploadcare_client/src/constants.dart';
+import 'package:flutter_uploadcare_client/src/transformations/base.dart';
 
 /// Constructs right `Uploadcare CND url` by `id` and provided `transformations` if any
 ///

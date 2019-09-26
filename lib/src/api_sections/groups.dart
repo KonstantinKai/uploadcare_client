@@ -1,11 +1,11 @@
 import 'package:meta/meta.dart';
-import 'package:uploadcare_client/src/entities/group.dart';
-import 'package:uploadcare_client/src/entities/list.dart';
-import 'package:uploadcare_client/src/mixins/mixins.dart';
-import 'package:uploadcare_client/src/options.dart';
-import 'package:uploadcare_client/src/transformations/base.dart';
-import 'package:uploadcare_client/src/transformations/path_transformer.dart';
-import 'package:uploadcare_client/uploadcare_client.dart';
+import 'package:flutter_uploadcare_client/src/entities/group.dart';
+import 'package:flutter_uploadcare_client/src/entities/list.dart';
+import 'package:flutter_uploadcare_client/src/mixins/mixins.dart';
+import 'package:flutter_uploadcare_client/src/options.dart';
+import 'package:flutter_uploadcare_client/src/transformations/base.dart';
+import 'package:flutter_uploadcare_client/src/transformations/path_transformer.dart';
+import 'package:flutter_uploadcare_client/flutter_uploadcare_client.dart';
 
 /// Provides API for working with groups
 class ApiGroups with OptionsShortcutMixin, TransportHelperMixin {

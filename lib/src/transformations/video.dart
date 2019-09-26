@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:uploadcare_client/src/transformations/base.dart';
-import 'package:uploadcare_client/src/transformations/common.dart';
+import 'package:flutter_uploadcare_client/src/transformations/base.dart';
+import 'package:flutter_uploadcare_client/src/transformations/common.dart';
 
 enum VideoFormatTValue {
   /// WebM is an open media file format designed for the web.
@@ -94,20 +94,22 @@ class VideoResizeTransformation extends ResizeTransformation
 
 /// Cuts out a video fragment based on the following parameters: [start], [length]
 class CutTransformation extends Transformation implements VideoTransformation {
-  /// defines the starting point of a fragment to cut based on your input file timeline.
+  /// Defines the starting point of a fragment to cut based on your input file timeline.
   final Duration start;
 
-  /// defines the duration of that fragment.
+  /// Defines the duration of that fragment.
   final Duration length;
 
-  /// includes all the duration of your input starting at [start].
+  /// Includes all the duration of your input starting at [start].
   final bool end;
 
   CutTransformation(
     this.start, {
     this.length,
-    this.end = false,
-  });
+    this.end,
+  })  : assert(!(length != null && end != null),
+            'Should be specified only one parameter: length or end'),
+        assert(length != null || end != null);
 
   String _digitsWithLeadingZero(int n, [bool isHour = false]) {
     if (isHour) {
@@ -134,8 +136,8 @@ class CutTransformation extends Transformation implements VideoTransformation {
   @override
   List<String> get params => [
         _formatDuration(start),
-        if (length != null || end)
-          length != null ? _formatDuration(length) : 'end',
+        if (length != null) _formatDuration(length),
+        if (end == true) 'end',
       ];
 }
 

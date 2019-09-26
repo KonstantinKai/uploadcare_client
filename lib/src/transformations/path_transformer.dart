@@ -1,14 +1,14 @@
-import 'package:uploadcare_client/src/transformations/base.dart';
+import 'package:flutter_uploadcare_client/src/transformations/base.dart';
 
 /// Provides API to collect destination URL with transformation according to Uploadcare CDN API
 class PathTransformer<T extends Transformation> {
-  /// resource id
+  /// Resource id
   final String id;
 
-  /// collection with [Transformation]
+  /// Collection with [Transformation]
   final List<T> _transformations;
 
-  /// transformation delimiter
+  /// Transformation delimiter
   final String delimiter;
 
   PathTransformer(
@@ -22,14 +22,14 @@ class PathTransformer<T extends Transformation> {
 
   bool get hasTransformations => _transformations.isNotEmpty;
 
-  /// add [Transformation] to collection if not exists
+  /// Add [Transformation] to collection if not exists
   void transform(T transformation) {
     if (_transformations.contains(transformation)) return;
 
     _transformations.add(transformation);
   }
 
-  /// add [List] of transformations to then collection
+  /// Add `List<T> ` of transformations to the collection
   void transforlAll(List<T> transformations) =>
       transformations.forEach(transform);
 

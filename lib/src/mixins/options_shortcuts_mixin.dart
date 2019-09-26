@@ -1,5 +1,5 @@
 import 'package:meta/meta.dart';
-import 'package:uploadcare_client/src/options.dart';
+import 'package:flutter_uploadcare_client/src/options.dart';
 
 mixin OptionsShortcutMixin {
   @protected

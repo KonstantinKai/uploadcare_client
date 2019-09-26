@@ -23,7 +23,7 @@ dependencies:
   image_picker:
   flutter_dotenv:
   url_launcher:
-  uploadcare_client:
+  flutter_uploadcare_client:
     path: ../
 
   # The following adds the Cupertino Icons font to your application.

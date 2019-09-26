@@ -1,14 +1,14 @@
 import 'dart:ui';
 
 import 'package:test/test.dart';
-import 'package:uploadcare_client/src/transformations/common.dart';
-import 'package:uploadcare_client/src/transformations/image.dart';
-import 'package:uploadcare_client/src/transformations/path_transformer.dart';
-import 'package:uploadcare_client/src/transformations/video.dart';
-import 'package:uploadcare_client/uploadcare_client.dart';
+import 'package:flutter_uploadcare_client/src/transformations/common.dart';
+import 'package:flutter_uploadcare_client/src/transformations/image.dart';
+import 'package:flutter_uploadcare_client/src/transformations/path_transformer.dart';
+import 'package:flutter_uploadcare_client/src/transformations/video.dart';
+import 'package:flutter_uploadcare_client/flutter_uploadcare_client.dart';
 
 void main() {
-  test('test #1', () {
+  test('Image transformations', () {
     final image = CdnImage('some-long-id')
       ..transform(ImageResizeTransformation(Size(300, 450)))
       ..transform(QualityTransformation())
@@ -21,7 +21,7 @@ void main() {
             '/some-long-id/-/resize/300x450/-/quality/normal/-/format/webp/-/crop/64x64/0,0/'));
   });
 
-  test('test #2', () {
+  test('Video transformations', () {
     final video = PathTransformer('some-long-id/video')
       ..transform(VideoResizeTransformation(Size(512, 384)))
       ..transform(VideoThumbsGenerateTransformation(10))
@@ -39,13 +39,13 @@ void main() {
             'some-long-id/video/-/cut/000:01:49/000:00:30/-/resize/512x384/-/thumbs~10/'));
   });
 
-  test('test #3', () {
+  test('CdnImage', () {
     final image = CdnImage('some-long-id');
 
     expect(image.pathTransformer.path, equals('some-long-id/'));
   });
 
-  test('test #4', () {
+  test('Get image from CdnGroup', () {
     final group = CdnGroup('some-long-group-id~2');
 
     expect(group.pathTransformer.path, equals('some-long-group-id~2/'));
@@ -59,7 +59,7 @@ void main() {
             'https://ucarecdn.com/some-long-group-id~2/nth/0/-/resize/66x66/'));
   });
 
-  test('test #5', () {
+  test('Group transformations', () {
     final group = CdnGroup('some-long-group-id~2')
       ..transform(ArchiveTransformation(ArchiveTValue.Tar, 'archive.tar'))
       ..transform(ArchiveTransformation(ArchiveTValue.Zip, 'archive.zip'));

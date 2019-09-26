@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:uploadcare_client/src/entities/file_info.dart';
+import 'package:flutter_uploadcare_client/src/entities/file_info.dart';
 
 /// Groups are identified in a way similar to individual files.
 /// A group ID consists of a UUID followed by a `~` tilde character and a group size: integer number of files in group.

@@ -1,8 +1,10 @@
+import 'dart:io';
+
 import 'package:dotenv/dotenv.dart';
 import 'package:test/test.dart';
-import 'package:uploadcare_client/src/entities/file_info.dart';
-import 'package:uploadcare_client/src/entities/list.dart';
-import 'package:uploadcare_client/uploadcare_client.dart';
+import 'package:flutter_uploadcare_client/src/entities/file_info.dart';
+import 'package:flutter_uploadcare_client/src/entities/list.dart';
+import 'package:flutter_uploadcare_client/flutter_uploadcare_client.dart';
 
 void main() {
   UploadcareClient client;
@@ -21,14 +23,15 @@ void main() {
     );
   });
 
-  test('Files', () async {
+  test('Get files', () async {
     final response = await client.files.list();
     expect(response, TypeMatcher<ListEntity<FileInfoEntity>>());
   });
 
-  test('File', () async {
-    final file =
-        await client.files.file('aca02b0a-2db1-42a3-ae53-a290d6b6b0a0');
+  test('Get file info', () async {
+    final fileId = await client.upload.base(File(env['UPLOAD_BASE']));
+    final file = await client.files.file(fileId);
+
     expect(file, TypeMatcher<FileInfoEntity>());
   });
 }

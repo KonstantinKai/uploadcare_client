@@ -3,8 +3,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
-import 'package:uploadcare_client/src/mixins/mixins.dart';
-import 'package:uploadcare_client/src/transport.dart';
+import 'package:flutter_uploadcare_client/src/mixins/mixins.dart';
+import 'package:flutter_uploadcare_client/src/transport.dart';
 
 mixin TransportHelperMixin on OptionsShortcutMixin {
   @protected

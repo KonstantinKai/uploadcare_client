@@ -1,8 +1,10 @@
-name: uploadcare_client
-description: A new Flutter package project.
+name: flutter_uploadcare_client
+description: Flutter Uploadcare service client
 version: 0.0.1
-author:
-homepage:
+author: Konstantin Kai <kosyak46@gmail.com>
+homepage: https://github.com/KonstantinKai/uploadcare_client
+repository: https://github.com/KonstantinKai/uploadcare_client
+issue_tracker: https://github.com/KonstantinKai/uploadcare_client/issues
 
 environment:
   sdk: ">=2.2.2 <3.0.0"

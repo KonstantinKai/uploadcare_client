@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
-import 'package:uploadcare_client/src/entities/video_encoding.dart';
-import 'package:uploadcare_client/src/mixins/mixins.dart';
-import 'package:uploadcare_client/src/options.dart';
-import 'package:uploadcare_client/src/transformations/base.dart';
-import 'package:uploadcare_client/src/transformations/path_transformer.dart';
-import 'package:uploadcare_client/src/transformations/video.dart';
+import 'package:flutter_uploadcare_client/src/entities/video_encoding.dart';
+import 'package:flutter_uploadcare_client/src/mixins/mixins.dart';
+import 'package:flutter_uploadcare_client/src/options.dart';
+import 'package:flutter_uploadcare_client/src/transformations/base.dart';
+import 'package:flutter_uploadcare_client/src/transformations/path_transformer.dart';
+import 'package:flutter_uploadcare_client/src/transformations/video.dart';
 
 /// Provides API for working with video encoding
 class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {

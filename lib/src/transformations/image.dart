@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:uploadcare_client/src/transformations/base.dart';
-import 'package:uploadcare_client/src/transformations/common.dart';
+import 'package:flutter_uploadcare_client/src/transformations/base.dart';
+import 'package:flutter_uploadcare_client/src/transformations/common.dart';
 
 enum ImageFormatTValue {
   /// convert an image to JPEG.
@@ -43,7 +43,7 @@ class ImageFormatTransformation extends EnumTransformation<ImageFormatTValue>
 }
 
 /// Convert JPEG to Progressive JPEG. Has no effect on non-JPEGs. Does not force image formats to jpeg.
-/// if [value] is equal `true` then use multi-scan rendering.
+/// if [value] is equal `true` then are using multi-scan rendering.
 class ProgressiveTransformation extends BooleanTransformation
     implements ImageTransformation {
   ProgressiveTransformation([bool value = false]) : super(value);

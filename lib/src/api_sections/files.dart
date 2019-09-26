@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:meta/meta.dart';
-import 'package:uploadcare_client/src/entities/common.dart';
-import 'package:uploadcare_client/src/entities/file_info.dart';
-import 'package:uploadcare_client/src/entities/list.dart';
-import 'package:uploadcare_client/src/mixins/mixins.dart';
-import 'package:uploadcare_client/src/options.dart';
+import 'package:flutter_uploadcare_client/src/entities/common.dart';
+import 'package:flutter_uploadcare_client/src/entities/file_info.dart';
+import 'package:flutter_uploadcare_client/src/entities/list.dart';
+import 'package:flutter_uploadcare_client/src/mixins/mixins.dart';
+import 'package:flutter_uploadcare_client/src/options.dart';
 
 /// Provides API for working with files
 class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {

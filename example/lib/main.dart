@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:uploadcare_client/uploadcare_client.dart';
+import 'package:flutter_uploadcare_client/flutter_uploadcare_client.dart';
 
 void main() async {
   await DotEnv().load('.env');
@@ -36,23 +36,38 @@ class MyHomePage extends StatefulWidget {
 
 class _Item {
   final FileInfoEntity fileInfo;
-  final Stream<VideoEncodingJobEntity> encoding$;
-  final Stream<ProgressEntity> progress$;
+  final VideoEncodingJobEntity encoding;
+  final ProgressEntity progress;
 
   const _Item({
     this.fileInfo,
-    this.encoding$,
-    this.progress$,
+    this.encoding,
+    this.progress,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _Item &&
+          runtimeType == other.runtimeType &&
+          fileInfo == other.fileInfo &&
+          encoding == other.encoding &&
+          progress == other.progress;
+
+  @override
+  int get hashCode => fileInfo.hashCode ^ encoding.hashCode ^ progress.hashCode;
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<_Item> _files;
   StreamController<List<_Item>> _controller;
   UploadcareClient _client;
 
   @override
   void initState() {
     super.initState();
+
+    _files = [];
 
     _client = UploadcareClient.withSimpleAuth(
       publicKey: DotEnv().env['UPLOADCARE_PUBLIC_KEY'],
@@ -63,14 +78,20 @@ class _MyHomePageState extends State<MyHomePage> {
     _controller = StreamController.broadcast();
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _client.files
-        .list(
-            limit: 500,
-            ordering: FilesOrdering(
-              FilesFilterValue.DatetimeUploaded,
-              direction: OrderDirection.Desc,
-            ))
-        .then((value) => _controller
-            .add(value.results.map((item) => _Item(fileInfo: item)).toList())));
+            .list(
+                limit: 500,
+                stored: false,
+                removed: false,
+                ordering: FilesOrdering(
+                  FilesFilterValue.DatetimeUploaded,
+                  direction: OrderDirection.Desc,
+                ))
+            .then((value) {
+          _files.addAll(
+              value.results.map((item) => _Item(fileInfo: item)).toList());
+
+          _controller.add(_files);
+        }));
   }
 
   @override
@@ -97,9 +118,8 @@ class _MyHomePageState extends State<MyHomePage> {
             itemCount: files.length,
             itemBuilder: (context, index) => MediaListItem(
               fileInfo: files[index].fileInfo,
-              client: _client,
-              progress$: files[index].progress$,
-              encoding$: files[index].encoding$,
+              progress: files[index].progress,
+              encoding: files[index].encoding,
             ),
           );
         },
@@ -117,7 +137,6 @@ class _MyHomePageState extends State<MyHomePage> {
               if (file == null) return;
 
               _upload(file);
-              setState(() {});
             },
           ),
           SizedBox(
@@ -141,24 +160,23 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future _upload(File file) async {
-    final StreamController<ProgressEntity> progress =
-        StreamController.broadcast();
-    Stream<VideoEncodingJobEntity> encoding$;
+    _files.insert(
+      0,
+      _Item(
+        progress: ProgressEntity(0, await file.length()),
+      ),
+    );
 
-    _controller.add((await _controller.stream.last)
-      ..insert(
-          0,
-          _Item(
-            progress$: progress.stream,
-          )));
+    _controller.add(_files);
 
     final fileId = await _client.upload.auto(
       file,
       storeMode: false,
-      onProgress: (value) => progress.add(value),
+      onProgress: (value) {
+        _files[0] = _Item(progress: value);
+        _controller.add(_files);
+      },
     );
-
-    progress.close();
 
     final fileInfo = await _client.files.file(fileId);
 
@@ -172,74 +190,65 @@ class _MyHomePageState extends State<MyHomePage> {
           await _client.videoEncoding.process({fileId: videoTransformations});
 
       if (result.problems.isEmpty) {
-        encoding$ =
+        final stream =
             _client.videoEncoding.statusAsStream(result.results.first.token);
+        await for (VideoEncodingJobEntity job in stream) {
+          _files[0] = _Item(
+            fileInfo: fileInfo,
+            encoding: job,
+          );
+          _controller.add(_files);
+        }
       } else {
-        encoding$ = Stream.error(Exception(result.problems.values.first));
+        _files[0] = _Item(
+          fileInfo: fileInfo,
+          encoding: VideoEncodingJobEntity(
+            errorMessage: result.problems.values.first,
+            status: VideoEncodingJobStatusValue.Failed,
+          ),
+        );
+        _controller.add(_files);
       }
     }
 
-    _controller.add((await _controller.stream.last)
-      ..replaceRange(0, 1, [
-        _Item(
-          encoding$: encoding$,
-          fileInfo: fileInfo,
-        )
-      ]));
+    _files[0] = _Item(
+      fileInfo: fileInfo,
+    );
+
+    _controller.add(_files);
   }
 }
 
-class MediaListItem extends StatefulWidget {
+class MediaListItem extends StatelessWidget {
   MediaListItem({
     Key key,
     this.fileInfo,
-    this.client,
-    this.progress$,
-    this.encoding$,
+    this.progress,
+    this.encoding,
   }) : super(key: key);
 
   final FileInfoEntity fileInfo;
-  final UploadcareClient client;
-  final Stream<ProgressEntity> progress$;
-  final Stream<VideoEncodingJobEntity> encoding$;
+  final ProgressEntity progress;
+  final VideoEncodingJobEntity encoding;
 
-  _MediaListItemState createState() => _MediaListItemState();
-}
+  bool get _isUploaded => fileInfo != null;
 
-class _MediaListItemState extends State<MediaListItem> {
-  FileInfoEntity _fileInfo;
-  Stream<VideoEncodingJobEntity> get _encoding$ => widget.encoding$;
-
-  Stream<ProgressEntity> get _progress => widget.progress$;
-
-  UploadcareClient get _client => widget.client;
-
-  bool get _isUploaded => _fileInfo != null;
-
-  @override
-  initState() {
-    super.initState();
-
-    _fileInfo = widget.fileInfo;
-  }
-
-  Widget _buildEncoding() => StreamBuilder(
-        stream: _encoding$,
-        builder: (context, AsyncSnapshot<VideoEncodingJobEntity> snapshot) {
-          if (snapshot.hasError)
-            return Text(
-              (snapshot.error as dynamic).message,
-              style: TextStyle(
-                color: Colors.redAccent,
-              ),
-            );
-          if (!snapshot.hasData) return Text('getting status...');
-          if (snapshot.data.status == VideoEncodingJobStatusValue.Finished)
-            return Text(_fileInfo.filename);
-
-          return Text('encoding...');
-        },
+  Widget _buildEncoding() {
+    if (encoding.status == VideoEncodingJobStatusValue.Failed)
+      return Text(
+        encoding.errorMessage,
+        style: TextStyle(
+          color: Colors.redAccent,
+        ),
       );
+    if (encoding.status == VideoEncodingJobStatusValue.Processing ||
+        encoding.status == VideoEncodingJobStatusValue.Pending)
+      return Text('encoding...');
+    if (encoding.status == VideoEncodingJobStatusValue.Finished)
+      return Text(fileInfo.filename);
+
+    return Text('getting status...');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -249,26 +258,20 @@ class _MediaListItemState extends State<MediaListItem> {
         children: <Widget>[
           if (!_isUploaded)
             Center(
-              child: StreamBuilder(
-                stream: _progress,
-                initialData: null,
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  return LinearProgressIndicator(
-                    value: snapshot?.data?.value,
-                  );
-                },
+              child: LinearProgressIndicator(
+                value: progress?.value == 1 ? null : progress?.value ?? null,
               ),
             ),
           if (_isUploaded)
             ListTile(
               contentPadding: const EdgeInsets.all(10.0),
-              leading: _fileInfo.isImage
+              leading: fileInfo.isImage
                   ? Image(
                       height: 58,
                       width: 58,
                       fit: BoxFit.contain,
                       image: UploadcareImageProvider(
-                        _fileInfo.id,
+                        fileInfo.id,
                         transformations: [
                           BlurTransformation(50),
                           GrayscaleTransformation(),
@@ -284,8 +287,8 @@ class _MediaListItemState extends State<MediaListItem> {
                         child: Icon(Icons.video_library),
                       ),
                     ),
-              title: _isUploaded && _encoding$ == null
-                  ? Text(_fileInfo?.filename ?? 'preparing...')
+              title: _isUploaded && encoding == null
+                  ? Text(fileInfo?.filename ?? 'preparing...')
                   : _buildEncoding(),
             ),
         ],

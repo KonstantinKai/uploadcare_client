@@ -6,10 +6,10 @@ import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:meta/meta.dart';
 import 'package:mime_type/mime_type.dart';
-import 'package:uploadcare_client/src/concurrent_runner.dart';
-import 'package:uploadcare_client/src/entities/entities.dart';
-import 'package:uploadcare_client/src/mixins/mixins.dart';
-import 'package:uploadcare_client/src/options.dart';
+import 'package:flutter_uploadcare_client/src/concurrent_runner.dart';
+import 'package:flutter_uploadcare_client/src/entities/entities.dart';
+import 'package:flutter_uploadcare_client/src/mixins/mixins.dart';
+import 'package:flutter_uploadcare_client/src/options.dart';
 
 const int _kChunkSize = 5242880;
 const int _kRecomendedMaxFilesizeForBaseUpload = 10000000;

@@ -61,7 +61,9 @@ class FileInfoEntity extends Equatable {
         datetimeUploaded: json['datetime_uploaded'] != null
             ? DateTime.parse(json['datetime_uploaded'])
             : null,
-        imageInfo: (json['image_info'] as Map).cast<String, dynamic>(),
+        imageInfo: json['image_info'] != null
+            ? (json['image_info'] as Map).cast<String, dynamic>()
+            : null,
       );
 
   /// if your file is an image and can be processed via Image Processing, Please note, our processing engine does not treat all image files as such.

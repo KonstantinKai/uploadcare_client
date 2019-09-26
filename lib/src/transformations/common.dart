@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:uploadcare_client/src/transformations/base.dart';
+import 'package:flutter_uploadcare_client/src/transformations/base.dart';
 
 enum QualityTValue {
   /// lowest visual quality yet minimal loading times; smaller than [QualityTValue.Lighter].

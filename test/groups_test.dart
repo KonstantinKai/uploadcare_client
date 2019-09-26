@@ -1,7 +1,7 @@
 import 'package:dotenv/dotenv.dart';
 import 'package:test/test.dart';
-import 'package:uploadcare_client/src/entities/group.dart';
-import 'package:uploadcare_client/uploadcare_client.dart';
+import 'package:flutter_uploadcare_client/src/entities/group.dart';
+import 'package:flutter_uploadcare_client/flutter_uploadcare_client.dart';
 
 void main() {
   UploadcareClient client;
@@ -20,14 +20,14 @@ void main() {
     );
   });
 
-  test('create group', () async {
+  test('Create group', () async {
     final response = await client.groups.create({
       'aca02b0a-2db1-42a3-ae53-a290d6b6b0a0': [],
     });
     expect(response, TypeMatcher<GroupInfoEntity>());
   });
 
-  test('list group', () async {
+  test('Get group list', () async {
     final response = await client.groups.list();
     expect(response, TypeMatcher<ListEntity<GroupInfoEntity>>());
   });
