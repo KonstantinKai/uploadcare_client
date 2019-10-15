@@ -36,8 +36,8 @@ class AuthSchemeRegular extends AuthScheme {
 
   AuthSchemeRegular({
     @required String publicKey,
-    @required String privateKey,
     @required String apiVersion,
+    String privateKey,
   }) : super(
           apiVersion: apiVersion,
           publicKey: publicKey,

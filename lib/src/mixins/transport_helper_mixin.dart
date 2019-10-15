@@ -3,8 +3,14 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:meta/meta.dart';
+import 'package:uploadcare_client/src/authorization/scheme.dart';
 import 'package:uploadcare_client/src/mixins/mixins.dart';
 import 'package:uploadcare_client/src/transport.dart';
+
+void assertAuthorization(bool authorizeRequest, AuthScheme scheme) {
+  assert(authorizeRequest ? scheme.privateKey != null : true,
+      'Please provide privateKey for using authorized requests');
+}
 
 mixin TransportHelperMixin on OptionsShortcutMixin {
   @protected
@@ -12,24 +18,28 @@ mixin TransportHelperMixin on OptionsShortcutMixin {
     String method,
     Uri uri, [
     bool authorizeRequest = true,
-  ]) =>
-      UcMultipartRequest(
-        scheme: authorizeRequest ? options.authorizationScheme : null,
-        method: method,
-        uri: uri,
-      );
+  ]) {
+    assertAuthorization(authorizeRequest, options.authorizationScheme);
+    return UcMultipartRequest(
+      scheme: authorizeRequest ? options.authorizationScheme : null,
+      method: method,
+      uri: uri,
+    );
+  }
 
   @protected
   UcRequest createRequest(
     String method,
     Uri uri, [
     bool authorizeRequest = true,
-  ]) =>
-      UcRequest(
-        scheme: authorizeRequest ? options.authorizationScheme : null,
-        method: method,
-        uri: uri,
-      );
+  ]) {
+    assertAuthorization(authorizeRequest, options.authorizationScheme);
+    return UcRequest(
+      scheme: authorizeRequest ? options.authorizationScheme : null,
+      method: method,
+      uri: uri,
+    );
+  }
 
   Future<Response> _resolveResponseStatusCode(FutureOr<Response> resp) async {
     final response = await resp;

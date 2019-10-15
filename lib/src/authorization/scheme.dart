@@ -13,9 +13,9 @@ abstract class AuthScheme {
 
   AuthScheme({
     @required this.publicKey,
-    @required this.privateKey,
     @required String apiVersion,
-  })  : assert(publicKey != null && privateKey != null && apiVersion != null),
+    this.privateKey,
+  })  : assert(publicKey != null && apiVersion != null),
         acceptHeader =
             MapEntry('Accept', 'application/vnd.uploadcare-$apiVersion+json');
 

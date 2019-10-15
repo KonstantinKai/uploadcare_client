@@ -25,7 +25,7 @@ class ClientOptions {
   /// Max concurrent request for mulipart uploads
   final int multipartMaxConcurrentChunkRequests;
 
-  const ClientOptions({
+  ClientOptions({
     @required this.authorizationScheme,
     this.uploadUrl = kDefaultUploadEndpoint,
     this.apiUrl = kDefaultRequestEndpoint,
@@ -33,5 +33,6 @@ class ClientOptions {
     this.useSignedUploads = false,
     this.signedUploadsSignatureLifetime = const Duration(minutes: 30),
     this.multipartMaxConcurrentChunkRequests = 3,
-  });
+  }) : assert(useSignedUploads ? authorizationScheme.privateKey != null : true,
+            'Please provide private key for using signed uploads');
 }

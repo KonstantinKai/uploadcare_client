@@ -7,8 +7,8 @@ class AuthSchemeSimple extends AuthScheme {
 
   AuthSchemeSimple({
     @required String publicKey,
-    @required String privateKey,
     @required String apiVersion,
+    String privateKey,
   }) : super(
           apiVersion: apiVersion,
           publicKey: publicKey,

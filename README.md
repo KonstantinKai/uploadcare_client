@@ -41,18 +41,20 @@ Uploadcare is a complete file handling platform that helps you ship products fas
 - improve documentation
 
 ## Example:
+**Note:** you can omit `privateKey`, but in this case only Upload API will be available. (CDN API also will be available).
+
 How to use library:
 ```dart
 // create client with simple auth scheme
 final client = UploadcareClient.withSimpleAuth(
-  publicKey: DotEnv().env['UPLOADCARE_PUBLIC_KEY'],
-  privateKey: DotEnv().env['UPLOADCARE_PRIVATE_KEY'],
+  publicKey: 'UPLOADCARE_PUBLIC_KEY',
+  privateKey: 'UPLOADCARE_PRIVATE_KEY',
   apiVersion: 'v0.5',
 );
 // or create client with reqular auth scheme
 final client = UploadcareClient.withRegularAuth(
-  publicKey: DotEnv().env['UPLOADCARE_PUBLIC_KEY'],
-  privateKey: DotEnv().env['UPLOADCARE_PRIVATE_KEY'],
+  publicKey: 'UPLOADCARE_PUBLIC_KEY',
+  privateKey: 'UPLOADCARE_PRIVATE_KEY',
   apiVersion: 'v0.5',
 );
 // or more flexible
@@ -60,8 +62,8 @@ final client = UploadcareClient(
   options: ClientOptions(
     authorizationScheme: AuthSchemeRegular(
       apiVersion: 'v0.5',
-      publicKey: env['UPLOADCARE_PUBLIC_KEY'],
-      privateKey: env['UPLOADCARE_PRIVATE_KEY'],
+      publicKey: 'UPLOADCARE_PUBLIC_KEY',
+      privateKey: 'UPLOADCARE_PRIVATE_KEY',
     ),
     // rest options...
   ),
@@ -79,8 +81,8 @@ You can use each api section separately, for example:
 final options = ClientOptions(
   authorizationScheme: AuthSchemeRegular(
     apiVersion: 'v0.5',
-    publicKey: env['UPLOADCARE_PUBLIC_KEY'],
-    privateKey: env['UPLOADCARE_PRIVATE_KEY'],
+    publicKey: 'UPLOADCARE_PUBLIC_KEY',
+    privateKey: 'UPLOADCARE_PRIVATE_KEY',
   )
 );
 
@@ -105,5 +107,3 @@ Image(
   ),
 )
 ```
-
-### For more details see an example and read the doc on pub.dev

@@ -20,10 +20,11 @@ class UploadcareClient {
         videoEncoding = ApiVideoEncoding(options: options),
         groups = ApiGroups(options: options);
 
+  /// With omitted [privateKey], only upload API is available
   UploadcareClient.withSimpleAuth({
     @required String publicKey,
-    @required String privateKey,
     @required String apiVersion,
+    String privateKey,
   }) : this(
           options: ClientOptions(
             authorizationScheme: AuthSchemeSimple(
@@ -34,10 +35,11 @@ class UploadcareClient {
           ),
         );
 
+  /// With omitted [privateKey], only upload API is available
   UploadcareClient.withRegularAuth({
     @required String publicKey,
-    @required String privateKey,
     @required String apiVersion,
+    String privateKey,
   }) : this(
           options: ClientOptions(
             authorizationScheme: AuthSchemeRegular(
