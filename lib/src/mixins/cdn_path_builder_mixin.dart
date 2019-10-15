@@ -19,5 +19,5 @@ mixin CdnPathBuilderMixin<T extends Transformation> on CndEntity {
   void transform(T transformation) => pathTransformer.transform(transformation);
 
   void transformAll(List<T> transformations) =>
-      pathTransformer.transforlAll(transformations);
+      pathTransformer.transformAll(transformations);
 }

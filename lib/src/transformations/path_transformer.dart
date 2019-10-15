@@ -30,7 +30,7 @@ class PathTransformer<T extends Transformation> {
   }
 
   /// Add `List<T> ` of transformations to the collection
-  void transforlAll(List<T> transformations) =>
+  void transformAll(List<T> transformations) =>
       transformations.forEach(transform);
 
   void sort(int compare(T a, T b)) => _transformations.sort(compare);
