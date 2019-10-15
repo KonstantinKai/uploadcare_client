@@ -144,7 +144,7 @@ class BlurTransformation extends IntTransformation
 class MaxIccSizeTransformation extends IntTransformation
     implements ImageTransformation {
   MaxIccSizeTransformation([int value = 10])
-      : assert(value > 0, 'Should be positive int'),
+      : assert(value >= 0, 'Should be positive int'),
         super(value);
 
   @override

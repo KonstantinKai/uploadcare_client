@@ -48,7 +48,7 @@ enum VideoResizeTValue {
   PreserveRatio,
 
   /// match the output video to provided dimensions, no matter the original aspect ratio.
-  BreakRation,
+  BreakRatio,
 
   /// match the output video to provided dimensions, crop the rest of the pixels along one of the axes (top/bottom or left/right).
   ScaleCrop,
@@ -74,7 +74,7 @@ class VideoResizeTransformation extends ResizeTransformation
     switch (value) {
       case VideoResizeTValue.PreserveRatio:
         return 'preserve_ratio';
-      case VideoResizeTValue.BreakRation:
+      case VideoResizeTValue.BreakRatio:
         return 'break_ratio';
       case VideoResizeTValue.ScaleCrop:
         return 'scale_crop';
