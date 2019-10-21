@@ -1,4 +1,8 @@
-## [1.0.1] - Mon Oct 15 2019
+## [1.0.2] - Mon Oct 21 2019
+
+* Minor grammatical fixes
+
+## [1.0.1] - Tue Oct 15 2019
 
 * Make `privateKey` optional
 
