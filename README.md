@@ -1,4 +1,4 @@
-![alt flutter uploadcare client](https://github.com/KonstantinKai/uploadcare_client/blob/master/assets/logo.png)
+![alt flutter uploadcare client](https://github.com/KonstantinKai/uploadcare_client/blob/master/assets/logo_small.png)
 
 ## Flutter Uploadcare Client
 
