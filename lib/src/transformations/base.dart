@@ -6,6 +6,8 @@ abstract class Transformation {
   /// related parameters
   List<String> get params;
 
+  String get delimiter => '-/';
+
   @override
   String toString() => [operation, ...params].join('/');
 

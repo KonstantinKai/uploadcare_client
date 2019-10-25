@@ -10,10 +10,11 @@ abstract class AuthScheme {
   /// Uploadcare private key
   final String privateKey;
   final MapEntry<String, String> acceptHeader;
+  final String apiVersion;
 
   AuthScheme({
     @required this.publicKey,
-    @required String apiVersion,
+    @required this.apiVersion,
     this.privateKey,
   })  : assert(publicKey != null && apiVersion != null),
         acceptHeader =

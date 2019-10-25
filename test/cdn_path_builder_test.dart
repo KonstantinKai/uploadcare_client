@@ -67,4 +67,41 @@ void main() {
     expect(group.pathTransformer.path,
         equals('some-long-group-id~2/archive/tar/archive.tar/'));
   });
+
+  test('Overlay transformations', () {
+    final image = CdnImage('image-id-1')
+      ..transform(OverlayTransformation(
+        'image-id-2',
+        dimensions: Size(40, 30),
+        coordinates: OverlayCoordinates.center,
+        opacity: 40,
+      ))
+      ..transform(OverlayTransformation(
+        'image-id-3',
+        dimensions: Size(40, 30),
+        coordinates: OverlayCoordinates(const Offset(40, 90)),
+      ));
+
+    expect(
+        image.pathTransformer.path,
+        equals(
+            'image-id-1/-/overlay/image-id-2/40px30p/center/40p/-/overlay/image-id-3/40px30p/40p,90p/'));
+  });
+
+  test('GifToVideoTransformation transformation', () {
+    final file = CdnFile('gif-id-1')
+      ..transform(GifToVideoTransformation([
+        VideoFormatTransformation(VideoFormatTValue.Mp4),
+        QualityTransformation(QualityTValue.Best),
+      ]));
+
+    expect(file.pathTransformer.path,
+        equals('gif-id-1/gif2video/-/format/mp4/-/quality/best/'));
+  });
+
+  test('CdnFile', () {
+    final file = CdnFile('some-long-group-id');
+
+    expect(file.pathTransformer.path, equals('some-long-group-id/'));
+  });
 }

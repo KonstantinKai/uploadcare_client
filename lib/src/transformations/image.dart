@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/transformations/base.dart';
 import 'package:uploadcare_client/src/transformations/common.dart';
 
@@ -259,4 +260,92 @@ class CropTransformation extends ResizeTransformation
 class ImageResizeTransformation extends ResizeTransformation
     implements ImageTransformation {
   ImageResizeTransformation(Size size) : super(size);
+}
+
+class OverlayCoordinates {
+  final Offset offset;
+  final String predefined;
+
+  const OverlayCoordinates._({
+    this.offset,
+    this.predefined,
+  });
+
+  const OverlayCoordinates(this.offset) : predefined = null;
+
+  static const top = const OverlayCoordinates._(predefined: 'top');
+  static const bottom = const OverlayCoordinates._(predefined: 'bottom');
+  static const left = const OverlayCoordinates._(predefined: 'left');
+  static const right = const OverlayCoordinates._(predefined: 'right');
+  static const center = const OverlayCoordinates._(predefined: 'center');
+
+  @override
+  String toString() =>
+      predefined ?? '${offset.dx.toInt()}p,${offset.dy.toInt()}p';
+}
+
+/// The overlay operation allows to layer images one over another.
+class OverlayTransformation extends Transformation
+    implements ImageTransformation {
+  /// UUID of an image to be layered over input. To be recognized by :uuid, that image should be related to any project of your account.
+  final String imageId;
+
+  /// Linear relative dimensions of the overlay image. The aspect ratio of an overlay is preserved.
+  final Size dimensions;
+
+  /// Relative position of the overlay over your input. By default, an overlay is positioned in the top-left corner of an input.
+  /// Coordinates represent an offset along each of the axes in either pixel or percent format.
+  /// In general, the coordinate system is similar to the CSS background-position.
+  final OverlayCoordinates coordinates;
+
+  /// Controls the opacity of the overlay in percent format.
+  final int opacity;
+
+  OverlayTransformation(
+    this.imageId, {
+    this.dimensions,
+    this.coordinates,
+    this.opacity,
+  })  : assert(imageId != null),
+        assert(dimensions != null
+            ? dimensions.width != null && dimensions.height != null
+            : true),
+        assert(coordinates != null ? dimensions != null : true,
+            'dimensions should be provided'),
+        assert(
+            opacity != null
+                ? dimensions.width != null &&
+                    coordinates != null &&
+                    opacity >= 0 &&
+                    opacity <= 100
+                : true,
+            'Should be in 0..100 range');
+
+  @override
+  String get operation => 'overlay';
+
+  @override
+  List<String> get params => [
+        imageId,
+        if (dimensions != null)
+          '${dimensions.width.toInt()}px${dimensions.height.toInt()}p',
+        if (coordinates != null && dimensions != null) coordinates.toString(),
+        if (opacity != null && coordinates != null && dimensions != null)
+          '${opacity}p',
+      ];
+
+  bool operator ==(dynamic other) =>
+      other is OverlayTransformation &&
+      runtimeType == other.runtimeType &&
+      imageId == other.imageId &&
+      dimensions == other.dimensions &&
+      coordinates == other.coordinates &&
+      opacity == other.opacity;
+
+  @override
+  int get hashCode =>
+      imageId.hashCode ^
+      dimensions.hashCode ^
+      coordinates.hashCode ^
+      opacity.hashCode;
 }

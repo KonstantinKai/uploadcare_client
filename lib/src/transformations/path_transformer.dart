@@ -9,6 +9,7 @@ class PathTransformer<T extends Transformation> {
   final List<T> _transformations;
 
   /// Transformation delimiter
+  @deprecated
   final String delimiter;
 
   PathTransformer(
@@ -18,7 +19,7 @@ class PathTransformer<T extends Transformation> {
   }) : _transformations = transformations ?? [];
 
   String get path => _transformations.fold<String>(
-      '$id/', (prev, next) => '$prev$delimiter$next/');
+      '$id/', (prev, next) => '$prev${next.delimiter ?? delimiter}$next/');
 
   bool get hasTransformations => _transformations.isNotEmpty;
 

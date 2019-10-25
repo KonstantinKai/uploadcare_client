@@ -27,4 +27,7 @@ class ArchiveTransformation extends EnumTransformation<ArchiveTValue>
 
   @override
   String get valueAsString => value == ArchiveTValue.Zip ? 'zip' : 'tar';
+
+  @override
+  String get delimiter => '';
 }

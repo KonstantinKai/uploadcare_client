@@ -32,6 +32,10 @@ class FileInfoEntity extends Equatable {
   /// Image meta (if a file is an image): Width and height Orientation Geolocation, from EXIF Original datetime, from EXIF Format Resolution, DPI
   final Map<String, dynamic> imageInfo;
 
+  /// Object Recognition allows categorizing and tagging images.
+  /// When using Uploadcare Object Recognition, you get a list of objects detected in your image paired with confidence levels for every object class.
+  final Map<String, double> recognitionInfo;
+
   const FileInfoEntity({
     this.isStored,
     this.id,
@@ -43,6 +47,7 @@ class FileInfoEntity extends Equatable {
     this.datetimeStored,
     this.datetimeRemoved,
     this.imageInfo,
+    this.recognitionInfo,
   });
 
   factory FileInfoEntity.fromJson(Map<String, dynamic> json) => FileInfoEntity(
@@ -63,6 +68,9 @@ class FileInfoEntity extends Equatable {
             : null,
         imageInfo: json['image_info'] != null
             ? (json['image_info'] as Map).cast<String, dynamic>()
+            : null,
+        recognitionInfo: json['rekognition_info'] != null
+            ? (json['rekognition_info'] as Map).cast<String, double>()
             : null,
       );
 
@@ -85,5 +93,6 @@ class FileInfoEntity extends Equatable {
         datetimeStored,
         datetimeUploaded,
         imageInfo,
+        recognitionInfo,
       ];
 }

@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:uploadcare_client/src/transformations/base.dart';
+import 'package:uploadcare_client/src/transformations/path_transformer.dart';
+import 'package:uploadcare_client/src/transformations/video.dart';
 
 enum QualityTValue {
   /// lowest visual quality yet minimal loading times; smaller than [QualityTValue.Lighter].
@@ -59,4 +61,29 @@ class ResizeTransformation extends Transformation {
 
   @override
   List<String> get params => ['${_width}x$_height'];
+}
+
+class GifToVideoTransformation extends Transformation {
+  final List<VideoTransformation> transformations;
+
+  GifToVideoTransformation([this.transformations = const []])
+      : assert(
+            (transformations.isNotEmpty &&
+                    transformations.any((transformation) =>
+                        transformation is! VideoFormatTransformation ||
+                        transformation is! QualityTransformation)) ||
+                true,
+            'You can apply only format or quality transformations');
+
+  @override
+  String get operation => 'gif2video';
+
+  @override
+  List<String> get params => [
+        for (Transformation transform in transformations)
+          '${transform.delimiter}$transform',
+      ];
+
+  @override
+  String get delimiter => '';
 }

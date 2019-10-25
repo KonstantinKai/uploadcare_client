@@ -1,3 +1,8 @@
+## [1.2.0] - Fri Oct 25 2019
+
+* Add `detectFaces` method for `ApiFiles` section
+* Add `OverlayTransformation` applied to image
+
 ## [1.1.0] - Fri Oct 25 2019
 
 * Add ability to cancel file upload with `CancelToken`

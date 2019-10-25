@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:meta/meta.dart';
+import 'package:uploadcare_client/src/api_sections/cdn_file.dart';
 import 'package:uploadcare_client/src/entities/common.dart';
 import 'package:uploadcare_client/src/entities/file_info.dart';
 import 'package:uploadcare_client/src/entities/list.dart';
@@ -16,14 +18,27 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   final ClientOptions options;
 
   /// Retrieve file by [fileId]
-  Future<FileInfoEntity> file(String fileId) async => FileInfoEntity.fromJson(
-        await resolveStreamedResponse(
-          createRequest(
-            'GET',
-            buildUri('$apiUrl/files/$fileId/'),
-          ).send(),
-        ),
-      );
+  Future<FileInfoEntity> file(
+    String fileId, {
+
+    /// Only available in v0.6
+    @experimental bool includeRecognitionInfo = false,
+  }) async {
+    assert(includeRecognitionInfo
+        ? double.tryParse(options.authorizationScheme.apiVersion.substring(1)) >
+            0.5
+        : true);
+    return FileInfoEntity.fromJson(
+      await resolveStreamedResponse(
+        createRequest(
+          'GET',
+          buildUri('$apiUrl/files/$fileId/', {
+            if (includeRecognitionInfo) 'add_fields': 'rekognition_info',
+          }),
+        ).send(),
+      ),
+    );
+  }
 
   /// Batch file delete
   Future<void> remove(List<String> fileIds) async {
@@ -62,8 +77,15 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
     FilesOrdering ordering =
         const FilesOrdering(FilesFilterValue.DatetimeUploaded),
     dynamic fromFilter,
+
+    /// Only available in v0.6
+    @experimental bool includeRecognitionInfo = false,
   }) async {
     assert(limit > 0 && limit <= 1000, 'Should be in 1..1000 range');
+    assert(includeRecognitionInfo
+        ? double.tryParse(options.authorizationScheme.apiVersion.substring(1)) >
+            0.5
+        : true);
 
     if (fromFilter != null) {
       if (ordering.field == FilesFilterValue.DatetimeUploaded) {
@@ -90,7 +112,8 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
             if (stored != null) 'stored': stored.toString(),
             if (removed != null) 'removed': removed.toString(),
             if (offset != null) 'offset': offset.toString(),
-            if (fromFilter != null) 'from': fromFilter
+            if (fromFilter != null) 'from': fromFilter,
+            if (includeRecognitionInfo) 'add_fields': 'rekognition_info',
           })).send(),
     );
 
@@ -100,5 +123,20 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
           .map((item) => FileInfoEntity.fromJson(item))
           .toList(),
     );
+  }
+
+  /// Returns rectangles of faces found in an input image.
+  Future<List<Rect>> detectFaces(String imageId) async {
+    final cdnFile = CdnFile(imageId);
+
+    final response = await resolveStreamedResponse(
+      createRequest('GET', buildUri('${cdnFile.url}detect_faces/')).send(),
+    );
+
+    return List.from(response['faces'])
+        .map((face) =>
+            Offset(face[0].toDouble(), face[1].toDouble()) &
+            Size(face[2].toDouble(), face[3].toDouble()))
+        .toList();
   }
 }

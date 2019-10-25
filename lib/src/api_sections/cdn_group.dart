@@ -13,11 +13,11 @@ class CdnGroup extends CndEntity with CdnPathBuilderMixin<GroupTransformation> {
     String id, {
     this.cdnUrl,
   })  : assert(id != null),
-        pathTransformer = PathTransformer(id, delimiter: ''),
+        pathTransformer = PathTransformer(id),
         super(id);
 
   /// Retrive [CdnImage] from group
-  /// throws `RangeError` if index greater than [filesCount]
+  /// Throws `RangeError` if index greater than [filesCount]
   CdnImage getImage(int index) {
     if (index > filesCount - 1)
       throw RangeError('Group contains only $filesCount files');
