@@ -1,3 +1,11 @@
+## [1.1.0] - Fri Oct 25 2019
+
+* Add ability to cancel file upload with `CancelToken`
+* Optimize chunked upload
+* Change header names to constants from `dart:io HttpHeaders`
+* Fix progress data with multipart upload
+* Refactor example project
+
 ## [1.0.2] - Mon Oct 21 2019
 
 * Minor grammatical fixes

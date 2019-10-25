@@ -13,3 +13,5 @@ export 'src/transformations/common.dart';
 export 'src/transformations/group.dart';
 export 'src/entities/entities.dart';
 export 'src/api_sections/api_sections.dart';
+export 'src/cancel_token.dart';
+export 'src/cancel_upload_exception.dart';

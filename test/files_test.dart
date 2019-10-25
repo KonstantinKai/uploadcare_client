@@ -34,4 +34,9 @@ void main() {
 
     expect(file, TypeMatcher<FileInfoEntity>());
   });
+
+  test('Remove files', () async {
+    final fileId = await client.upload.base(File(env['UPLOAD_BASE']));
+    await client.files.remove([fileId]);
+  });
 }

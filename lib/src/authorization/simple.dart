@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/authorization/scheme.dart';
 
@@ -20,7 +22,8 @@ class AuthSchemeSimple extends AuthScheme {
   authorizeRequest(request) {
     request.headers.addAll(Map.fromEntries([
       acceptHeader,
-      MapEntry('Authorization', '$_name $publicKey:$privateKey'),
+      MapEntry(
+          HttpHeaders.authorizationHeader, '$_name $publicKey:$privateKey'),
     ]));
   }
 }

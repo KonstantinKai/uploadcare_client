@@ -44,7 +44,7 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
 
   /// Checking processing job status
   ///
-  /// [token] from [VideoEncodingConvertEntity.token]
+  /// [token] from [VideoEncodingResultEntity.token]
   Future<VideoEncodingJobEntity> status(
     int token,
   ) async =>
@@ -78,7 +78,7 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
 
   /// Returns processing job as `Stream`
   ///
-  /// [token] from [VideoEncodingConvertEntity.token]
+  /// [token] from [VideoEncodingResultEntity.token]
   /// [checkInterval] check status interval
   Stream<VideoEncodingJobEntity> statusAsStream(
     int token, {

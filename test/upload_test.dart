@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:dotenv/dotenv.dart';
 import 'package:test/test.dart';
+import 'package:uploadcare_client/src/cancel_token.dart';
+import 'package:uploadcare_client/src/cancel_upload_exception.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
 void main() {
@@ -104,5 +106,45 @@ void main() {
     expect(id, isA<String>());
 
     signedIds.add(id);
+  });
+
+  test('Base upload with CancelToken', () async {
+    final String cancelMessage = 'some cancel message';
+    final cancelToken = CancelToken(cancelMessage);
+    final future = client.upload.base(
+      File(env['UPLOAD_BASE']),
+      storeMode: false,
+      cancelToken: cancelToken,
+    );
+
+    Future.delayed(
+        const Duration(milliseconds: 500), () => cancelToken.cancel());
+
+    try {
+      await future;
+    } on CancelUploadException catch (e) {
+      expect(e, isA<CancelUploadException>());
+      expect(e.message, equals(cancelMessage));
+    }
+  });
+
+  test('Multipart upload with CancelToken', () async {
+    final cancelToken = CancelToken();
+    final future = client.upload.multipart(
+      File(env['UPLOAD_MULTIPART']),
+      storeMode: false,
+      cancelToken: cancelToken,
+      onProgress: (progress) {
+        if (progress.value > 0.5) {
+          cancelToken.cancel();
+        }
+      },
+    );
+
+    try {
+      await future;
+    } on CancelUploadException catch (e) {
+      expect(e, isA<CancelUploadException>());
+    }
   });
 }

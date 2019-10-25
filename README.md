@@ -7,11 +7,12 @@ Uploadcare is a complete file handling platform that helps you ship products fas
 - authorization
   - simple, [read more](https://uploadcare.com/docs/api_reference/rest/requests_auth/#auth-simple)
   - regular, [read more](https://uploadcare.com/docs/api_reference/rest/requests_auth/#auth-uploadcare)
-- upload, [read more](https://uploadcare.com/docs/api_reference/upload/)
+- [upload](#example), [read more](https://uploadcare.com/docs/api_reference/upload/)
   - base
   - multipart
   - from url
   - signed uploads, [read more](https://uploadcare.com/docs/api_reference/upload/signed_uploads/)
+  - [cancelable upload](#cancellation)
 - files API, [read more](https://uploadcare.com/docs/api_reference/rest/accessing_files/)
   - get one file
   - get list of files
@@ -30,15 +31,13 @@ Uploadcare is a complete file handling platform that helps you ship products fas
   - group transformations, [read more](https://uploadcare.com/docs/delivery/group_api/)
   - video transformations
 - Flutter (mobile/web)
-  - UploadcareImageProvider
+  - [UploadcareImageProvider](#using-with-widgets)
 
 #### Roadmap:
 - document conversion
 - complete transformations API (overlays, gif to video, .etc)
 - write more tests
-- more informative example
 - test on web
-- improve documentation
 
 ## Example:
 **Note:** you can omit `privateKey`, but in this case only Upload API will be available. (CDN API also will be available).
@@ -90,7 +89,7 @@ final upload = ApiUpload(options: options);
 final fileId = await upload.base(File('...some/file'));
 // ...etc.
 ```
-
+## Using with widgets
 The library provides `UploadcareImageProvider` for more effective use in the widget ecosystem, how to use image provider:
 ```dart
 Image(
@@ -106,4 +105,30 @@ Image(
     // rest image props...
   ),
 )
+```
+
+## Cancellation
+You can cancel the upload process by using `CancelToken`, each method from the upload section (`auto, base, multipart`) accepts `cancelToken` property, which you can use to cancel the upload process. This feature works only with files upload because Uploadcare isn't supporting interrupt upload by URL
+
+```dart
+...
+
+final cancelToken = CancelToken();
+
+...
+
+try {
+  final fileId = await client.upload.multipart(
+    File('/some/file'),
+    cancelToken: cancelToken,
+  );
+} on CancelUploadException catch (e) {
+  // cancelled
+}
+
+...
+
+// somewhere in code
+cancelToken.cancel();
+
 ```

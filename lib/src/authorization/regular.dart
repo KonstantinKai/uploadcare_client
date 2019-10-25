@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
@@ -52,11 +53,11 @@ class AuthSchemeRegular extends AuthScheme {
     request.headers.addAll(Map.fromEntries([
       acceptHeader,
       MapEntry(
-        'Date',
+        HttpHeaders.dateHeader,
         isoDate,
       ),
       MapEntry(
-        'Authorization',
+        HttpHeaders.authorizationHeader,
         '$_name $publicKey:${_buildSignature(request, isoDate)}',
       ),
     ]));
@@ -78,7 +79,7 @@ class AuthSchemeRegular extends AuthScheme {
     final String signString = [
       request.method,
       md5.convert(fields.codeUnits).toString(),
-      request.headers['Content-Type'],
+      request.headers[HttpHeaders.contentTypeHeader],
       isoDate,
       request.url.path +
           (request.url.query.isNotEmpty ? '?${request.url.query}' : ''),

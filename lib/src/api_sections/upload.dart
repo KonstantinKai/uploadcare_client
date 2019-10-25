@@ -6,10 +6,13 @@ import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:meta/meta.dart';
 import 'package:mime_type/mime_type.dart';
+import 'package:uploadcare_client/src/cancel_token.dart';
+import 'package:uploadcare_client/src/cancel_upload_exception.dart';
 import 'package:uploadcare_client/src/concurrent_runner.dart';
 import 'package:uploadcare_client/src/entities/entities.dart';
 import 'package:uploadcare_client/src/mixins/mixins.dart';
 import 'package:uploadcare_client/src/options.dart';
+import 'package:uploadcare_client/src/transport.dart';
 
 const int _kChunkSize = 5242880;
 const int _kRecomendedMaxFilesizeForBaseUpload = 10000000;
@@ -30,6 +33,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     dynamic res, {
     bool storeMode,
     ProgressListener onProgress,
+    CancelToken cancelToken,
   }) async {
     if (res is File) {
       final file = res;
@@ -40,12 +44,14 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
           file,
           storeMode: storeMode,
           onProgress: onProgress,
+          cancelToken: cancelToken,
         );
 
       return base(
         file,
         storeMode: storeMode,
         onProgress: onProgress,
+        cancelToken: cancelToken,
       );
     } else if (res is String && res.isNotEmpty) {
       return fromUrl(
@@ -64,10 +70,12 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   /// [storeMode]`=true` - store file
   /// [storeMode]`=false` - keep file for 24h in storage
   /// [onProgress] subscribe to progress event
+  /// [cancelToken] make cancelable request
   Future<String> base(
     File file, {
     bool storeMode,
     ProgressListener onProgress,
+    CancelToken cancelToken,
   }) async {
     final filename = Uri.parse(file.path).pathSegments.last;
     final filesize = await file.length();
@@ -105,15 +113,33 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
             ),
           );
 
-    return (await resolveStreamedResponse(client.send()))['file'] as String;
+    final completer = Completer<String>();
+    if (cancelToken != null) {
+      cancelToken.onCancel = _completeWithError(
+        completer: completer,
+        action: () => client.cancel(),
+        cancelMessage: cancelToken.cancelMessage,
+      );
+    }
+
+    resolveStreamedResponse(client.send())
+        .then((data) => completer.complete(data['file'] as String))
+        .catchError((e) {
+      if (!completer.isCompleted) completer.completeError(e);
+    });
+
+    return completer.future;
   }
 
   /// Make upload to `/multipart` endpoint
+  /// [maxConcurrentChunkRequests] maximum concurrent requests
+  /// [cancelToken] make cancelable request
   Future<String> multipart(
     File file, {
     bool storeMode,
     ProgressListener onProgress,
     int maxConcurrentChunkRequests,
+    CancelToken cancelToken,
   }) async {
     maxConcurrentChunkRequests ??= options.multipartMaxConcurrentChunkRequests;
 
@@ -123,6 +149,8 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
 
     assert(filesize > _kRecomendedMaxFilesizeForBaseUpload,
         'Minimum file size to use with Multipart Uploads is 10MB');
+
+    final completer = Completer<String>();
 
     final startTransaction = createMultipartRequest(
         'POST', buildUri('$uploadUrl/multipart/start/'), false)
@@ -135,51 +163,82 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
         if (options.useSignedUploads) ..._signUpload(),
       });
 
-    final map = await resolveStreamedResponse(startTransaction.send());
-    final urls = (map['parts'] as List).cast<String>();
-    final uuid = map['uuid'] as String;
+    if (cancelToken != null) {
+      cancelToken.onCancel = _completeWithError(
+        completer: completer,
+        action: () => startTransaction.cancel(),
+        cancelMessage: cancelToken.cancelMessage,
+      );
+    }
 
-    ProgressEntity progress = ProgressEntity(0, urls.length);
+    resolveStreamedResponse(startTransaction.send()).then((map) {
+      final urls = (map['parts'] as List).cast<String>();
+      final uuid = map['uuid'] as String;
+      final inProgressActions = <UcRequest>[];
 
-    final actions = await Future.wait(List.generate(urls.length, (index) {
-      final url = urls[index];
-      final offset = index * _kChunkSize;
-      final diff = filesize - offset;
-      final bytesToRead = _kChunkSize < diff ? _kChunkSize : diff;
+      ProgressEntity progress = ProgressEntity(0, filesize);
 
-      return file
-          .openRead(offset, offset + bytesToRead)
-          .toList()
-          .then((bytesList) => bytesList.expand((list) => list).toList())
-          .then((bytes) => createRequest('PUT', buildUri(url), false)
-            ..bodyBytes = bytes
-            ..headers.addAll({
-              'Content-Type': mimeType,
-            }))
-          .then((request) => () =>
-              resolveStreamedResponseStatusCode(request.send())
-                  .then((response) {
-                if (onProgress != null)
-                  onProgress(progress = progress.copyWith(
-                    uploaded: progress.uploaded + 1,
-                  ));
-                return response;
-              }));
-    }));
+      if (onProgress != null) onProgress(progress);
 
-    await ConcurrentRunner(maxConcurrentChunkRequests, actions).run();
+      return Future.wait(List.generate(urls.length, (index) {
+        final url = urls[index];
+        final offset = index * _kChunkSize;
+        final diff = filesize - offset;
+        final bytesToRead = _kChunkSize < diff ? _kChunkSize : diff;
 
-    final finishTransaction = createMultipartRequest(
-        'POST', buildUri('$uploadUrl/multipart/complete/'), false)
-      ..fields.addAll({
-        'UPLOADCARE_PUB_KEY': publicKey,
-        'uuid': uuid,
-        if (options.useSignedUploads) ..._signUpload(),
+        return Future.value(() {
+          if (cancelToken?.isCanceled ?? false) return null;
+
+          return file
+              .openRead(offset, offset + bytesToRead)
+              .toList()
+              .then((bytesList) => bytesList.expand((list) => list).toList())
+              .then((bytes) => createRequest('PUT', buildUri(url), false)
+                ..bodyBytes = bytes
+                ..headers.addAll({
+                  'Content-Type': mimeType,
+                }))
+              .then((request) {
+            inProgressActions.add(request);
+
+            return resolveStreamedResponseStatusCode(request.send())
+                .then((response) {
+              inProgressActions.remove(request);
+              if (onProgress != null)
+                onProgress(progress = progress.copyWith(
+                  uploaded: progress.uploaded + bytesToRead,
+                ));
+              return response;
+            });
+          });
+        });
+      })).then((actions) {
+        if (cancelToken != null)
+          cancelToken.onCancel = _completeWithError(
+            completer: completer,
+            action: () =>
+                inProgressActions.forEach((requests) => requests.cancel()),
+            cancelMessage: cancelToken.cancelMessage,
+          );
+        return ConcurrentRunner(maxConcurrentChunkRequests, actions).run();
+      }).then((_) {
+        final finishTransaction = createMultipartRequest(
+            'POST', buildUri('$uploadUrl/multipart/complete/'), false)
+          ..fields.addAll({
+            'UPLOADCARE_PUB_KEY': publicKey,
+            'uuid': uuid,
+            if (options.useSignedUploads) ..._signUpload(),
+          });
+
+        if (!completer.isCompleted)
+          completer.complete(resolveStreamedResponse(finishTransaction.send())
+              .then((_) => uuid));
       });
+    }).catchError((e) {
+      if (!completer.isCompleted) completer.completeError(e);
+    });
 
-    await resolveStreamedResponse(finishTransaction.send());
-
-    return uuid;
+    return completer.future;
   }
 
   /// Make upload to `/fromUrl` endpoint
@@ -276,4 +335,16 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
       'expire': expire.toString(),
     };
   }
+
+  void Function() _completeWithError({
+    @required Completer<String> completer,
+    @required void Function() action,
+    String cancelMessage,
+  }) =>
+      () {
+        if (!completer.isCompleted) {
+          action();
+          completer.completeError(CancelUploadException(cancelMessage));
+        }
+      };
 }
