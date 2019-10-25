@@ -1,3 +1,5 @@
+![alt flutter uploadcare client](https://github.com/KonstantinKai/uploadcare_client/blob/master/assets/logo.png)
+
 ## Flutter Uploadcare Client
 
 ## Introduction
@@ -12,7 +14,7 @@ Uploadcare is a complete file handling platform that helps you ship products fas
   - multipart
   - from url
   - signed uploads, [read more](https://uploadcare.com/docs/api_reference/upload/signed_uploads/)
-  - [cancelable upload](#cancellation)
+  - [cancellable upload](#cancellation)
 - files API, [read more](https://uploadcare.com/docs/api_reference/rest/accessing_files/)
   - get one file
   - get list of files
