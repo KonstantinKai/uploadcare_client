@@ -1,7 +1,10 @@
 ## [1.2.0] - Fri Oct 25 2019
 
 * Add `detectFaces` method for `ApiFiles` section
-* Add `OverlayTransformation` applied to image
+* Add `OverlayTransformation` applied to an image
+* Add `GifToVideoTransformation` applied to gif
+* Add `includeRecognitionInfo` parameter to `ApiFiles` section for `file` & `list` methods.
+    * **Note**: this feature will be available only since `v0.6` version of REST API
 
 ## [1.1.0] - Fri Oct 25 2019
 

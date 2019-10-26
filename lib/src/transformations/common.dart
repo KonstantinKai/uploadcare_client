@@ -1,23 +1,22 @@
 import 'dart:ui';
 
 import 'package:uploadcare_client/src/transformations/base.dart';
-import 'package:uploadcare_client/src/transformations/path_transformer.dart';
 import 'package:uploadcare_client/src/transformations/video.dart';
 
 enum QualityTValue {
-  /// lowest visual quality yet minimal loading times; smaller than [QualityTValue.Lighter].
+  /// Lowest visual quality yet minimal loading times; smaller than [QualityTValue.Lighter].
   Lightest,
 
-  /// saves traffic without a significant subjective quality loss; smaller file size compared to [QualityTValue.Normal].
+  /// Saves traffic without a significant subjective quality loss; smaller file size compared to [QualityTValue.Normal].
   Lighter,
 
-  /// suits most cases.
+  /// Suits most cases.
   Normal,
 
-  /// better video quality, larger file size compared to [QualityTValue.Normal].
+  /// Better video quality, larger file size compared to [QualityTValue.Normal].
   Better,
 
-  /// useful when you want to get perfect quality without paying much attention to file sizes; larger than [QualityTValue.Better] maximum size.
+  /// Useful when you want to get perfect quality without paying much attention to file sizes; larger than [QualityTValue.Better] maximum size.
   Best,
 }
 
@@ -63,16 +62,28 @@ class ResizeTransformation extends Transformation {
   List<String> get params => ['${_width}x$_height'];
 }
 
+/// GIF to Video conversion that provides better loading times thus reducing your bounce rate.
+/// The feature is available on paid plans only. Converts GIF files to video on the fly.
+/// You can change output format with [VideoFormatTransformation] and change video quality with [QualityTransformation]
+///
+/// Example:
+/// ```dart
+/// CdnFile('gif-id-1')
+///   ..transform(GifToVideoTransformation([
+///     VideoFormatTransformation(VideoFormatTValue.Mp4),
+///     QualityTransformation(QualityTValue.Best),
+///   ]))
+/// ```
 class GifToVideoTransformation extends Transformation {
   final List<VideoTransformation> transformations;
 
   GifToVideoTransformation([this.transformations = const []])
       : assert(
-            (transformations.isNotEmpty &&
-                    transformations.any((transformation) =>
-                        transformation is! VideoFormatTransformation ||
-                        transformation is! QualityTransformation)) ||
-                true,
+            transformations.isNotEmpty
+                ? transformations.every((transformation) =>
+                    transformation is VideoFormatTransformation ||
+                    transformation is QualityTransformation)
+                : true,
             'You can apply only format or quality transformations');
 
   @override

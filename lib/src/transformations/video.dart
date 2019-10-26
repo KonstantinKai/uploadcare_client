@@ -44,16 +44,16 @@ class VideoFormatTransformation extends EnumTransformation<VideoFormatTValue>
 }
 
 enum VideoResizeTValue {
-  /// preserve the aspect ratio of the original file.
+  /// Preserve the aspect ratio of the original file.
   PreserveRatio,
 
-  /// match the output video to provided dimensions, no matter the original aspect ratio.
+  /// Match the output video to provided dimensions, no matter the original aspect ratio.
   BreakRatio,
 
-  /// match the output video to provided dimensions, crop the rest of the pixels along one of the axes (top/bottom or left/right).
+  /// Match the output video to provided dimensions, crop the rest of the pixels along one of the axes (top/bottom or left/right).
   ScaleCrop,
 
-  /// letterbox the video to match the output frame size exactly (add black bars).
+  /// Letterbox the video to match the output frame size exactly (add black bars).
   AddPadding,
 }
 
@@ -93,6 +93,21 @@ class VideoResizeTransformation extends ResizeTransformation
 }
 
 /// Cuts out a video fragment based on the following parameters: [start], [length]
+///
+/// Example:
+/// ```dart
+/// CutTransformation(
+///   const const Duration(seconds: 109),
+///   length: const Duration(
+///     seconds: 30,
+///   ),
+/// )
+/// // or
+/// CutTransformation(
+///   const const Duration(seconds: 109),
+///   end: true,
+/// )
+/// ```
 class CutTransformation extends Transformation implements VideoTransformation {
   /// Defines the starting point of a fragment to cut based on your input file timeline.
   final Duration start;

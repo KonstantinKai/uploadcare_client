@@ -97,6 +97,14 @@ void main() {
 
     expect(file.pathTransformer.path,
         equals('gif-id-1/gif2video/-/format/mp4/-/quality/best/'));
+
+    final file2 = CdnFile('gif-id-2');
+
+    expect(
+        () => file2.transform(GifToVideoTransformation([
+              CutTransformation(const Duration(seconds: 1), end: true),
+            ])),
+        throwsA(TypeMatcher<AssertionError>()));
   });
 
   test('CdnFile', () {

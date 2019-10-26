@@ -21,6 +21,28 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
   ///
   /// [transformers] is a Map with video `id` and list of [VideoTransformation]
   /// When [storeMode] is set to `false`, the outputs will only be available for 24 hours.
+  ///
+  /// Example:
+  /// ```dart
+  /// ...
+  /// final videoEncoding = ApiVideoEncoding(options);
+  ///
+  /// final result = await videoEncoding.process({
+  ///   'video-id-1': [
+  ///     CutTransformation(
+  ///       const const Duration(seconds: 10),
+  ///       length: const Duration(
+  ///         seconds: 30,
+  ///       ),
+  ///     )
+  ///   ],
+  ///   'video-id-2': [
+  ///     VideoResizeTransformation(const Size(512, 384)),
+  ///     VideoThumbsGenerateTransformation(10),
+  ///    ]
+  /// })
+  /// ...
+  /// ```
   Future<VideoEncodingConvertEntity> process(
     Map<String, List<VideoTransformation>> transformers, {
     bool storeMode,

@@ -21,13 +21,10 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   Future<FileInfoEntity> file(
     String fileId, {
 
-    /// Only available in v0.6
+    /// Only available since v0.6
     @experimental bool includeRecognitionInfo = false,
   }) async {
-    assert(includeRecognitionInfo
-        ? double.tryParse(options.authorizationScheme.apiVersion.substring(1)) >
-            0.5
-        : true);
+    _assertRecongtionApiWithApiVersion(includeRecognitionInfo);
     return FileInfoEntity.fromJson(
       await resolveStreamedResponse(
         createRequest(
@@ -78,14 +75,11 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
         const FilesOrdering(FilesFilterValue.DatetimeUploaded),
     dynamic fromFilter,
 
-    /// Only available in v0.6
+    /// Only available since v0.6
     @experimental bool includeRecognitionInfo = false,
   }) async {
     assert(limit > 0 && limit <= 1000, 'Should be in 1..1000 range');
-    assert(includeRecognitionInfo
-        ? double.tryParse(options.authorizationScheme.apiVersion.substring(1)) >
-            0.5
-        : true);
+    _assertRecongtionApiWithApiVersion(includeRecognitionInfo);
 
     if (fromFilter != null) {
       if (ordering.field == FilesFilterValue.DatetimeUploaded) {
@@ -138,5 +132,12 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
             Offset(face[0].toDouble(), face[1].toDouble()) &
             Size(face[2].toDouble(), face[3].toDouble()))
         .toList();
+  }
+
+  void _assertRecongtionApiWithApiVersion(bool includeRecognitionInfo) {
+    assert(includeRecognitionInfo
+        ? double.tryParse(options.authorizationScheme.apiVersion.substring(1)) >
+            0.5
+        : true);
   }
 }

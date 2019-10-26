@@ -8,18 +8,13 @@ class PathTransformer<T extends Transformation> {
   /// Collection with [Transformation]
   final List<T> _transformations;
 
-  /// Transformation delimiter
-  @deprecated
-  final String delimiter;
-
   PathTransformer(
     this.id, {
-    this.delimiter = '-/',
     List<T> transformations,
   }) : _transformations = transformations ?? [];
 
   String get path => _transformations.fold<String>(
-      '$id/', (prev, next) => '$prev${next.delimiter ?? delimiter}$next/');
+      '$id/', (prev, next) => '$prev${next.delimiter}$next/');
 
   bool get hasTransformations => _transformations.isNotEmpty;
 

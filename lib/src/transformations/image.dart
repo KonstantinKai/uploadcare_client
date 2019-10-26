@@ -1,20 +1,19 @@
 import 'dart:ui';
 
-import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/transformations/base.dart';
 import 'package:uploadcare_client/src/transformations/common.dart';
 
 enum ImageFormatTValue {
-  /// convert an image to JPEG.
+  /// Convert an image to JPEG.
   Jpeg,
 
-  /// convert an image to PNG.
+  /// Convert an image to PNG.
   Png,
 
-  /// convert an image to WebP.
+  /// Convert an image to WebP.
   Webp,
 
-  /// try converting to WebP and fall back to JPEG when a user browser provides no WebP support.
+  /// Try converting to WebP and fall back to JPEG when a user browser provides no WebP support.
   Auto,
 }
 
@@ -285,6 +284,22 @@ class OverlayCoordinates {
 }
 
 /// The overlay operation allows to layer images one over another.
+///
+/// Example:
+/// ```dart
+/// CdnImage('image-id-1')
+/// ..transform(OverlayTransformation(
+///   'image-id-2',
+///   dimensions: Size(40, 30),
+///   coordinates: OverlayCoordinates.center,
+///   opacity: 40,
+/// ))
+/// ..transform(OverlayTransformation(
+///   'image-id-3',
+///   dimensions: Size(40, 30),
+///   coordinates: OverlayCoordinates(const Offset(40, 90)),
+/// ));
+/// ```
 class OverlayTransformation extends Transformation
     implements ImageTransformation {
   /// UUID of an image to be layered over input. To be recognized by :uuid, that image should be related to any project of your account.
@@ -295,7 +310,7 @@ class OverlayTransformation extends Transformation
 
   /// Relative position of the overlay over your input. By default, an overlay is positioned in the top-left corner of an input.
   /// Coordinates represent an offset along each of the axes in either pixel or percent format.
-  /// In general, the coordinate system is similar to the CSS background-position.
+  /// In general, the coordinate system is similar to the CSS background-position. See [OverlayCoordinates].
   final OverlayCoordinates coordinates;
 
   /// Controls the opacity of the overlay in percent format.

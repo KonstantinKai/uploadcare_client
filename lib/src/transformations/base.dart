@@ -3,9 +3,10 @@ abstract class Transformation {
   /// CDN API operation URL directive
   String get operation;
 
-  /// related parameters
+  /// Related parameters
   List<String> get params;
 
+  /// Instruction delimiter
   String get delimiter => '-/';
 
   @override
