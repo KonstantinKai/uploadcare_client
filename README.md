@@ -42,7 +42,7 @@ Uploadcare is a complete file handling platform that helps you ship products fas
 - document conversion
 - write more tests
 
-![alt flutter uploadcare example](https://ucarecdn.com/c1fbe2fc-e48f-417d-b027-e52aa6e13a62/uploadcare_example.gif)
+![alt flutter uploadcare example](https://ucarecdn.com/55cea75a-d539-43de-bdfa-0b0e62b3603f/uploadcare_example_gif.gif)
 
 ## Example:
 **Note:** you can omit `privateKey`, but in this case only Upload API will be available. (CDN API also will be available).
