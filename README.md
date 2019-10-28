@@ -1,4 +1,4 @@
-![alt flutter uploadcare client](https://github.com/KonstantinKai/uploadcare_client/blob/master/assets/logo_small.png)
+![alt flutter uploadcare client](https://ucarecdn.com/3608b809-bf65-4a90-9b81-37a6983aacdc/logo_small.png)
 
 ## Flutter Uploadcare Client
 
@@ -20,26 +20,29 @@ Uploadcare is a complete file handling platform that helps you ship products fas
   - get list of files
   - remove multiple files
   - store multiple files
+  - [gif to video](#gif-to-video), [read more](https://uploadcare.com/docs/image_transformations/gif2video/)
+  - [face recognition](#face-recognition), [read more](https://uploadcare.com/docs/image_transformations/face_recognition/)
 - groups API
   - get one group
   - get list of groups
   - create group
   - store all files in group
 - video encoding, [read more](https://uploadcare.com/docs/video_encoding/#process-operations)
-  - create processing tasks
+  - [create processing tasks](#video-encoding)
   - retrieve processing status
 - CDN API
   - image transformations, [read more](https://uploadcare.com/docs/api_reference/cdn/)
   - group transformations, [read more](https://uploadcare.com/docs/delivery/group_api/)
   - video transformations
-- Flutter (mobile/web)
+- Flutter (mobile)
   - [UploadcareImageProvider](#using-with-widgets)
+- **Web**: currently not working on the web, because flutter API (stable/master) differs for `NetworkProvider`, and `File` API from `dart:io` & `dart:html` is not the same.
 
 #### Roadmap:
 - document conversion
-- complete transformations API (overlays, gif to video, .etc)
 - write more tests
-- test on web
+
+![alt flutter uploadcare example](https://ucarecdn.com/c1fbe2fc-e48f-417d-b027-e52aa6e13a62/uploadcare_example.gif)
 
 ## Example:
 **Note:** you can omit `privateKey`, but in this case only Upload API will be available. (CDN API also will be available).
@@ -133,4 +136,53 @@ try {
 // somewhere in code
 cancelToken.cancel();
 
+```
+## Face Recognition
+```dart
+...
+final files = ApiFiles(options: options);
+
+final List<Rect> faces = await files.detectFaces('image-id');
+```
+
+## Gif to video
+```dart
+final file = CdnFile('gif-id-1')
+  ..transform(GifToVideoTransformation([
+    VideoFormatTransformation(VideoFormatTValue.Mp4),
+    QualityTransformation(QualityTValue.Best),
+  ]));
+
+...
+
+VideoPlayerController.network(file.url);
+```
+
+## Video encoding 
+```dart
+...
+
+final videoEncoding = ApiVideoEncoding(options);
+
+final VideoEncodingConvertEntity result = await videoEncoding.process({
+  'video-id-1': [
+    CutTransformation(
+      const const Duration(seconds: 10),
+      length: const Duration(
+        seconds: 30,
+      ),
+    )
+  ],
+  'video-id-2': [
+    VideoResizeTransformation(const Size(512, 384)),
+    VideoThumbsGenerateTransformation(10),
+  ],
+});
+
+final Stream<VideoEncodingJobEntity> processingStream = videoEncoding.statusAsStream(
+  result.results.first.token,
+  checkInterval: const Duration(seconds: 2),
+)..listen((VideoEncodingJobEntity status) {
+  // do something
+})
 ```

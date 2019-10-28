@@ -51,9 +51,12 @@ class ResizeTransformation extends Transformation {
 
   ResizeTransformation(this.size);
 
-  String get _width => size.width != null ? size.width.toInt().toString() : '';
-  String get _height =>
-      size.height != null ? size.height.toInt().toString() : '';
+  String get _width => size.width != null && size.width.isFinite
+      ? size.width.toInt().toString()
+      : '';
+  String get _height => size.height != null && size.height.isFinite
+      ? size.height.toInt().toString()
+      : '';
 
   @override
   String get operation => 'resize';

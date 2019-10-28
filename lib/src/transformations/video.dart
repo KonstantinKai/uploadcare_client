@@ -121,10 +121,8 @@ class CutTransformation extends Transformation implements VideoTransformation {
   CutTransformation(
     this.start, {
     this.length,
-    this.end,
-  })  : assert(!(length != null && end != null),
-            'Should be specified only one parameter: length or end'),
-        assert(length != null || end != null);
+    this.end = true,
+  }) : assert(length != null || end != null);
 
   String _digitsWithLeadingZero(int n, [bool isHour = false]) {
     if (isHour) {
@@ -152,7 +150,7 @@ class CutTransformation extends Transformation implements VideoTransformation {
   List<String> get params => [
         _formatDuration(start),
         if (length != null) _formatDuration(length),
-        if (end == true) 'end',
+        if (length == null && end) 'end',
       ];
 }
 

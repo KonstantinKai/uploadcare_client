@@ -16,7 +16,7 @@ void main() {
     client = UploadcareClient(
       options: ClientOptions(
         authorizationScheme: AuthSchemeRegular(
-          apiVersion: 'v0.5',
+          apiVersion: 'v0.6',
           publicKey: env['UPLOADCARE_PUBLIC_KEY'],
           privateKey: env['UPLOADCARE_PRIVATE_KEY'],
         ),

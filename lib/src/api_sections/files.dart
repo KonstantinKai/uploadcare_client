@@ -120,6 +120,12 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   }
 
   /// Returns rectangles of faces found in an input image.
+  ///
+  /// Example
+  /// ```dart
+  /// final files = ApiFiles(options: options);
+  /// final List<Rect> faces = await files.detectFaces('image-id');
+  /// ```
   Future<List<Rect>> detectFaces(String imageId) async {
     final cdnFile = CdnFile(imageId);
 
