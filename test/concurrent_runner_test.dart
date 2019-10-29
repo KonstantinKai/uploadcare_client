@@ -33,7 +33,7 @@ void main() {
     final results = await ConcurrentRunner(4, actions).run();
 
     expect(verify(testObject.action(captureAny)).captured,
-        [0, 3, 6, 9, 1, 2, 4, 7, 5, 8]);
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
     expect(results, equals(List.generate(10, (index) => index)));
   });
@@ -42,7 +42,7 @@ void main() {
     await ConcurrentRunner(2, actions).run();
 
     expect(verify(testObject.action(captureAny)).captured,
-        [0, 5, 1, 2, 3, 6, 4, 7, 8, 9]);
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
   });
 
   test('Test #3', () async {

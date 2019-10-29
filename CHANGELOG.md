@@ -1,3 +1,7 @@
+## [1.2.1] - Tue Oct 29 2019
+
+* Refactor `ConcurrentRunner` class
+
 ## [1.2.0] - Mon Oct 28 2019
 
 * Add `detectFaces` method for `ApiFiles` section
