@@ -1,3 +1,7 @@
+## [1.2.2] - Wed Oct 30 2019
+
+* Fix case when `content_type` value for upload is null with filenames in uppercase (related to `mime_type` package).
+
 ## [1.2.1] - Tue Oct 29 2019
 
 * Refactor `ConcurrentRunner` class

@@ -109,7 +109,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
                   ),
               filesize,
               filename: filename,
-              contentType: MediaType.parse(mime(filename)),
+              contentType: MediaType.parse(mime(filename.toLowerCase()) ?? ''),
             ),
           );
 
@@ -145,7 +145,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
 
     final filename = Uri.parse(file.path).pathSegments.last;
     final filesize = await file.length();
-    final mimeType = mime(filename);
+    final mimeType = mime(filename.toLowerCase() ?? '');
 
     assert(filesize > _kRecomendedMaxFilesizeForBaseUpload,
         'Minimum file size to use with Multipart Uploads is 10MB');
