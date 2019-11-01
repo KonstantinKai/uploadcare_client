@@ -1,4 +1,4 @@
-![alt flutter uploadcare client](https://ucarecdn.com/3608b809-bf65-4a90-9b81-37a6983aacdc/logo_small.png)
+![alt flutter uploadcare client](https://drive.google.com/uc?export=download&id=1aUeEPWSFwzPVeMn6NGRf7B4x-bPKOkHM)
 
 ## Flutter Uploadcare Client
 
@@ -42,7 +42,9 @@ Uploadcare is a complete file handling platform that helps you ship products fas
 - document conversion
 - write more tests
 
-![alt flutter uploadcare example](https://ucarecdn.com/55cea75a-d539-43de-bdfa-0b0e62b3603f/uploadcare_example_gif.gif)
+![alt flutter uploadcare example](https://drive.google.com/uc?export=download&id=1nj2rLUgbanzq-4CfJiRSkvMA_qOi10-s)
+
+![alt flutter uploadcare face rocognition example](https://drive.google.com/uc?export=download&id=1HPIyuq6G_1MI3XN1ll0fHgGnk-J4bSi1)
 
 ## Example:
 **Note:** you can omit `privateKey`, but in this case only Upload API will be available. (CDN API also will be available).
@@ -142,7 +144,48 @@ cancelToken.cancel();
 ...
 final files = ApiFiles(options: options);
 
-final List<Rect> faces = await files.detectFaces('image-id');
+final FacesEntity entity = await files.detectFacesWithOriginalImageSize('image-id');
+...
+RenderBox renderBox = context.findRenderObject();
+
+return FractionallySizedBox(
+  widthFactor: 1,
+  heightFactor: 1,
+  child: Stack(
+    children: <Widget>[
+      Positioned.fill(
+        child: Image(
+          image: UploadcareImageProvider(widget.imageId),
+          fit: BoxFit.contain,
+          alignment: Alignment.topCenter,
+        ),
+      ),
+      ...entity
+          .getRelativeFaces(
+        Size(
+          renderBox.size.width,
+          renderBox.size.width /
+              entity.originalSize.aspectRatio,
+        ),
+      )
+          .map((face) {
+        return Positioned(
+          top: face.top,
+          left: face.left,
+          child: Container(
+            width: face.size.width,
+            height: face.size.height,
+            decoration: BoxDecoration(
+              color: Colors.black12,
+              border: Border.all(color: Colors.white54, width: 1.0),
+            ),
+          ),
+        );
+      }).toList(),
+    ],
+  ),
+);
+...
 ```
 
 ## Gif to video

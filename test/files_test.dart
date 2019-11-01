@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:dotenv/dotenv.dart';
 import 'package:test/test.dart';
@@ -41,12 +40,12 @@ void main() {
     await client.files.remove([fileId]);
   });
 
-  test('Detect faces', () async {
+  test('Detect faces with FacesEntity', () async {
     final fileId = await client.upload.base(File(env['UPLOAD_FACE']));
-    final faces = await client.files.detectFaces(fileId);
+    final entity = await client.files.getFacesEntity(fileId);
 
-    expect(faces, TypeMatcher<List<Rect>>());
-    expect(faces.length, equals(1));
+    expect(entity, TypeMatcher<FacesEntity>());
+    expect(entity.hasFaces, equals(true));
 
     await client.files.remove([fileId]);
   });

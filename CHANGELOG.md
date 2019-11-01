@@ -1,3 +1,10 @@
+## [1.3.0] - Fri Nov 1 2019
+
+* Add `FacesEntity` which holds Face Recognition data of an image related to the original size
+* Add `getFacesEntity` method to `ApiFiles` which returns `FacesEntity`
+* Add `detectFaces` method to `deprecated`. Use `getFacesEntity` instead.
+* Add face recognition screen to the example project
+
 ## [1.2.2] - Wed Oct 30 2019
 
 * Fix case when `content_type` value for upload is null with filenames in uppercase (related to `mime_type` package).
