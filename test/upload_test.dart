@@ -4,6 +4,7 @@ import 'package:dotenv/dotenv.dart';
 import 'package:test/test.dart';
 import 'package:uploadcare_client/src/cancel_token.dart';
 import 'package:uploadcare_client/src/cancel_upload_exception.dart';
+import 'package:uploadcare_client/src/multithread/thread.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
 void main() {
@@ -132,6 +133,40 @@ void main() {
     final cancelToken = CancelToken();
     final future = client.upload.multipart(
       File(env['UPLOAD_MULTIPART']),
+      storeMode: false,
+      cancelToken: cancelToken,
+      onProgress: (progress) {
+        if (progress.value > 0.5) {
+          cancelToken.cancel();
+        }
+      },
+    );
+
+    try {
+      await future;
+    } on CancelUploadException catch (e) {
+      expect(e, isA<CancelUploadException>());
+    }
+  });
+
+  test('Simple multipart upload in Isolate', () async {
+    final id = await uploadInIsolate(
+      options: client.options,
+      file: File(env['UPLOAD_MULTIPART']),
+      storeMode: false,
+      onProgress: (progress) => print(progress.value),
+    );
+
+    expect(id, isA<String>());
+
+    ids.add(id);
+  });
+
+  test('Multipart upload with CancelToken in Isolate', () async {
+    final cancelToken = CancelToken();
+    final future = uploadInIsolate(
+      options: client.options,
+      file: File(env['UPLOAD_MULTIPART']),
       storeMode: false,
       cancelToken: cancelToken,
       onProgress: (progress) {
