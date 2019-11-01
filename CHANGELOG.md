@@ -2,7 +2,7 @@
 
 * Add `FacesEntity` which holds Face Recognition data of an image related to the original size
 * Add `getFacesEntity` method to `ApiFiles` which returns `FacesEntity`
-* Add `detectFaces` method to `deprecated`. Use `getFacesEntity` instead.
+* Mark `detectFaces` method to `deprecated`. Use `getFacesEntity` instead.
 * Add face recognition screen to the example project
 
 ## [1.2.2] - Wed Oct 30 2019
