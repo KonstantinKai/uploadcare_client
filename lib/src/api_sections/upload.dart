@@ -10,6 +10,7 @@ import 'package:uploadcare_client/src/cancel_token.dart';
 import 'package:uploadcare_client/src/cancel_upload_exception.dart';
 import 'package:uploadcare_client/src/concurrent_runner.dart';
 import 'package:uploadcare_client/src/entities/entities.dart';
+import 'package:uploadcare_client/src/isolate_worker.dart';
 import 'package:uploadcare_client/src/mixins/mixins.dart';
 import 'package:uploadcare_client/src/options.dart';
 import 'package:uploadcare_client/src/transport.dart';
@@ -20,6 +21,24 @@ const int _kRecomendedMaxFilesizeForBaseUpload = 10000000;
 typedef void ProgressListener(ProgressEntity progress);
 
 /// Provides API for uploading files
+///
+/// ```dart
+/// final upload = ApiUpload(options: options);
+/// ...
+/// final file1 = File('/some/file');
+/// final file2 = 'https://some/file';
+///
+/// final id1 = await upload.auto(file1); // File instance
+/// final id2 = await upload.auto(file2); // URL to file
+/// final id3 = await upload.auto(file.path) // path to file;
+/// ```
+///
+/// Run upload process in isolate
+/// ```dart
+/// final upload = ApiUpload(options: options);
+/// ...
+/// final id = await upload.auto(File('/some/file'), runInIsolate: true);
+/// ```
 class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   final ClientOptions options;
 
@@ -27,16 +46,47 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     @required this.options,
   }) : assert(options != null);
 
-  /// Upload file [res] according to type
-  /// if `String` makes [fromUrl] upload, otherwise make an `File` request according to size
+  /// Upload file [resource] according to type
+  /// if `String` makes [fromUrl] upload if it is http/https url or try retrieve [File] if path is absolute, otherwise make an `File` request according to size
   Future<String> auto(
-    dynamic res, {
+    dynamic resource, {
     bool storeMode,
     ProgressListener onProgress,
     CancelToken cancelToken,
+    bool runInIsolate = false,
   }) async {
-    if (res is File) {
-      final file = res;
+    assert(resource is String || resource is File,
+        'The resource should be one of File or URL and File path');
+    assert(runInIsolate != null);
+
+    if (runInIsolate)
+      return _runInIsolate(
+        resource,
+        storeMode: storeMode,
+        onProgress: onProgress,
+        cancelToken: cancelToken,
+      );
+
+    if (resource is String && resource.isNotEmpty) {
+      Uri uri = Uri.tryParse(resource);
+
+      if (uri != null) {
+        if (['http', 'https'].contains(uri.scheme)) {
+          return fromUrl(
+            resource,
+            storeMode: storeMode,
+            onProgress: onProgress,
+          );
+        } else if (uri.hasAbsolutePath) {
+          resource = File.fromUri(uri);
+        } else {
+          throw Exception('Cannot parse URL from string');
+        }
+      }
+    }
+
+    if (resource is File) {
+      final file = resource;
       final filesize = await file.length();
 
       if (filesize > _kRecomendedMaxFilesizeForBaseUpload)
@@ -52,12 +102,6 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
         storeMode: storeMode,
         onProgress: onProgress,
         cancelToken: cancelToken,
-      );
-    } else if (res is String && res.isNotEmpty) {
-      return fromUrl(
-        res,
-        storeMode: storeMode,
-        onProgress: onProgress,
       );
     }
 
@@ -77,6 +121,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     ProgressListener onProgress,
     CancelToken cancelToken,
   }) async {
+    assert(file != null, 'The file cannot be null');
     final filename = Uri.parse(file.path).pathSegments.last;
     final filesize = await file.length();
 
@@ -141,6 +186,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     int maxConcurrentChunkRequests,
     CancelToken cancelToken,
   }) async {
+    assert(file != null, 'The file cannot be null');
     maxConcurrentChunkRequests ??= options.multipartMaxConcurrentChunkRequests;
 
     final filename = Uri.parse(file.path).pathSegments.last;
@@ -347,4 +393,22 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
           completer.completeError(CancelUploadException(cancelMessage));
         }
       };
+
+  Future<String> _runInIsolate(
+    dynamic resource, {
+    bool storeMode,
+    ProgressListener onProgress,
+    CancelToken cancelToken,
+  }) {
+    final poolSize = options.maxIsolatePoolSize;
+    final isolateWorker = IsolateWorker(poolSize);
+
+    return isolateWorker.upload(
+      options: options,
+      resource: resource,
+      storeMode: storeMode,
+      onProgress: onProgress,
+      cancelToken: cancelToken,
+    );
+  }
 }

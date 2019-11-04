@@ -15,6 +15,7 @@ Uploadcare is a complete file handling platform that helps you ship products fas
   - from url
   - signed uploads, [read more](https://uploadcare.com/docs/api_reference/upload/signed_uploads/)
   - [cancellable upload](#cancellation)
+  - [upload in isolate](#upload-in-isolates)
 - files API, [read more](https://uploadcare.com/docs/api_reference/rest/accessing_files/)
   - get one file
   - get list of files
@@ -228,4 +229,23 @@ final Stream<VideoEncodingJobEntity> processingStream = videoEncoding.statusAsSt
 )..listen((VideoEncodingJobEntity status) {
   // do something
 })
+```
+
+## Upload in isolates
+```dart
+final client = UploadcareClient(
+  options: ClientOptions(
+    // setup max concurrent running isolates
+    maxIsolatePoolSize: 3,
+    authorizationScheme: AuthSchemeSimple(
+      apiVersion: 'v0.5',
+      publicKey: env['UPLOADCARE_PUBLIC_KEY'],
+    ),
+  ),
+);
+
+final id = await client.upload.auto(
+  File('/some/file'),
+  runInIsolate: true,
+);
 ```
