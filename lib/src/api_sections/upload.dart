@@ -30,7 +30,7 @@ typedef void ProgressListener(ProgressEntity progress);
 ///
 /// final id1 = await upload.auto(file1); // File instance
 /// final id2 = await upload.auto(file2); // URL to file
-/// final id3 = await upload.auto(file.path) // path to file;
+/// final id3 = await upload.auto(file1.path) // path to file;
 /// ```
 ///
 /// Run upload process in isolate
