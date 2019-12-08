@@ -43,7 +43,8 @@ class UploadcareImageProvider extends ImageProvider<NetworkImage> {
   NetworkImage _provider;
 
   @override
-  ImageStreamCompleter load(NetworkImage key) => _provider.load(key);
+  ImageStreamCompleter load(NetworkImage key, DecoderCallback decode) =>
+      _provider.load(key, decode);
 
   @override
   Future<NetworkImage> obtainKey(ImageConfiguration configuration) =>

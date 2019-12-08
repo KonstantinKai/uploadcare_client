@@ -4,6 +4,7 @@ import 'package:dotenv/dotenv.dart';
 import 'package:test/test.dart';
 import 'package:uploadcare_client/src/cancel_token.dart';
 import 'package:uploadcare_client/src/cancel_upload_exception.dart';
+import 'package:uploadcare_client/src/file/file.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
 void main() {
@@ -44,7 +45,7 @@ void main() {
 
   test('Simple base upload', () async {
     final id = await client.upload.base(
-      File(env['UPLOAD_BASE']),
+      SharedFile(File(env['UPLOAD_BASE'])),
       storeMode: false,
     );
 
@@ -55,7 +56,7 @@ void main() {
 
   test('Simple multipart upload', () async {
     final id = await client.upload.multipart(
-      File(env['UPLOAD_MULTIPART']),
+      SharedFile(File(env['UPLOAD_MULTIPART'])),
       storeMode: false,
     );
 
@@ -77,7 +78,7 @@ void main() {
 
   test('Signed base upload', () async {
     final id = await clientSigned.upload.base(
-      File(env['UPLOAD_BASE']),
+      SharedFile(File(env['UPLOAD_BASE'])),
       storeMode: false,
     );
 
@@ -88,7 +89,7 @@ void main() {
 
   test('Signed multipart upload', () async {
     final id = await clientSigned.upload.multipart(
-      File(env['UPLOAD_MULTIPART']),
+      SharedFile(File(env['UPLOAD_MULTIPART'])),
       storeMode: false,
     );
 
@@ -112,7 +113,7 @@ void main() {
     final String cancelMessage = 'some cancel message';
     final cancelToken = CancelToken(cancelMessage);
     final future = client.upload.base(
-      File(env['UPLOAD_BASE']),
+      SharedFile(File(env['UPLOAD_BASE'])),
       storeMode: false,
       cancelToken: cancelToken,
     );
@@ -131,7 +132,7 @@ void main() {
   test('Multipart upload with CancelToken', () async {
     final cancelToken = CancelToken();
     final future = client.upload.multipart(
-      File(env['UPLOAD_MULTIPART']),
+      SharedFile(File(env['UPLOAD_MULTIPART'])),
       storeMode: false,
       cancelToken: cancelToken,
       onProgress: (progress) {

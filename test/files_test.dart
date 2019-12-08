@@ -5,6 +5,7 @@ import 'package:dotenv/dotenv.dart';
 import 'package:test/test.dart';
 import 'package:uploadcare_client/src/entities/file_info.dart';
 import 'package:uploadcare_client/src/entities/list.dart';
+import 'package:uploadcare_client/src/file/file.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
 void main() {
@@ -30,19 +31,22 @@ void main() {
   });
 
   test('Get file info', () async {
-    final fileId = await client.upload.base(File(env['UPLOAD_BASE']));
+    final fileId =
+        await client.upload.base(SharedFile(File(env['UPLOAD_BASE'])));
     final file = await client.files.file(fileId);
 
     expect(file, TypeMatcher<FileInfoEntity>());
   });
 
   test('Remove files', () async {
-    final fileId = await client.upload.base(File(env['UPLOAD_BASE']));
+    final fileId =
+        await client.upload.base(SharedFile(File(env['UPLOAD_BASE'])));
     await client.files.remove([fileId]);
   });
 
   test('Detect faces', () async {
-    final fileId = await client.upload.base(File(env['UPLOAD_FACE']));
+    final fileId =
+        await client.upload.base(SharedFile(File(env['UPLOAD_FACE'])));
     final faces = await client.files.detectFaces(fileId);
 
     expect(faces, TypeMatcher<List<Rect>>());

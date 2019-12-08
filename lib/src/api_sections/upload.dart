@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
@@ -10,6 +9,7 @@ import 'package:uploadcare_client/src/cancel_token.dart';
 import 'package:uploadcare_client/src/cancel_upload_exception.dart';
 import 'package:uploadcare_client/src/concurrent_runner.dart';
 import 'package:uploadcare_client/src/entities/entities.dart';
+import 'package:uploadcare_client/src/file/file.dart';
 import 'package:uploadcare_client/src/mixins/mixins.dart';
 import 'package:uploadcare_client/src/options.dart';
 import 'package:uploadcare_client/src/transport.dart';
@@ -35,7 +35,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     ProgressListener onProgress,
     CancelToken cancelToken,
   }) async {
-    if (res is File) {
+    if (res is SharedFile) {
       final file = res;
       final filesize = await file.length();
 
@@ -72,12 +72,12 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   /// [onProgress] subscribe to progress event
   /// [cancelToken] make cancelable request
   Future<String> base(
-    File file, {
+    SharedFile file, {
     bool storeMode,
     ProgressListener onProgress,
     CancelToken cancelToken,
   }) async {
-    final filename = Uri.parse(file.path).pathSegments.last;
+    final filename = file.name;
     final filesize = await file.length();
 
     ProgressEntity progress = ProgressEntity(0, filesize);
@@ -135,7 +135,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   /// [maxConcurrentChunkRequests] maximum concurrent requests
   /// [cancelToken] make cancelable request
   Future<String> multipart(
-    File file, {
+    SharedFile file, {
     bool storeMode,
     ProgressListener onProgress,
     int maxConcurrentChunkRequests,
@@ -143,9 +143,9 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   }) async {
     maxConcurrentChunkRequests ??= options.multipartMaxConcurrentChunkRequests;
 
-    final filename = Uri.parse(file.path).pathSegments.last;
+    final filename = file.name;
     final filesize = await file.length();
-    final mimeType = mime(filename);
+    final mimeType = file.mimeType;
 
     assert(filesize > _kRecomendedMaxFilesizeForBaseUpload,
         'Minimum file size to use with Multipart Uploads is 10MB');

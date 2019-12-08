@@ -15,3 +15,4 @@ export 'src/entities/entities.dart';
 export 'src/api_sections/api_sections.dart';
 export 'src/cancel_token.dart';
 export 'src/cancel_upload_exception.dart';
+export 'src/file/file.dart';
