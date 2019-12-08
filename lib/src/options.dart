@@ -25,6 +25,9 @@ class ClientOptions {
   /// Max concurrent request for mulipart uploads
   final int multipartMaxConcurrentChunkRequests;
 
+  /// Max concurrent running isolates. If you are using [ApiUpload.auto] with `runInIsolate` parameter
+  final int maxIsolatePoolSize;
+
   ClientOptions({
     @required this.authorizationScheme,
     this.uploadUrl = kDefaultUploadEndpoint,
@@ -33,6 +36,7 @@ class ClientOptions {
     this.useSignedUploads = false,
     this.signedUploadsSignatureLifetime = const Duration(minutes: 30),
     this.multipartMaxConcurrentChunkRequests = 3,
+    this.maxIsolatePoolSize = 3,
   }) : assert(useSignedUploads ? authorizationScheme.privateKey != null : true,
             'Please provide private key for using signed uploads');
 }

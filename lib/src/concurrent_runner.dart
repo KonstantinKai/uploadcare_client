@@ -1,26 +1,47 @@
+import 'dart:async';
+
 typedef Future<T> ConcurrentAction<T>();
 
 class ConcurrentRunner<T> {
   final int _limit;
   final List<ConcurrentAction<T>> actions;
 
+  int _currentActions = 0;
+
   ConcurrentRunner(
     int limit,
-    this.actions,
-  ) : _limit = limit > actions.length ? actions.length : limit;
+    List<ConcurrentAction<T>> actions,
+  )   : _limit = limit > actions.length ? actions.length : limit,
+        this.actions = List.from(actions.reversed);
 
   Future<List<T>> run() {
-    return Future.wait(List.generate(_limit, (index) {
-      final int maxInchunk = (actions.length / _limit).ceil();
-      final start = index * maxInchunk;
-      int end = start + maxInchunk;
+    final completer = Completer<List<T>>();
 
-      if (index == _limit - 1) end -= end - actions.length;
+    _run(completer, List(actions.length));
 
-      return actions.sublist(start, end).fold<Future<List<T>>>(
-          Future.value([]),
-          (prev, next) => prev.then(
-              (results) => next().then((result) => results..add(result))));
-    })).then((results) => results.expand((result) => result).toList());
+    return completer.future;
+  }
+
+  void _run(Completer<List<T>> completer, List<T> results) {
+    if (completer.isCompleted) return;
+    if (actions.isEmpty && _currentActions == 0)
+      return completer.complete(results.reversed.toList());
+
+    for (; _currentActions < _limit && actions.isNotEmpty; _currentActions++) {
+      _callAction().then((result) {
+        results[result.key] = result.value;
+        _currentActions--;
+        _run(completer, results);
+      }).catchError((error) {
+        if (!completer.isCompleted) completer.completeError(error);
+      });
+    }
+  }
+
+  Future<MapEntry<int, T>> _callAction() {
+    final action = actions.removeLast();
+    final index = actions.length;
+
+    return action().then((result) => MapEntry(index, result));
   }
 }

@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/api_sections/cdn_file.dart';
-import 'package:uploadcare_client/src/entities/common.dart';
+import 'package:uploadcare_client/src/entities/entities.dart';
 import 'package:uploadcare_client/src/entities/file_info.dart';
 import 'package:uploadcare_client/src/entities/list.dart';
 import 'package:uploadcare_client/src/mixins/mixins.dart';
@@ -120,18 +120,80 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   }
 
   /// Returns rectangles of faces found in an input image.
-  Future<List<Rect>> detectFaces(String imageId) async {
+  ///
+  /// Example
+  /// ```dart
+  /// final files = ApiFiles(options: options);
+  /// final List<Rect> faces = await files.detectFaces('image-id');
+  /// ```
+  @Deprecated('''
+  In a real-world case, this method is unnecessary, because we can't get faces coordinates
+  relative to real widget size. So we should use `getFacesEntity` method, which provides
+  more flexible API to retrieve the right data (`getRelativeFaces(Size size)`)
+  ''')
+  Future<List<Rect>> detectFaces<T>(String imageId) async {
+    final entity = await getFacesEntity(imageId);
+
+    return entity.faces;
+  }
+
+  /// Returns [FacesEntity] which contains original image size and rectangles of faces
+  ///
+  /// Example:
+  /// ```dart
+  /// FacesEntity entity = /* FacesEntity */
+  /// RenderBox renderBox = context.findRenderObject();
+  ///
+  /// return FractionallySizedBox(
+  ///   widthFactor: 1,
+  ///   heightFactor: 1,
+  ///   child: Stack(
+  ///     children: <Widget>[
+  ///       Positioned.fill(
+  ///         child: Image(
+  ///           image: UploadcareImageProvider(widget.imageId),
+  ///           fit: BoxFit.contain,
+  ///           alignment: Alignment.topCenter,
+  ///         ),
+  ///       ),
+  ///       ...entity
+  ///           .getRelativeFaces(
+  ///         Size(
+  ///           renderBox.size.width,
+  ///           renderBox.size.width /
+  ///               entity.originalSize.aspectRatio,
+  ///         ),
+  ///       )
+  ///           .map((face) {
+  ///         return Positioned(
+  ///           top: face.top,
+  ///           left: face.left,
+  ///           child: Container(
+  ///             width: face.size.width,
+  ///             height: face.size.height,
+  ///             decoration: BoxDecoration(
+  ///               color: Colors.black12,
+  ///               border: Border.all(color: Colors.white54, width: 1.0),
+  ///             ),
+  ///           ),
+  ///         );
+  ///       }).toList(),
+  ///     ],
+  ///   ),
+  /// );
+  /// ```
+  Future<FacesEntity> getFacesEntity(String imageId) async {
+    final response = await _detectFaces(imageId);
+
+    return FacesEntity.fromJson(response);
+  }
+
+  Future<Map<String, dynamic>> _detectFaces(String imageId) {
     final cdnFile = CdnFile(imageId);
 
-    final response = await resolveStreamedResponse(
+    return resolveStreamedResponse(
       createRequest('GET', buildUri('${cdnFile.url}detect_faces/')).send(),
     );
-
-    return List.from(response['faces'])
-        .map((face) =>
-            Offset(face[0].toDouble(), face[1].toDouble()) &
-            Size(face[2].toDouble(), face[3].toDouble()))
-        .toList();
   }
 
   void _assertRecongtionApiWithApiVersion(bool includeRecognitionInfo) {

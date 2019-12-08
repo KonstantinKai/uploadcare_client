@@ -276,7 +276,7 @@ class _FilesScreenState extends State<FilesScreen> {
       final files = await widget.uploadcareClient.files.list(
         offset: 0,
         limit: _limit,
-        stored: false,
+        stored: null,
       );
 
       setState(() {
@@ -325,21 +325,131 @@ class _FilesScreenState extends State<FilesScreen> {
               return ListTile(
                 title: Text('Filename: ${file.filename}'),
                 subtitle: Text('Type: ${file.isImage ? 'image' : 'video'}'),
-                trailing: IconButton(
-                  icon: Icon(
-                    Icons.delete,
-                    color: Colors.redAccent,
-                  ),
-                  onPressed: () async {
-                    await widget.uploadcareClient.files.remove([file.id]);
-                    setState(() {
-                      _total--;
-                    });
-                    _filesController.add(files..removeAt(index));
-                  },
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    if (file.isImage)
+                      IconButton(
+                        icon: Icon(Icons.face),
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            fullscreenDialog: true,
+                            builder: (context) => FaceDetectScreen(
+                              uploadcareClient: widget.uploadcareClient,
+                              imageId: file.id,
+                            ),
+                          ),
+                        ),
+                      ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.delete,
+                        color: Colors.redAccent,
+                      ),
+                      onPressed: () async {
+                        await widget.uploadcareClient.files.remove([file.id]);
+                        setState(() {
+                          _total--;
+                        });
+                        _filesController.add(files..removeAt(index));
+                      },
+                    ),
+                  ],
                 ),
               );
             },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class FaceDetectScreen extends StatefulWidget {
+  FaceDetectScreen({
+    Key key,
+    this.uploadcareClient,
+    this.imageId,
+  }) : super(key: key);
+
+  final UploadcareClient uploadcareClient;
+  final String imageId;
+
+  @override
+  _FaceDetectScreenState createState() => _FaceDetectScreenState();
+}
+
+class _FaceDetectScreenState extends State<FaceDetectScreen> {
+  Future<FacesEntity> _future;
+  GlobalKey _key;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _key = GlobalKey();
+    _future = widget.uploadcareClient.files.getFacesEntity(widget.imageId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Face detection screen'),
+      ),
+      body: FutureBuilder(
+        future: _future,
+        builder: (BuildContext context, AsyncSnapshot<FacesEntity> snapshot) {
+          if (!snapshot.hasData)
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+
+          if (!snapshot.data.hasFaces)
+            return Center(
+              child: Text('No faces has been detected'),
+            );
+
+          RenderBox renderBox = context.findRenderObject();
+
+          return FractionallySizedBox(
+            widthFactor: 1,
+            heightFactor: 1,
+            child: Stack(
+              children: <Widget>[
+                Positioned.fill(
+                  child: Image(
+                    key: _key,
+                    image: UploadcareImageProvider(widget.imageId),
+                    fit: BoxFit.contain,
+                    alignment: Alignment.topCenter,
+                  ),
+                ),
+                ...snapshot.data
+                    .getRelativeFaces(
+                  Size(
+                    renderBox.size.width,
+                    renderBox.size.width /
+                        snapshot.data.originalSize.aspectRatio,
+                  ),
+                )
+                    .map((face) {
+                  return Positioned(
+                    top: face.top,
+                    left: face.left,
+                    child: Container(
+                      width: face.size.width,
+                      height: face.size.height,
+                      decoration: BoxDecoration(
+                        color: Colors.black12,
+                        border: Border.all(color: Colors.white54, width: 1.0),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ],
+            ),
           );
         },
       ),

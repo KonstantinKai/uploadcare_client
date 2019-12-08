@@ -1,4 +1,4 @@
-![alt flutter uploadcare client](https://github.com/KonstantinKai/uploadcare_client/blob/master/assets/logo_small.png)
+![alt flutter uploadcare client](https://drive.google.com/uc?export=download&id=1aUeEPWSFwzPVeMn6NGRf7B4x-bPKOkHM)
 
 ## Flutter Uploadcare Client
 
@@ -15,31 +15,37 @@ Uploadcare is a complete file handling platform that helps you ship products fas
   - from url
   - signed uploads, [read more](https://uploadcare.com/docs/api_reference/upload/signed_uploads/)
   - [cancellable upload](#cancellation)
+  - [upload in isolate](#upload-in-isolates)
 - files API, [read more](https://uploadcare.com/docs/api_reference/rest/accessing_files/)
   - get one file
   - get list of files
   - remove multiple files
   - store multiple files
+  - [gif to video](#gif-to-video), [read more](https://uploadcare.com/docs/image_transformations/gif2video/)
+  - [face recognition](#face-recognition), [read more](https://uploadcare.com/docs/image_transformations/face_recognition/)
 - groups API
   - get one group
   - get list of groups
   - create group
   - store all files in group
 - video encoding, [read more](https://uploadcare.com/docs/video_encoding/#process-operations)
-  - create processing tasks
+  - [create processing tasks](#video-encoding)
   - retrieve processing status
 - CDN API
   - image transformations, [read more](https://uploadcare.com/docs/api_reference/cdn/)
   - group transformations, [read more](https://uploadcare.com/docs/delivery/group_api/)
   - video transformations
-- Flutter (mobile/web)
+- Flutter (mobile)
   - [UploadcareImageProvider](#using-with-widgets)
+- **Web**: currently not working on the web, because flutter API (stable/master) differs for `NetworkProvider`, and `File` API from `dart:io` & `dart:html` is not the same.
 
 #### Roadmap:
 - document conversion
-- complete transformations API (overlays, gif to video, .etc)
 - write more tests
-- test on web
+
+![alt flutter uploadcare example](https://drive.google.com/uc?export=download&id=1nj2rLUgbanzq-4CfJiRSkvMA_qOi10-s)
+
+![alt flutter uploadcare face rocognition example](https://drive.google.com/uc?export=download&id=1HPIyuq6G_1MI3XN1ll0fHgGnk-J4bSi1)
 
 ## Example:
 **Note:** you can omit `privateKey`, but in this case only Upload API will be available. (CDN API also will be available).
@@ -133,4 +139,113 @@ try {
 // somewhere in code
 cancelToken.cancel();
 
+```
+## Face Recognition
+```dart
+...
+final files = ApiFiles(options: options);
+
+final FacesEntity entity = await files.detectFacesWithOriginalImageSize('image-id');
+...
+RenderBox renderBox = context.findRenderObject();
+
+return FractionallySizedBox(
+  widthFactor: 1,
+  heightFactor: 1,
+  child: Stack(
+    children: <Widget>[
+      Positioned.fill(
+        child: Image(
+          image: UploadcareImageProvider(widget.imageId),
+          fit: BoxFit.contain,
+          alignment: Alignment.topCenter,
+        ),
+      ),
+      ...entity
+          .getRelativeFaces(
+        Size(
+          renderBox.size.width,
+          renderBox.size.width /
+              entity.originalSize.aspectRatio,
+        ),
+      )
+          .map((face) {
+        return Positioned(
+          top: face.top,
+          left: face.left,
+          child: Container(
+            width: face.size.width,
+            height: face.size.height,
+            decoration: BoxDecoration(
+              color: Colors.black12,
+              border: Border.all(color: Colors.white54, width: 1.0),
+            ),
+          ),
+        );
+      }).toList(),
+    ],
+  ),
+);
+...
+```
+
+## Gif to video
+```dart
+final file = CdnFile('gif-id-1')
+  ..transform(GifToVideoTransformation([
+    VideoFormatTransformation(VideoFormatTValue.Mp4),
+    QualityTransformation(QualityTValue.Best),
+  ]));
+
+...
+
+VideoPlayerController.network(file.url);
+```
+
+## Video encoding 
+```dart
+...
+
+final videoEncoding = ApiVideoEncoding(options);
+
+final VideoEncodingConvertEntity result = await videoEncoding.process({
+  'video-id-1': [
+    CutTransformation(
+      const const Duration(seconds: 10),
+      length: const Duration(
+        seconds: 30,
+      ),
+    )
+  ],
+  'video-id-2': [
+    VideoResizeTransformation(const Size(512, 384)),
+    VideoThumbsGenerateTransformation(10),
+  ],
+});
+
+final Stream<VideoEncodingJobEntity> processingStream = videoEncoding.statusAsStream(
+  result.results.first.token,
+  checkInterval: const Duration(seconds: 2),
+)..listen((VideoEncodingJobEntity status) {
+  // do something
+})
+```
+
+## Upload in isolates
+```dart
+final client = UploadcareClient(
+  options: ClientOptions(
+    // setup max concurrent running isolates
+    maxIsolatePoolSize: 3,
+    authorizationScheme: AuthSchemeSimple(
+      apiVersion: 'v0.5',
+      publicKey: env['UPLOADCARE_PUBLIC_KEY'],
+    ),
+  ),
+);
+
+final id = await client.upload.auto(
+  File('/some/file'),
+  runInIsolate: true,
+);
 ```

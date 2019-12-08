@@ -3,12 +3,15 @@ import 'dart:html';
 
 import 'package:uploadcare_client/src/file/file.dart';
 
-SharedFile createFile(dynamic file) => WebFile(file as File);
+SharedFile createFile(dynamic file) => _WebFile(file as File);
 
-class WebFile implements SharedFile {
+SharedFile createFileFromUri(Uri uri) =>
+    throw UnsupportedError('Cannot create a file from uri with dart:html');
+
+class _WebFile implements SharedFile {
   final File _file;
 
-  WebFile(this._file) : assert(_file != null);
+  _WebFile(this._file) : assert(_file != null);
 
   @override
   String get mimeType => _file.type;

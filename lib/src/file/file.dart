@@ -9,6 +9,8 @@ abstract class SharedFile {
 
   factory SharedFile(dynamic file) => createFile(file);
 
+  factory SharedFile.fromUri(Uri uri) => createFileFromUri(uri);
+
   Future<int> length();
 
   Stream<List<int>> openRead([
