@@ -3,7 +3,7 @@ import 'dart:html';
 
 import 'package:uploadcare_client/src/file/file.dart';
 
-SharedFile createFile(dynamic file) => _WebFile(file as File);
+SharedFile createFile(Object file) => _WebFile(file as File);
 
 SharedFile createFileFromUri(Uri uri) =>
     throw UnsupportedError('Cannot create a file from uri with dart:html');

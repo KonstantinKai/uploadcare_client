@@ -49,7 +49,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   /// Upload file [resource] according to type
   /// if `String` makes [fromUrl] upload if it is http/https url or try retrieve [File] if path is absolute, otherwise make an `File` request according to size
   Future<String> auto(
-    dynamic resource, {
+    Object resource, {
     bool storeMode,
     ProgressListener onProgress,
     CancelToken cancelToken,
@@ -395,7 +395,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
       };
 
   Future<String> _runInIsolate(
-    dynamic resource, {
+    Object resource, {
     bool storeMode,
     ProgressListener onProgress,
     CancelToken cancelToken,
