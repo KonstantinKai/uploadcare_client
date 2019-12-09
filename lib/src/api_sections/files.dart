@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:meta/meta.dart';
 import 'package:uploadcare_client/src/api_sections/cdn_file.dart';
@@ -117,24 +116,6 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
           .map((item) => FileInfoEntity.fromJson(item))
           .toList(),
     );
-  }
-
-  /// Returns rectangles of faces found in an input image.
-  ///
-  /// Example
-  /// ```dart
-  /// final files = ApiFiles(options: options);
-  /// final List<Rect> faces = await files.detectFaces('image-id');
-  /// ```
-  @Deprecated('''
-  In a real-world case, this method is unnecessary, because we can't get faces coordinates
-  relative to real widget size. So we should use `getFacesEntity` method, which provides
-  more flexible API to retrieve the right data (`getRelativeFaces(Size size)`)
-  ''')
-  Future<List<Rect>> detectFaces<T>(String imageId) async {
-    final entity = await getFacesEntity(imageId);
-
-    return entity.faces;
   }
 
   /// Returns [FacesEntity] which contains original image size and rectangles of faces
