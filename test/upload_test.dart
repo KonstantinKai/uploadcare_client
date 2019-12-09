@@ -47,7 +47,7 @@ void main() {
   test('Simple auto upload', () async {
     final _ids = await Future.wait([
       client.upload.auto(
-        File(env['UPLOAD_BASE']),
+        SharedFile(File(env['UPLOAD_BASE'])),
         storeMode: false,
       ),
       client.upload.auto(

@@ -1,4 +1,5 @@
 import 'dart:async';
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 
 import 'package:uploadcare_client/src/file/file.dart';
@@ -27,10 +28,15 @@ class _WebFile implements SharedFile {
     final controller = StreamController<List<int>>();
     final reader = FileReader();
 
-    reader.onLoadEnd.listen((data) {
-      controller.add(reader.result);
-      controller.close();
-    });
+    reader
+      ..onLoadEnd.listen((data) {
+        controller.add(reader.result);
+        if (!controller.isClosed) controller.close();
+      })
+      ..onError.listen((data) {
+        controller.addError(reader.error);
+        if (!controller.isClosed) controller.close();
+      });
 
     Blob blob = _file;
 

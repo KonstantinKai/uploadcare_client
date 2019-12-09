@@ -25,7 +25,7 @@ typedef void ProgressListener(ProgressEntity progress);
 /// ```dart
 /// final upload = ApiUpload(options: options);
 /// ...
-/// final file1 = File('/some/file');
+/// final file1 = SharedFile(File('/some/file'));
 /// final file2 = 'https://some/file';
 ///
 /// final id1 = await upload.auto(file1); // File instance
@@ -37,7 +37,7 @@ typedef void ProgressListener(ProgressEntity progress);
 /// ```dart
 /// final upload = ApiUpload(options: options);
 /// ...
-/// final id = await upload.auto(File('/some/file'), runInIsolate: true);
+/// final id = await upload.auto(SharedFile(File('/some/file')), runInIsolate: true);
 /// ```
 class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   final ClientOptions options;
@@ -47,7 +47,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   }) : assert(options != null);
 
   /// Upload file [resource] according to type
-  /// if `String` makes [fromUrl] upload if it is http/https url or try retrieve [File] if path is absolute, otherwise make an `File` request according to size
+  /// if `String` makes [fromUrl] upload if it is http/https url or try retrieve [SharedFile] if path is absolute, otherwise make an `SharedFile` request according to size
   Future<String> auto(
     Object resource, {
     bool storeMode,
@@ -263,7 +263,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
           cancelToken.onCancel = _completeWithError(
             completer: completer,
             action: () =>
-                inProgressActions.forEach((requests) => requests.cancel()),
+                inProgressActions.forEach((request) => request.cancel()),
             cancelMessage: cancelToken.cancelMessage,
           );
         return ConcurrentRunner(maxConcurrentChunkRequests, actions).run();
