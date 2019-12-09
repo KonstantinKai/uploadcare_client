@@ -1,3 +1,14 @@
+## [2.0.0-rc.1] - Mon Dec 9 2019 [**BREAKING CHANGES**]
+* Changed `UploadcareImageProvider.load` method arguments, related to the SDK changes for `ImageProvider`
+* Added ability to upload in `flutter_web` environment
+  * Added `SharedFile` abstraction, which works on both `mobile` & `web`
+  * Changed `res` argument type in `ApiSectionUpload.auto` method
+  * Changed `file` argument type in `ApiSectionUpload.base` & `ApiSectionUpload.multipart` methods
+* Added ability to upload files in example project in `flutter_web` environment
+
+## [1.4.1] - Mon Dec 9 2019
+* Updated dependencies to the latest version
+
 ## [1.4.0] - Mon Nov 4 2019
 
 * Improved `auto` method from `ApiUpload`. Now you can pass file string to this method and client try to parse him.

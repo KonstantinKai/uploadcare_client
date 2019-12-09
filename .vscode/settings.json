@@ -1,3 +1,5 @@
 {
-  "gitlens.codeLens.enabled": false
+  "gitlens.codeLens.enabled": false,
+  "dart.previewNewCompletionPlaceholders": true,
+  "dart.flutterSdkPath": "/Users/kai/Dev/flutter",
 }

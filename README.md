@@ -2,6 +2,14 @@
 
 ## Flutter Uploadcare Client
 
+### Breaking changes
+The Flutter team made a breaking change with the ImageProvider in Flutter `1.10.15`. Also, the Flutter team doesn't recommend use flutter_web in `1.9`, that why I specify flutter SDK constraints for the `2.0.0` version. This version added the ability to upload files in flutter_web environment.
+
+If you have the following error, please upgrade to `2.0.0`
+```sh
+The method 'UploadcareImageProvider.load' has fewer positional arguments than those of overridden method 'ImageProvider.load'
+```
+
 ## Introduction
 Uploadcare is a complete file handling platform that helps you ship products faster and focus on your business goals, not files. With Uploadcare, you can build an infrastructure, optimize content, conversions, load times, traffic, and user experience. [Read more...](https://uploadcare.com/docs/)
 
@@ -35,17 +43,19 @@ Uploadcare is a complete file handling platform that helps you ship products fas
   - image transformations, [read more](https://uploadcare.com/docs/api_reference/cdn/)
   - group transformations, [read more](https://uploadcare.com/docs/delivery/group_api/)
   - video transformations
-- Flutter (mobile)
-  - [UploadcareImageProvider](#using-with-widgets)
-- **Web**: currently not working on the web, because flutter API (stable/master) differs for `NetworkProvider`, and `File` API from `dart:io` & `dart:html` is not the same.
+- Flutter (mobile/web)
+  - [UploadcareImageProvider](#using-with-widgets) (**since `2.0.0`**)
 
 #### Roadmap:
 - document conversion
-- write more tests
 
 ![alt flutter uploadcare example](https://drive.google.com/uc?export=download&id=1nj2rLUgbanzq-4CfJiRSkvMA_qOi10-s)
 
 ![alt flutter uploadcare face rocognition example](https://drive.google.com/uc?export=download&id=1HPIyuq6G_1MI3XN1ll0fHgGnk-J4bSi1)
+
+![alt flutter uploadcare web upload video](https://drive.google.com/uc?export=download&id=188FQUmaf5u18j17iMaMNJ-8CeI2-6m_H)
+
+![alt flutter uploadcare web upload image](https://drive.google.com/uc?export=download&id=1uSYJ4MdBtVmvM4iWsOmyS7mFvyv7818L)
 
 ## Example:
 **Note:** you can omit `privateKey`, but in this case only Upload API will be available. (CDN API also will be available).
@@ -94,7 +104,7 @@ final options = ClientOptions(
 );
 
 final upload = ApiUpload(options: options);
-final fileId = await upload.base(File('...some/file'));
+final fileId = await upload.base(SharedFile(File('...some/file')));
 // ...etc.
 ```
 ## Using with widgets
@@ -127,7 +137,7 @@ final cancelToken = CancelToken();
 
 try {
   final fileId = await client.upload.multipart(
-    File('/some/file'),
+    SharedFile(File('/some/file')),
     cancelToken: cancelToken,
   );
 } on CancelUploadException catch (e) {
@@ -245,7 +255,7 @@ final client = UploadcareClient(
 );
 
 final id = await client.upload.auto(
-  File('/some/file'),
+  SharedFile(File('/some/file')),
   runInIsolate: true,
 );
 ```

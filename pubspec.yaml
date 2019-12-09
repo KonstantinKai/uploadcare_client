@@ -1,6 +1,6 @@
 name: uploadcare_client
 description: A flutter library for working with Uploadcare REST API. File uploads, media processing, and adaptive delivery for web and mobile.
-version: 1.4.0
+version: 1.4.1
 author: Konstantin Kai <kosyak46@gmail.com>
 homepage: https://github.com/KonstantinKai/uploadcare_client
 repository: https://github.com/KonstantinKai/uploadcare_client
@@ -17,7 +17,7 @@ dependencies:
   meta: ^1.1.7
   mime_type: ^0.2.4
   http_parser: ^3.1.3
-  equatable: ^0.6.1
+  equatable: ^1.0.1
 
 dev_dependencies:
   flutter_test:
