@@ -204,7 +204,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.4.2"
+    version: "1.4.3"
   url_launcher:
     dependency: "direct main"
     description:
@@ -221,4 +221,4 @@ packages:
     version: "2.0.8"
 sdks:
   dart: ">=2.2.2 <3.0.0"
-  flutter: ">=1.5.0 <1.10.15"
+  flutter: ">=1.5.0 <2.0.0"
