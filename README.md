@@ -10,6 +10,10 @@ If you have the following error, please upgrade to `2.0.0`
 The method 'UploadcareImageProvider.load' has fewer positional arguments than those of overridden method 'ImageProvider.load'
 ```
 
+### Limitations
+* It's impossible to use `AuthSchemeRegular` auth scheme in `flutter_web` with fetch API because `Date` request header is forbidden for XMLRequest https://fetch.spec.whatwg.org/#forbidden-header-name.
+* It's impossible to run the upload process in the separate isolate.
+
 ## Introduction
 Uploadcare is a complete file handling platform that helps you ship products faster and focus on your business goals, not files. With Uploadcare, you can build an infrastructure, optimize content, conversions, load times, traffic, and user experience. [Read more...](https://uploadcare.com/docs/)
 

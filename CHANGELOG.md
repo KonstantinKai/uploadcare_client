@@ -1,3 +1,7 @@
+## [1.4.2] - Tue Dec 10 2019
+* Added flutter SDK version constraint
+* Described limitations in README
+
 ## [2.0.0-rc.1] - Mon Dec 9 2019 [**BREAKING CHANGES**]
 * Changed `UploadcareImageProvider.load` method arguments, related to the SDK changes for `ImageProvider`
 * Added ability to upload in `flutter_web` environment
