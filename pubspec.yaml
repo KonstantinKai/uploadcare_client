@@ -7,7 +7,8 @@ repository: https://github.com/KonstantinKai/uploadcare_client
 issue_tracker: https://github.com/KonstantinKai/uploadcare_client/issues
 
 environment:
-  sdk: ">=2.2.2 <3.0.0"
+  sdk: '>=2.2.2 <3.0.0'
+  flutter: '<1.10.15'
 
 dependencies:
   flutter:
