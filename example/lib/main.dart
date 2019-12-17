@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
+import 'picker_stub.dart'
+    if (dart.library.html) 'picker_web.dart'
+    if (dart.library.io) 'picker_io.dart';
 
 void main() async {
   await DotEnv().load('.env');
@@ -75,59 +76,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future _onUpload() async {
-    final file = await showModalBottomSheet<File>(
-        context: context,
-        builder: (context) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                title: Text('Pick image from gallery'),
-                onTap: () async => Navigator.pop(
-                  context,
-                  await ImagePicker.pickImage(
-                    source: ImageSource.gallery,
-                  ),
-                ),
-              ),
-              ListTile(
-                title: Text('Pick image from camera'),
-                onTap: () async => Navigator.pop(
-                  context,
-                  await ImagePicker.pickImage(
-                    source: ImageSource.camera,
-                  ),
-                ),
-              ),
-              ListTile(
-                title: Text('Pick video from gallery'),
-                onTap: () async => Navigator.pop(
-                  context,
-                  await ImagePicker.pickVideo(
-                    source: ImageSource.gallery,
-                  ),
-                ),
-              ),
-              ListTile(
-                title: Text('Pick video from camera'),
-                onTap: () async => Navigator.pop(
-                  context,
-                  await ImagePicker.pickVideo(
-                    source: ImageSource.camera,
-                  ),
-                ),
-              ),
-            ],
-          );
-        });
+    final files = await pickFiles(context);
 
-    if (file != null) {
+    if (files.isNotEmpty) {
       Navigator.push(
           context,
           MaterialPageRoute(
             fullscreenDialog: true,
             builder: (context) => UploadScreen(
-              file: file,
+              file: files.first,
               uploadcareClient: _uploadcareClient,
             ),
           ));
@@ -151,7 +108,7 @@ class UploadScreen extends StatefulWidget {
     this.uploadcareClient,
   }) : super(key: key);
 
-  final File file;
+  final SharedFile file;
   final UploadcareClient uploadcareClient;
 
   _UploadScreenState createState() => _UploadScreenState();
@@ -269,7 +226,7 @@ class _UploadScreenState extends State<UploadScreen> {
                       const SizedBox(
                         height: 20,
                       ),
-                      Text(widget.file.path),
+                      Text(widget.file.name),
                     ],
                   ),
                 ),

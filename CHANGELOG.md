@@ -1,14 +1,15 @@
-## [1.4.2] - Tue Dec 10 2019
-* Added flutter SDK version constraint
-* Described limitations in README
-
-## [2.0.0-rc.1] - Mon Dec 9 2019 [**BREAKING CHANGES**]
+## [2.0.0] - Tue Dec 17 2019
 * Changed `UploadcareImageProvider.load` method arguments, related to the SDK changes for `ImageProvider`
 * Added ability to upload in `flutter_web` environment
   * Added `SharedFile` abstraction, which works on both `mobile` & `web`
   * Changed `res` argument type in `ApiSectionUpload.auto` method
   * Changed `file` argument type in `ApiSectionUpload.base` & `ApiSectionUpload.multipart` methods
 * Added ability to upload files in example project in `flutter_web` environment
+* Removed deprecated `detectFaces` method from `ApiFiles`;
+
+## [1.4.2] - Tue Dec 10 2019
+* Added flutter SDK version constraint
+* Described limitations in README
 
 ## [1.4.1] - Mon Dec 9 2019
 * Updated dependencies to the latest version

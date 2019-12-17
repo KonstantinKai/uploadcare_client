@@ -2,4 +2,8 @@
   "gitlens.codeLens.enabled": false,
   "dart.previewNewCompletionPlaceholders": true,
   "dart.flutterSdkPath": "/Users/kai/Dev/flutter",
+  "dart.flutterSdkPaths": [
+    "/Users/kai/Dev/flutter",
+    "/Users/kai/Dev/flutter_dev",
+  ]
 }

@@ -3,12 +3,7 @@
 ## Flutter Uploadcare Client
 
 ### Breaking changes
-The Flutter team made a breaking change with the ImageProvider in Flutter `1.10.15`. Also, the Flutter team doesn't recommend use flutter_web in `1.9`, that why I specify flutter SDK constraints for the `2.0.0` version. This version added the ability to upload files in flutter_web environment.
-
-If you have the following error, please upgrade to `2.0.0`
-```sh
-The method 'UploadcareImageProvider.load' has fewer positional arguments than those of overridden method 'ImageProvider.load'
-```
+The Flutter team made a breaking change with the ImageProvider in Flutter `1.10.15`.
 
 ### Limitations
 * It's impossible to use `AuthSchemeRegular` auth scheme in `flutter_web` with fetch API because `Date` request header is forbidden for XMLRequest https://fetch.spec.whatwg.org/#forbidden-header-name.

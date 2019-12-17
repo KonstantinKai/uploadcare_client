@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
@@ -10,6 +9,7 @@ import 'package:uploadcare_client/src/cancel_token.dart';
 import 'package:uploadcare_client/src/cancel_upload_exception.dart';
 import 'package:uploadcare_client/src/concurrent_runner.dart';
 import 'package:uploadcare_client/src/entities/entities.dart';
+import 'package:uploadcare_client/src/file/file.dart';
 import 'package:uploadcare_client/src/isolate_worker.dart';
 import 'package:uploadcare_client/src/mixins/mixins.dart';
 import 'package:uploadcare_client/src/options.dart';
@@ -25,7 +25,7 @@ typedef void ProgressListener(ProgressEntity progress);
 /// ```dart
 /// final upload = ApiUpload(options: options);
 /// ...
-/// final file1 = File('/some/file');
+/// final file1 = SharedFile(File('/some/file'));
 /// final file2 = 'https://some/file';
 ///
 /// final id1 = await upload.auto(file1); // File instance
@@ -37,7 +37,7 @@ typedef void ProgressListener(ProgressEntity progress);
 /// ```dart
 /// final upload = ApiUpload(options: options);
 /// ...
-/// final id = await upload.auto(File('/some/file'), runInIsolate: true);
+/// final id = await upload.auto(SharedFile(File('/some/file')), runInIsolate: true);
 /// ```
 class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   final ClientOptions options;
@@ -47,15 +47,15 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   }) : assert(options != null);
 
   /// Upload file [resource] according to type
-  /// if `String` makes [fromUrl] upload if it is http/https url or try retrieve [File] if path is absolute, otherwise make an `File` request according to size
+  /// if `String` makes [fromUrl] upload if it is http/https url or try retrieve [SharedFile] if path is absolute, otherwise make an `SharedFile` request according to size
   Future<String> auto(
-    dynamic resource, {
+    Object resource, {
     bool storeMode,
     ProgressListener onProgress,
     CancelToken cancelToken,
     bool runInIsolate = false,
   }) async {
-    assert(resource is String || resource is File,
+    assert(resource is String || resource is SharedFile,
         'The resource should be one of File or URL and File path');
     assert(runInIsolate != null);
 
@@ -78,14 +78,14 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
             onProgress: onProgress,
           );
         } else if (uri.hasAbsolutePath) {
-          resource = File.fromUri(uri);
+          resource = SharedFile.fromUri(uri);
         } else {
           throw Exception('Cannot parse URL from string');
         }
       }
     }
 
-    if (resource is File) {
+    if (resource is SharedFile) {
       final file = resource;
       final filesize = await file.length();
 
@@ -116,13 +116,13 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   /// [onProgress] subscribe to progress event
   /// [cancelToken] make cancelable request
   Future<String> base(
-    File file, {
+    SharedFile file, {
     bool storeMode,
     ProgressListener onProgress,
     CancelToken cancelToken,
   }) async {
     assert(file != null, 'The file cannot be null');
-    final filename = Uri.parse(file.path).pathSegments.last;
+    final filename = file.name;
     final filesize = await file.length();
 
     ProgressEntity progress = ProgressEntity(0, filesize);
@@ -180,7 +180,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   /// [maxConcurrentChunkRequests] maximum concurrent requests
   /// [cancelToken] make cancelable request
   Future<String> multipart(
-    File file, {
+    SharedFile file, {
     bool storeMode,
     ProgressListener onProgress,
     int maxConcurrentChunkRequests,
@@ -189,9 +189,9 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     assert(file != null, 'The file cannot be null');
     maxConcurrentChunkRequests ??= options.multipartMaxConcurrentChunkRequests;
 
-    final filename = Uri.parse(file.path).pathSegments.last;
+    final filename = file.name;
     final filesize = await file.length();
-    final mimeType = mime(filename.toLowerCase() ?? '');
+    final mimeType = file.mimeType;
 
     assert(filesize > _kRecomendedMaxFilesizeForBaseUpload,
         'Minimum file size to use with Multipart Uploads is 10MB');
@@ -263,7 +263,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
           cancelToken.onCancel = _completeWithError(
             completer: completer,
             action: () =>
-                inProgressActions.forEach((requests) => requests.cancel()),
+                inProgressActions.forEach((request) => request.cancel()),
             cancelMessage: cancelToken.cancelMessage,
           );
         return ConcurrentRunner(maxConcurrentChunkRequests, actions).run();
@@ -395,7 +395,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
       };
 
   Future<String> _runInIsolate(
-    dynamic resource, {
+    Object resource, {
     bool storeMode,
     ProgressListener onProgress,
     CancelToken cancelToken,
