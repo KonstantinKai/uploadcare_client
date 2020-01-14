@@ -127,7 +127,7 @@ class _UploadScreenState extends State<UploadScreen> {
   UploadState _uploadState;
   String _fileId;
   FileInfoEntity _fileInfoEntity;
-  String _cancelMessage;
+  String _errorMessage;
 
   @override
   void initState() {
@@ -149,9 +149,10 @@ class _UploadScreenState extends State<UploadScreen> {
         _uploadState = UploadState.Uploaded;
       } on CancelUploadException catch (e) {
         _uploadState = UploadState.Canceled;
-        _cancelMessage = e.message;
+        _errorMessage = e.message;
       } catch (e) {
         _uploadState = UploadState.Error;
+        _errorMessage = e.message ?? e.toString();
       }
 
       setState(() {});
@@ -218,9 +219,12 @@ class _UploadScreenState extends State<UploadScreen> {
                           image: UploadcareImageProvider(_fileId),
                           fit: BoxFit.contain,
                         ),
-                      if (_uploadState == UploadState.Canceled)
+                      if ([
+                        UploadState.Canceled,
+                        UploadState.Error,
+                      ].contains(_uploadState))
                         Text(
-                          _cancelMessage,
+                          _errorMessage,
                           style: TextStyle(color: Colors.red),
                         ),
                       const SizedBox(
