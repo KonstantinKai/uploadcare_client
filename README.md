@@ -2,9 +2,6 @@
 
 ## Flutter Uploadcare Client
 
-### Breaking changes
-The Flutter team made a breaking change with the ImageProvider in Flutter `1.10.15`.
-
 ### Limitations
 * It's impossible to use `AuthSchemeRegular` auth scheme in `flutter_web` with fetch API because `Date` request header is forbidden for XMLRequest https://fetch.spec.whatwg.org/#forbidden-header-name.
 * It's impossible to run the upload process in the separate isolate.

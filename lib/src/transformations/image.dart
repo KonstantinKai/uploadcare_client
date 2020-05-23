@@ -203,13 +203,62 @@ class SetFillTransformation extends Transformation
       [color.value.toRadixString(16).replaceRange(0, 2, '')];
 }
 
+/// Type value which enables smart image analysis for [ScaleCropTransformation]
+enum ScaleCropTypeTValue {
+  /// default image analysis mode, face detection, object detection and corner points detection
+  Smart,
+
+  /// same as [ScaleCropTypeTValue.Smart], face detection, object detection and corner points detection
+  SmartFacesObjectsPoints,
+
+  /// face detection, followed by object detection
+  SmartFacesObjects,
+
+  /// face detection, followed by corner points detection
+  SmartFacesPoints,
+
+  /// object detection, followed by face detection, followed by corner points detection
+  SmartObjectsFacesPoints,
+
+  /// object detection, followed by face detection
+  SmartObjectsFaces,
+
+  /// object detection, followed by corner points detection
+  SmartObjectsPoints,
+
+  /// corner points detection or manual region specified by offset parameter
+  SmartPoints,
+
+  /// object detection or manual region specified by offset parameter
+  SmartObjects,
+
+  /// face detection or manual region specified by offset parameter
+  SmartFaces,
+}
+
 /// Downscale an image along one of the axes (the one with smaller linear size) and crop the rest.
+/// The method can be implemented with manual, center-focused or “smart crop” behavior.
 class ScaleCropTransformation extends ResizeTransformation
     implements ImageTransformation {
+  /// an optional [ScaleCropTypeTValue] which enables smart image analysis.
+  /// Each smart analysis mode combines various methods for detecting areas of interest in an image.
+  /// The methods you include are applied sequentially.
+  /// The algorithm switches to the next method only if no regions were found by the previous one.
+  /// If no regions of interest were found, the [offset] setting is used to crop an image.
+  final ScaleCropTypeTValue type;
+
+  /// setting is used to crop an image. When no [offset] are specified, images get center-cropped
+  final Offset offset;
+
   /// centering the crop focus.
   final bool center;
 
-  ScaleCropTransformation(Size size, [this.center = false]) : super(size);
+  ScaleCropTransformation(
+    Size size, {
+    this.type,
+    this.offset,
+    this.center = false,
+  }) : super(size);
 
   @override
   String get operation => 'scale_crop';
@@ -217,8 +266,39 @@ class ScaleCropTransformation extends ResizeTransformation
   @override
   List<String> get params => [
         ...super.params,
-        if (center) 'center',
+        if (type != null) _typeAsString,
+        if (offset != null)
+          '${offset.dx?.toInt()},${offset.dy?.toInt()}'
+        else if (center)
+          'center',
       ];
+
+  String get _typeAsString {
+    switch (type) {
+      case ScaleCropTypeTValue.Smart:
+        return 'smart';
+      case ScaleCropTypeTValue.SmartFacesObjectsPoints:
+        return 'smart_faces_objects_points';
+      case ScaleCropTypeTValue.SmartFacesObjects:
+        return 'smart_faces_objects';
+      case ScaleCropTypeTValue.SmartFacesPoints:
+        return 'smart_faces_points';
+      case ScaleCropTypeTValue.SmartObjectsFacesPoints:
+        return 'smart_objects_faces_points';
+      case ScaleCropTypeTValue.SmartObjectsFaces:
+        return 'smart_objects_faces';
+      case ScaleCropTypeTValue.SmartObjectsPoints:
+        return 'smart_objects_points';
+      case ScaleCropTypeTValue.SmartPoints:
+        return 'smart_points';
+      case ScaleCropTypeTValue.SmartObjects:
+        return 'smart_objects';
+      case ScaleCropTypeTValue.SmartFaces:
+        return 'smart_faces';
+      default:
+        return '';
+    }
+  }
 }
 
 /// Resize an image to fit into specified dimensions, proportional.

@@ -6,6 +6,7 @@ import 'package:uploadcare_client/src/entities/video_encoding.dart';
 import 'package:uploadcare_client/src/mixins/mixins.dart';
 import 'package:uploadcare_client/src/options.dart';
 import 'package:uploadcare_client/src/transformations/base.dart';
+import 'package:uploadcare_client/src/transformations/common.dart';
 import 'package:uploadcare_client/src/transformations/path_transformer.dart';
 import 'package:uploadcare_client/src/transformations/video.dart';
 
@@ -49,13 +50,19 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
   }) async {
     final request = createRequest('POST', buildUri('$apiUrl/convert/video/'))
       ..body = jsonEncode({
-        'paths': transformers.entries
-            .map((entry) => PathTransformer('${entry.key}/video',
-                    transformations: entry.value
-                      ..sort((a, b) =>
-                          b is VideoThumbsGenerateTransformation ? -1 : 1))
-                .path)
-            .toList(),
+        'paths': transformers.entries.map((entry) {
+          assert(() {
+            return !entry.value.any((transformation) =>
+                transformation is QualityTransformation &&
+                transformation.value == QualityTValue.Smart);
+          }(), 'QualityTValue.Smart cannot be used with VideoTransformation');
+
+          return PathTransformer('${entry.key}/video',
+                  transformations: entry.value
+                    ..sort((a, b) =>
+                        b is VideoThumbsGenerateTransformation ? -1 : 1))
+              .path;
+        }).toList(),
         'store': resolveStoreModeParam(storeMode),
       });
 

@@ -1,4 +1,13 @@
+## [2.1.0] - Sat May 23 2020
+* **Breaking change with 2.0.0**
+  * Changed `ScaleCropTransformation` constructor parameters, accepts the required `size` and optional named `offset`, `type`, `center`
+* Added `ScaleCropTypeTValue` as `type`, `Offset` as `offset`, `bool` as `center` parameters to the `ScaleCropTransformation` class
+* Added `QualityTValue.Smart` value to the `QualityTransformation` class, but you can use it only with `ImageTransformation`
+* Updated dependencies
+
 ## [2.0.0] - Tue Dec 17 2019
+* **Breaking changes with 1.4.2**
+  * The Flutter team made a breaking change with the ImageProvider in Flutter `1.10.15`.
 * Changed `UploadcareImageProvider.load` method arguments, related to the SDK changes for `ImageProvider`
 * Added ability to upload in `flutter_web` environment
   * Added `SharedFile` abstraction, which works on both `mobile` & `web`

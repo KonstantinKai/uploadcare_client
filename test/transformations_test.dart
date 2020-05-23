@@ -23,6 +23,8 @@ void main() {
           equals('quality/better'));
       expect(QualityTransformation(QualityTValue.Best).toString(),
           equals('quality/best'));
+      expect(QualityTransformation(QualityTValue.Smart).toString(),
+          equals('quality/smart'));
     });
 
     test('ResizeTransformation', () {
@@ -174,8 +176,34 @@ void main() {
       testDelimiter(ScaleCropTransformation(Size.zero));
       expect(ScaleCropTransformation(Size.zero).toString(),
           equals('scale_crop/0x0'));
-      expect(ScaleCropTransformation(Size.zero, true).toString(),
+      expect(ScaleCropTransformation(Size.zero, center: true).toString(),
           equals('scale_crop/0x0/center'));
+      expect(
+          ScaleCropTransformation(
+            Size.zero,
+            offset: Offset.zero,
+          ).toString(),
+          equals('scale_crop/0x0/0,0'));
+      expect(
+          ScaleCropTransformation(
+            Size.zero,
+            type: ScaleCropTypeTValue.Smart,
+          ).toString(),
+          equals('scale_crop/0x0/smart'));
+      expect(
+          ScaleCropTransformation(
+            Size.zero,
+            type: ScaleCropTypeTValue.Smart,
+            offset: Offset.zero,
+          ).toString(),
+          equals('scale_crop/0x0/smart/0,0'));
+      expect(
+          ScaleCropTransformation(
+            Size.zero,
+            type: ScaleCropTypeTValue.SmartFacesObjects,
+            center: true,
+          ).toString(),
+          equals('scale_crop/0x0/smart_faces_objects/center'));
     });
 
     test('PreviewTransformation', () {

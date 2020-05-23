@@ -18,6 +18,10 @@ enum QualityTValue {
 
   /// Useful when you want to get perfect quality without paying much attention to file sizes; larger than [QualityTValue.Better] maximum size.
   Best,
+
+  /// Automatically set optimal image compression and format settings to preserve visual quality while minimizing the file size, content-aware.
+  /// Only for image transformation
+  Smart,
 }
 
 /// Sets the level of source quality that affects file sizes and hence loading times and volumes of generated traffic.
@@ -36,6 +40,8 @@ class QualityTransformation extends EnumTransformation<QualityTValue>
         return 'better';
       case QualityTValue.Best:
         return 'best';
+      case QualityTValue.Smart:
+        return 'smart';
       default:
         return 'normal';
     }
