@@ -1,3 +1,6 @@
+## [2.1.1] - Mon Aug 3 2020
+* Re export `GroupInfoEntity` and `CdnEntity` from main library file (related to: [#2](https://github.com/KonstantinKai/uploadcare_client/issues/2))
+
 ## [2.1.0] - Sat May 23 2020
 * **Breaking change with 2.0.0**
   * Changed `ScaleCropTransformation` constructor parameters, accepts the required `size` and optional named `offset`, `type`, `center`
