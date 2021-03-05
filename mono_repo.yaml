@@ -1,0 +1,6 @@
+github:
+
+self_validate: analyze
+
+merge_stages:
+- analyze

@@ -1,0 +1,24 @@
+name: uploadcare_client
+description: A dart library for working with Uploadcare REST API. File uploads, media processing, and adaptive delivery for web and mobile.
+version: 3.0.0
+homepage: https://github.com/KonstantinKai/uploadcare_client
+repository: https://github.com/KonstantinKai/uploadcare_client
+issue_tracker: https://github.com/KonstantinKai/uploadcare_client/issues
+author: KonstantinKai
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+
+dependencies:
+  http: 0.13.0
+  crypto: 3.0.0
+  meta: 1.3.0
+  mime: 1.0.0
+  http_parser: 4.0.0
+  equatable: 2.0.0
+
+dev_dependencies:
+  test: 1.16.5
+  dotenv: '3.0.0-nullsafety.0'
+  mockito: '5.0.0-nullsafety.7'
+  pedantic: 1.11.0
