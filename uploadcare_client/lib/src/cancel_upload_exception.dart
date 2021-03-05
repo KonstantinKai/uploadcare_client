@@ -1,11 +1,14 @@
 class CancelUploadException implements Exception {
-  final String? message;
+  final String message;
 
-  const CancelUploadException([this.message]);
+  const CancelUploadException([this.message = '']);
 
   @override
   String toString() {
-    if (message == null) return 'CancelUploadException';
+    if (message.isNotEmpty) {
+      return 'CancelUploadException';
+    }
+
     return 'CancelUploadException: $message';
   }
 }

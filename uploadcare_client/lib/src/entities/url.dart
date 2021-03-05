@@ -47,7 +47,7 @@ class UrlUploadStatusEntity extends Equatable {
 
     return UrlUploadStatusEntity(
       status: status,
-      errorMessage: json['error'],
+      errorMessage: json['error'] ?? '',
       fileInfo: status == UrlUploadStatusValue.Success
           ? FileInfoEntity.fromJson(json)
           : null,

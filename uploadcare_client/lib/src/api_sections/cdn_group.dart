@@ -18,7 +18,7 @@ class CdnGroup extends CndEntity with CdnPathBuilderMixin<GroupTransformation> {
   })  : pathTransformer = PathTransformer(id),
         super(id);
 
-  /// Retrive [CdnImage] from group
+  /// Retreive [CdnImage] from group
   /// Throws `RangeError` if index greater than [filesCount]
   CdnImage getImage(int index) {
     if (index > filesCount - 1) {

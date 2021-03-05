@@ -40,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _uploadcareClient = UploadcareClient.withSimpleAuth(
+    _uploadcareClient = UploadcareClient.withRegularAuth(
       publicKey: DotEnv.env['UPLOADCARE_PUBLIC_KEY'] ?? '',
       privateKey: DotEnv.env['UPLOADCARE_PRIVATE_KEY'] ?? '',
       apiVersion: 'v0.5',

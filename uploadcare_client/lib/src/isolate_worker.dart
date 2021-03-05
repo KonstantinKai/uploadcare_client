@@ -8,6 +8,7 @@ import 'concurrent_runner.dart';
 import 'entities/progress.dart';
 import 'options.dart';
 
+/// Replace with [TaskRunner] in future
 class IsolateWorker {
   static IsolateWorker? _instance;
 

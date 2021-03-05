@@ -1,12 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
 Future<List<SharedFile>> pickFiles(BuildContext context) async {
   final ImagePicker picker = new ImagePicker();
-  final file = await showModalBottomSheet<File>(
+  final file = await showModalBottomSheet<PickedFile>(
       context: context,
       builder: (context) {
         return Column(
@@ -52,7 +50,7 @@ Future<List<SharedFile>> pickFiles(BuildContext context) async {
         );
       });
 
-  if (file != null) return [SharedFile(file)];
+  if (file != null) return [SharedFile.fromUri(Uri.file(file.path))];
 
   return const [];
 }

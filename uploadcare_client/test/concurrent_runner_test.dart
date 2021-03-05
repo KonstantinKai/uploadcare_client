@@ -1,24 +1,20 @@
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:uploadcare_client/src/concurrent_runner.dart';
+import 'concurrent_runner_test.mocks.dart';
 
-class _TestConcurrentActions {
+class TestConcurrentActions {
   Future<int> action(int number) => Future.value(number);
 }
 
-class _TestConcurrentActionsMock extends Mock
-    implements _TestConcurrentActions {
-  @override
-  Future<int> action(int? number) =>
-      super.noSuchMethod(Invocation.method(#action, [number]));
-}
-
+@GenerateMocks([TestConcurrentActions])
 void main() {
   late List<ConcurrentAction<int?>> actions;
-  late _TestConcurrentActionsMock testObject;
+  late MockTestConcurrentActions testObject;
 
   setUpAll(() {
-    testObject = _TestConcurrentActionsMock();
+    testObject = MockTestConcurrentActions();
     actions = List.generate(
       10,
       (index) => () {

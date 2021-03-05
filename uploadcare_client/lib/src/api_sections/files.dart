@@ -173,7 +173,8 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
     final cdnFile = CdnFile(imageId);
 
     return resolveStreamedResponse(
-      createRequest('GET', buildUri('${cdnFile.url}detect_faces/')).send(),
+      createRequest('GET', buildUri('${cdnFile.url}detect_faces/'), false)
+          .send(),
     );
   }
 

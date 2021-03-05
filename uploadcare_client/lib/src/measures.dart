@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
+/// dart:ui [Size] replacement for non flutter project
 class Dimensions extends Equatable {
   final int width;
   final int height;
@@ -21,6 +22,7 @@ class Dimensions extends Equatable {
   List<Object?> get props => [width, height];
 }
 
+/// dart:ui [Offset] replacement for non flutter project
 class Offsets extends Equatable {
   final int dx;
   final int dy;
@@ -35,6 +37,7 @@ class Offsets extends Equatable {
   List<Object> get props => [dx, dy];
 }
 
+/// Provides uploadcare face shape
 class FaceRect extends Equatable {
   final Offsets topLeft;
   final Dimensions size;

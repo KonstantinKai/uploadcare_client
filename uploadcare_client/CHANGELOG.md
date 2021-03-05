@@ -1,6 +1,10 @@
-## [3.0.0] - Sat May 23 2020
+## [3.0.0] - Sat Mar 6 2021
 * **Breaking change with 2**
-  * Add ability to use library with dart
+  * Added `Null safety`, updated all dependencies
+  * Replaced `mime_type` package with `mime` that supports `Null safety`
+  * Package has been split into 2 libraries, `uploadcare_client` can be used in non-flutter environments, install `uploadcare_flutter` to use with flutter
+  * Added new entities `Dimensions, Offsets, FaceRect` to drop flutter dependency
+  * Made the main repository as a monorepo
 
 ## [2.1.0] - Sat May 23 2020
 * **Breaking change with 2.0.0**

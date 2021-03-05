@@ -1,5 +1,3 @@
-// @dart=2.9
-
 import 'package:test/test.dart';
 import 'package:uploadcare_client/src/measures.dart';
 import 'package:uploadcare_client/src/transformations/common.dart';

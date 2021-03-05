@@ -76,7 +76,9 @@ mixin TransportHelperMixin on OptionsShortcutMixin {
   Uri buildUri(String url, [Map<String, dynamic> params = const {}]) {
     final uri = Uri.parse(url);
 
-    if (params.isEmpty) return uri;
+    if (params.isEmpty) {
+      return uri;
+    }
 
     return uri.replace(queryParameters: params);
   }

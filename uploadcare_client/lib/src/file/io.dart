@@ -8,15 +8,15 @@ SharedFile createFileFromUri(Uri uri) => _IOFile(File.fromUri(uri));
 
 class _IOFile implements SharedFile {
   final File _file;
-  late final String? _name;
+  final String _name;
 
-  _IOFile(this._file);
+  _IOFile(this._file) : _name = Uri.parse(_file.path).pathSegments.last;
 
   @override
   String get mimeType => lookupMimeType(name.toLowerCase()) ?? '';
 
   @override
-  String get name => _name ??= Uri.parse(_file.path).pathSegments.last;
+  String get name => _name;
 
   @override
   Future<int> length() => _file.length();

@@ -2,6 +2,7 @@ import 'dart:async';
 
 typedef ConcurrentAction<T> = Future<T> Function();
 
+/// Replace with [TaskRunner] in future
 class ConcurrentRunner<T> {
   final int _limit;
   final List<ConcurrentAction<T>> actions;
@@ -13,7 +14,7 @@ class ConcurrentRunner<T> {
     List<ConcurrentAction<T>> actions,
   )   : _limit = limit > actions.length ? actions.length : limit,
         // ignore: unnecessary_this
-        this.actions = List.from(actions.reversed),;
+        this.actions = List.from(actions.reversed);
 
   Future<List<T>> run() {
     final completer = Completer<List<T>>();
