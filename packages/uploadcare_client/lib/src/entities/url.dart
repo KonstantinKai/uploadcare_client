@@ -19,27 +19,27 @@ enum UrlUploadStatusValue {
 /// Provides status data from `fromUrl` uploading
 class UrlUploadStatusEntity extends Equatable {
   /// Upload status
-  final UrlUploadStatusValue status;
+  final UrlUploadStatusValue? status;
 
   /// Error message if status equal [UrlUploadStatusValue.Error]
   final String errorMessage;
 
   /// File info if status equal [UrlUploadStatusValue.Success]
-  final FileInfoEntity fileInfo;
+  final FileInfoEntity? fileInfo;
 
   /// Progress info if status equal [UrlUploadStatusValue.Progress]
-  final ProgressEntity progress;
+  final ProgressEntity? progress;
 
   const UrlUploadStatusEntity({
+    this.errorMessage = '',
     this.status,
-    this.errorMessage,
     this.fileInfo,
     this.progress,
   });
 
   factory UrlUploadStatusEntity.fromJson(Map<String, dynamic> json) {
     final stringStatus = json['status'];
-    UrlUploadStatusValue status;
+    UrlUploadStatusValue? status;
 
     if (stringStatus == 'progress') status = UrlUploadStatusValue.Progress;
     if (stringStatus == 'error') status = UrlUploadStatusValue.Error;

@@ -30,10 +30,9 @@ abstract class GroupTransformation implements Transformation {}
 
 /// An abstraction to make transformation implementation with `enum` values
 abstract class EnumTransformation<T> extends Transformation {
-  final T value;
+  final T? value;
 
-  EnumTransformation(this.value)
-      : assert(value != null, 'Should be non-null enum value');
+  EnumTransformation(this.value);
 
   String get valueAsString;
 
@@ -45,8 +44,7 @@ abstract class EnumTransformation<T> extends Transformation {
 abstract class BooleanTransformation extends Transformation {
   final bool value;
 
-  BooleanTransformation(this.value)
-      : assert(value != null, 'Should be non-null boolean value');
+  BooleanTransformation(this.value);
 
   @override
   List<String> get params => [value ? 'yes' : 'no'];
@@ -56,8 +54,7 @@ abstract class BooleanTransformation extends Transformation {
 abstract class IntTransformation extends Transformation {
   final int value;
 
-  IntTransformation(this.value)
-      : assert(value != null, 'Should be an non-null integer');
+  IntTransformation(this.value);
 
   @override
   List<String> get params => [value.toString()];

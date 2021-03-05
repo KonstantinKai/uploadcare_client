@@ -14,7 +14,8 @@ class ArchiveTransformation extends EnumTransformation<ArchiveTValue>
   /// Output filename: you can either specify a name for your archive
   final String filename;
 
-  ArchiveTransformation(ArchiveTValue value, [this.filename]) : super(value);
+  ArchiveTransformation(ArchiveTValue value, [this.filename = ''])
+      : super(value);
 
   @override
   String get operation => 'archive';
@@ -22,7 +23,7 @@ class ArchiveTransformation extends EnumTransformation<ArchiveTValue>
   @override
   List<String> get params => [
         valueAsString,
-        if (filename?.isNotEmpty ?? false) filename,
+        if (filename.isNotEmpty) filename,
       ];
 
   @override

@@ -21,28 +21,28 @@ class FileInfoEntity extends Equatable {
   final int size;
 
   /// Date and time when a file was uploaded.
-  final DateTime datetimeUploaded;
+  final DateTime? datetimeUploaded;
 
   /// Date and time of the last store request, if any.
-  final DateTime datetimeStored;
+  final DateTime? datetimeStored;
 
   /// Date and time when a file was removed, if any.
-  final DateTime datetimeRemoved;
+  final DateTime? datetimeRemoved;
 
   /// Image meta (if a file is an image): Width and height Orientation Geolocation, from EXIF Original datetime, from EXIF Format Resolution, DPI
-  final Map<String, dynamic> imageInfo;
+  final Map<String, dynamic>? imageInfo;
 
   /// Object Recognition allows categorizing and tagging images.
   /// When using Uploadcare Object Recognition, you get a list of objects detected in your image paired with confidence levels for every object class.
-  final Map<String, double> recognitionInfo;
+  final Map<String, double>? recognitionInfo;
 
   const FileInfoEntity({
-    this.isStored,
-    this.id,
-    this.filename,
-    this.mimeType,
-    this.isReady,
-    this.size,
+    required this.isStored,
+    required this.id,
+    required this.filename,
+    required this.mimeType,
+    required this.isReady,
+    required this.size,
     this.datetimeUploaded,
     this.datetimeStored,
     this.datetimeRemoved,

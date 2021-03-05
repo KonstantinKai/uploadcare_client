@@ -13,20 +13,20 @@ class ListEntity<T> extends Equatable {
 
   const ListEntity({
     /// Next page URL.
-    this.nextUrl,
+    required this.nextUrl,
 
     /// Previous page URL.
-    this.previousUrl,
+    required this.previousUrl,
 
     /// A total number of objects of the queried type.
     /// For files, the queried type depends on the stored and removed query parameters.
-    this.total,
+    required this.total,
 
     /// Number of objects per page.
-    this.limit,
+    required this.limit,
 
     /// List of paginated objects. See the documentation for specific object structure, e.g., [ApiFiles.list] or [ApiGroups.list].
-    this.results,
+    required this.results,
   });
 
   factory ListEntity.fromJson(

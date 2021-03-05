@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 import '../entities/entities.dart';
 import '../mixins/mixins.dart';
 import '../options.dart';
@@ -11,8 +10,8 @@ class ApiGroups with OptionsShortcutMixin, TransportHelperMixin {
   final ClientOptions options;
 
   ApiGroups({
-    @required this.options,
-  }) : assert(options != null);
+    required this.options,
+  });
 
   /// Retrieve group by [id]
   Future<GroupInfoEntity> group(String id) async =>
@@ -55,9 +54,9 @@ class ApiGroups with OptionsShortcutMixin, TransportHelperMixin {
   /// [orderDirection] specifies the way groups are sorted in a returned list,
   Future<ListEntity<GroupInfoEntity>> list({
     int limit = 100,
-    int offset,
-    DateTime fromDate,
     OrderDirection orderDirection = OrderDirection.Asc,
+    int? offset,
+    DateTime? fromDate,
   }) async {
     assert(limit > 0 && limit <= 1000, 'Should be in 1..1000 range');
 
@@ -66,10 +65,9 @@ class ApiGroups with OptionsShortcutMixin, TransportHelperMixin {
         buildUri('$apiUrl/groups/', {
           'limit': limit.toString(),
           if (offset != null) 'offset': offset.toString(),
-          if (orderDirection != null)
-            'ordering': orderDirection == OrderDirection.Asc
-                ? 'datetime_created'
-                : '-datetime_created',
+          'ordering': orderDirection == OrderDirection.Asc
+              ? 'datetime_created'
+              : '-datetime_created',
           if (fromDate != null) 'from': fromDate.toIso8601String(),
         }));
 

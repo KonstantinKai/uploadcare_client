@@ -11,7 +11,7 @@ class GroupInfoEntity extends Equatable {
   final DateTime datetimeCreated;
 
   /// Date and time when files in a group were stored.
-  final DateTime datetimeStored;
+  final DateTime? datetimeStored;
 
   /// Number of files in a group.
   final int filesCount;
@@ -24,11 +24,11 @@ class GroupInfoEntity extends Equatable {
   final List<FileInfoEntity> files;
 
   const GroupInfoEntity({
-    this.datetimeCreated,
+    required this.datetimeCreated,
+    required this.files,
+    required this.filesCount,
+    required this.id,
     this.datetimeStored,
-    this.files,
-    this.filesCount,
-    this.id,
   });
 
   factory GroupInfoEntity.fromJson(Map<String, dynamic> json) =>
@@ -43,7 +43,7 @@ class GroupInfoEntity extends Equatable {
             ? (json['files'] as List)
                 .map((item) => FileInfoEntity.fromJson(item))
                 .toList()
-            : null,
+            : [],
       );
 
   /// @nodoc

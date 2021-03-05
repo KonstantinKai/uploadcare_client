@@ -81,6 +81,9 @@ mixin TransportHelperMixin on OptionsShortcutMixin {
   }
 
   @protected
-  String resolveStoreModeParam(bool storeMode) =>
-      storeMode != null ? storeMode ? '1' : '0' : 'auto';
+  String resolveStoreModeParam(bool? storeMode) => storeMode != null
+      ? storeMode
+          ? '1'
+          : '0'
+      : 'auto';
 }

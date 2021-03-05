@@ -1,5 +1,4 @@
 import 'package:http/http.dart';
-import 'package:meta/meta.dart';
 
 /// To authenticate your account, every request made to https://api.uploadcare.com/ MUST be signed.
 /// There are two available auth schemes: a simple one with intuitive auth-param and a more sophisticated and secure one that can be used for Signed Requests.
@@ -13,11 +12,10 @@ abstract class AuthScheme {
   final String apiVersion;
 
   AuthScheme({
-    @required this.publicKey,
-    @required this.apiVersion,
-    this.privateKey,
-  })  : assert(publicKey != null && apiVersion != null),
-        acceptHeader =
+    required this.publicKey,
+    required this.apiVersion,
+    this.privateKey = '',
+  }) : acceptHeader =
             MapEntry('Accept', 'application/vnd.uploadcare-$apiVersion+json');
 
   void authorizeRequest(BaseRequest request);

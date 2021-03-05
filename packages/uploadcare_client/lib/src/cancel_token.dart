@@ -18,13 +18,13 @@
 /// }
 /// ```
 class CancelToken {
-  CancelToken([this.cancelMessage]);
+  CancelToken([this.cancelMessage = '']);
 
   /// Optional exception message
   final String cancelMessage;
 
   /// Internal property to handle cancel message **DON'T USE IT IN YOUR CODE**
-  void Function() onCancel;
+  void Function()? onCancel;
 
   bool _isCanceled = false;
 
@@ -39,7 +39,7 @@ class CancelToken {
 
     _isCanceled = true;
     if (onCancel != null) {
-      onCancel();
+      onCancel!();
     }
   }
 }

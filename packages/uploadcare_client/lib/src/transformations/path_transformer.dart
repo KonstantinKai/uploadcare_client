@@ -10,7 +10,7 @@ class PathTransformer<T extends Transformation> {
 
   PathTransformer(
     this.id, {
-    List<T> transformations,
+    List<T>? transformations,
   }) : _transformations = transformations ?? [];
 
   String get path => _transformations.fold<String>(

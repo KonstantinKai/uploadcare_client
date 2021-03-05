@@ -2,8 +2,8 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 class Dimensions extends Equatable {
-  final int width;
-  final int height;
+  final int? width;
+  final int? height;
 
   const Dimensions(this.width, this.height)
       : assert(
@@ -22,12 +22,12 @@ class Dimensions extends Equatable {
   /// @nodoc
   @protected
   @override
-  List<Object> get props => [width, height];
+  List<Object?> get props => [width, height];
 }
 
 class Offsets extends Equatable {
-  final int dx;
-  final int dy;
+  final int? dx;
+  final int? dy;
 
   const Offsets(this.dx, this.dy)
       : assert(
@@ -40,12 +40,12 @@ class Offsets extends Equatable {
   /// @nodoc
   @protected
   @override
-  List<Object> get props => [dx, dy];
+  List<Object?> get props => [dx, dy];
 }
 
 class FaceRect extends Equatable {
-  final Offsets topLeft;
-  final Dimensions size;
+  final Offsets? topLeft;
+  final Dimensions? size;
 
   const FaceRect(this.topLeft, this.size)
       : assert(
@@ -54,7 +54,7 @@ class FaceRect extends Equatable {
         );
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
         topLeft,
         size,
       ];

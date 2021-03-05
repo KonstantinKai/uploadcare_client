@@ -18,7 +18,7 @@ class ConcurrentRunner<T> {
   Future<List<T>> run() {
     final completer = Completer<List<T>>();
 
-    _run(completer, List(actions.length));
+    _run(completer, List.filled(actions.length, null));
 
     return completer.future;
   }

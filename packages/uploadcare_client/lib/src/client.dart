@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 import 'api_sections/api_sections.dart';
 import 'authorization/regular.dart';
 import 'authorization/simple.dart';
@@ -15,17 +14,17 @@ class UploadcareClient {
   final ApiGroups groups;
 
   UploadcareClient({
-    @required this.options,
-  })  : upload = ApiUpload(options: options),
+    required this.options,
+  })   : upload = ApiUpload(options: options),
         files = ApiFiles(options: options),
         videoEncoding = ApiVideoEncoding(options: options),
         groups = ApiGroups(options: options);
 
   /// With omitted [privateKey], only upload API is available
   UploadcareClient.withSimpleAuth({
-    @required String publicKey,
-    @required String apiVersion,
-    String privateKey,
+    required String publicKey,
+    required String apiVersion,
+    String? privateKey,
   }) : this(
           options: ClientOptions(
             authorizationScheme: AuthSchemeSimple(
@@ -38,9 +37,9 @@ class UploadcareClient {
 
   /// With omitted [privateKey], only upload API is available
   UploadcareClient.withRegularAuth({
-    @required String publicKey,
-    @required String apiVersion,
-    String privateKey,
+    required String publicKey,
+    required String apiVersion,
+    String? privateKey,
   }) : this(
           options: ClientOptions(
             authorizationScheme: AuthSchemeRegular(

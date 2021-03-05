@@ -35,9 +35,9 @@ class AuthSchemeRegular extends AuthScheme {
   static const String _name = 'Uploadcare';
 
   AuthSchemeRegular({
-    @required String publicKey,
-    @required String apiVersion,
-    String privateKey,
+    required String publicKey,
+    required String apiVersion,
+    required String privateKey,
   }) : super(
           apiVersion: apiVersion,
           publicKey: publicKey,
@@ -73,7 +73,9 @@ class AuthSchemeRegular extends AuthScheme {
   String _buildSignature(BaseRequest request, String isoDate) {
     final fields = request is MultipartRequest
         ? jsonEncode(request.fields)
-        : request is Request ? request.body : '';
+        : request is Request
+            ? request.body
+            : '';
 
     final String signString = [
       request.method,

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:meta/meta.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:mime_type/mime_type.dart';
 import '../cancel_token.dart';
 import '../cancel_upload_exception.dart';
@@ -43,21 +43,20 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   final ClientOptions options;
 
   ApiUpload({
-    @required this.options,
-  }) : assert(options != null);
+    required this.options,
+  });
 
   /// Upload file [resource] according to type
   /// if `String` makes [fromUrl] upload if it is http/https url or try retrieve [SharedFile] if path is absolute, otherwise make an `SharedFile` request according to size
-  Future<String> auto(
+  Future<String?> auto(
     Object resource, {
-    bool storeMode,
-    ProgressListener onProgress,
-    CancelToken cancelToken,
     bool runInIsolate = false,
+    bool? storeMode,
+    ProgressListener? onProgress,
+    CancelToken? cancelToken,
   }) async {
     assert(resource is String || resource is SharedFile,
         'The resource should be one of File or URL and File path');
-    assert(runInIsolate != null);
 
     if (runInIsolate) {
       return _runInIsolate(
@@ -69,7 +68,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     }
 
     if (resource is String && resource.isNotEmpty) {
-      Uri uri = Uri.tryParse(resource);
+      Uri? uri = Uri.tryParse(resource);
 
       if (uri != null) {
         if (['http', 'https'].contains(uri.scheme)) {
@@ -119,11 +118,10 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   /// [cancelToken] make cancelable request
   Future<String> base(
     SharedFile file, {
-    bool storeMode,
-    ProgressListener onProgress,
-    CancelToken cancelToken,
+    bool? storeMode,
+    ProgressListener? onProgress,
+    CancelToken? cancelToken,
   }) async {
-    assert(file != null, 'The file cannot be null');
     final filename = file.name;
     final filesize = await file.length();
 
@@ -185,12 +183,11 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   /// [cancelToken] make cancelable request
   Future<String> multipart(
     SharedFile file, {
-    bool storeMode,
-    ProgressListener onProgress,
-    int maxConcurrentChunkRequests,
-    CancelToken cancelToken,
+    bool? storeMode,
+    ProgressListener? onProgress,
+    CancelToken? cancelToken,
+    int? maxConcurrentChunkRequests,
   }) async {
-    assert(file != null, 'The file cannot be null');
     maxConcurrentChunkRequests ??= options.multipartMaxConcurrentChunkRequests;
 
     final filename = file.name;
@@ -273,7 +270,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
             cancelMessage: cancelToken.cancelMessage,
           );
         }
-        return ConcurrentRunner(maxConcurrentChunkRequests, actions).run();
+        return ConcurrentRunner(maxConcurrentChunkRequests!, actions).run();
       }).then((_) {
         final finishTransaction = createMultipartRequest(
             'POST', buildUri('$uploadUrl/multipart/complete/'), false)
@@ -296,11 +293,11 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   }
 
   /// Make upload to `/fromUrl` endpoint
-  Future<String> fromUrl(
+  Future<String?> fromUrl(
     String url, {
-    bool storeMode,
-    ProgressListener onProgress,
     Duration checkInterval = const Duration(seconds: 1),
+    bool? storeMode,
+    ProgressListener? onProgress,
   }) async {
     final request = createMultipartRequest(
       'POST',
@@ -316,7 +313,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     final token =
         (await resolveStreamedResponse(request.send()))['token'] as String;
 
-    String fileId;
+    String? fileId;
 
     await for (UrlUploadStatusEntity response
         in _urlUploadStatusAsStream(token, checkInterval)) {
@@ -329,7 +326,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
       }
 
       if (response.progress != null && onProgress != null) {
-        onProgress(response.progress);
+        onProgress(response.progress!);
       }
     }
 
@@ -359,8 +356,9 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     controller.add(response);
 
     if (response.status == UrlUploadStatusValue.Progress) {
-      return Timer(checkInterval,
+      Timer(checkInterval,
           () => _statusTimerCallback(token, checkInterval, controller));
+      return;
     }
 
     // ignore: unawaited_futures
@@ -395,9 +393,9 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   }
 
   void Function() _completeWithError({
-    @required Completer<String> completer,
-    @required void Function() action,
-    String cancelMessage,
+    required Completer<String> completer,
+    required void Function() action,
+    String cancelMessage = '',
   }) =>
       () {
         if (!completer.isCompleted) {
@@ -408,9 +406,9 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
 
   Future<String> _runInIsolate(
     Object resource, {
-    bool storeMode,
-    ProgressListener onProgress,
-    CancelToken cancelToken,
+    bool? storeMode,
+    ProgressListener? onProgress,
+    CancelToken? cancelToken,
   }) {
     final poolSize = options.maxIsolatePoolSize;
     final isolateWorker = IsolateWorker(poolSize);

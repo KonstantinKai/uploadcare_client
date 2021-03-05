@@ -166,8 +166,7 @@ enum StretchTValue {
 class StretchTransformation extends EnumTransformation<StretchTValue>
     implements ImageTransformation {
   StretchTransformation([StretchTValue value = StretchTValue.On])
-      : assert(value != null),
-        super(value);
+      : super(value);
 
   @override
   String get valueAsString {
@@ -191,8 +190,7 @@ class SetFillTransformation extends Transformation
   /// fill color
   final String hexColor;
 
-  SetFillTransformation([this.hexColor = '#ffffff'])
-      : assert(hexColor != null, 'Should be non-null color value');
+  SetFillTransformation([this.hexColor = '#ffffff']);
 
   @override
   String get operation => 'setfill';
@@ -244,17 +242,17 @@ class ScaleCropTransformation extends ResizeTransformation
   /// The algorithm switches to the next method only if no regions were found by the previous one.
   /// If no regions of interest were found, the [offset] setting is used to crop an image.
   @override
-  final ScaleCropTypeTValue value;
+  final ScaleCropTypeTValue? value;
 
   /// setting is used to crop an image. When no [offset] are specified, images get center-cropped
-  final Offsets offset;
+  final Offsets? offset;
 
   /// centering the crop focus.
   final bool center;
 
   ScaleCropTransformation(
     Dimensions size, {
-    ScaleCropTypeTValue type,
+    ScaleCropTypeTValue? type,
     this.offset,
     this.center = false,
   })  : value = type,
@@ -268,7 +266,7 @@ class ScaleCropTransformation extends ResizeTransformation
         ...super.params,
         if (value != null) valueAsString,
         if (offset != null)
-          '${offset.dx ?? 0},${offset.dy ?? 0}'
+          '${offset!.dx ?? 0},${offset!.dy ?? 0}'
         else if (center)
           'center',
       ];
@@ -345,10 +343,10 @@ class ImageResizeTransformation extends ResizeTransformation
 
 class OverlayCoordinates {
   final Offsets offset;
-  final String predefined;
+  final String? predefined;
 
   const OverlayCoordinates._({
-    this.offset,
+    this.offset = Offsets.zero,
     this.predefined,
   });
 
@@ -387,35 +385,34 @@ class OverlayTransformation extends Transformation
   final String imageId;
 
   /// Linear relative dimensions of the overlay image. The aspect ratio of an overlay is preserved.
-  final Dimensions dimensions;
+  final Dimensions? dimensions;
 
   /// Relative position of the overlay over your input. By default, an overlay is positioned in the top-left corner of an input.
   /// Coordinates represent an offset along each of the axes in either pixel or percent format.
   /// In general, the coordinate system is similar to the CSS background-position. See [OverlayCoordinates].
-  final OverlayCoordinates coordinates;
+  final OverlayCoordinates? coordinates;
 
   /// Controls the opacity of the overlay in percent format.
-  final int opacity;
+  final int? opacity;
 
   OverlayTransformation(
     this.imageId, {
     this.dimensions,
     this.coordinates,
     this.opacity,
-  })  : assert(imageId != null),
-        assert(dimensions != null
+  })  : assert(dimensions != null
             ? dimensions.width != null && dimensions.height != null
             : true),
         assert(coordinates != null ? dimensions != null : true,
-            'dimensions should be provided'),
+            'dimensions should be provided if you are using `coordinates`'),
         assert(
             opacity != null
-                ? dimensions.width != null &&
+                ? dimensions != null &&
                     coordinates != null &&
                     opacity >= 0 &&
                     opacity <= 100
                 : true,
-            'Should be in 0..100 range');
+            '`opacity` should be in 0..100 range');
 
   @override
   String get operation => 'overlay';
@@ -423,10 +420,9 @@ class OverlayTransformation extends Transformation
   @override
   List<String> get params => [
         imageId,
-        if (dimensions != null) '${dimensions.width}px${dimensions.height}p',
-        if (coordinates != null && dimensions != null) coordinates.toString(),
-        if (opacity != null && coordinates != null && dimensions != null)
-          '${opacity}p',
+        if (dimensions != null) '${dimensions!.width}px${dimensions!.height}p',
+        if (coordinates != null) coordinates.toString(),
+        if (opacity != null) '${opacity}p',
       ];
 
   @override

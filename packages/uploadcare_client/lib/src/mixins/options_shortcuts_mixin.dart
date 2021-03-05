@@ -8,7 +8,7 @@ mixin OptionsShortcutMixin {
   @protected
   String get publicKey => options.authorizationScheme.publicKey;
   @protected
-  String get privateKey => options.authorizationScheme.privateKey;
+  String? get privateKey => options.authorizationScheme.privateKey;
 
   @protected
   String get uploadUrl => options.uploadUrl;

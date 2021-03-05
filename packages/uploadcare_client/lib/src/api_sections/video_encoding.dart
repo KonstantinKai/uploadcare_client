@@ -15,8 +15,8 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
   final ClientOptions options;
 
   ApiVideoEncoding({
-    @required this.options,
-  }) : assert(options != null);
+    required this.options,
+  });
 
   /// Run a processing job
   ///
@@ -46,7 +46,7 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
   /// ```
   Future<VideoEncodingConvertEntity> process(
     Map<String, List<VideoTransformation>> transformers, {
-    bool storeMode,
+    bool? storeMode,
   }) async {
     final request = createRequest('POST', buildUri('$apiUrl/convert/video/'))
       ..body = jsonEncode({
@@ -99,8 +99,9 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
       VideoEncodingJobStatusValue.Processing,
       VideoEncodingJobStatusValue.Pending
     ].contains(response.status)) {
-      return Timer(checkInterval,
+      Timer(checkInterval,
           () => _statusTimerCallback(token, checkInterval, controller));
+      return;
     }
 
     // ignore: unawaited_futures

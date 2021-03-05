@@ -60,12 +60,12 @@ enum VideoResizeTValue {
 class VideoResizeTransformation extends ResizeTransformation
     implements EnumTransformation<VideoResizeTValue>, VideoTransformation {
   @override
-  final VideoResizeTValue value;
+  final VideoResizeTValue? value;
 
   VideoResizeTransformation(Dimensions size, [this.value])
-      : assert(size.width != null ? size.width % 4 == 0 : true,
+      : assert(size.width != null ? size.width! % 4 == 0 : true,
             'Should be a non-zero integer divisible by 4'),
-        assert(size.height != null ? size.height % 4 == 0 : true,
+        assert(size.height != null ? size.height! % 4 == 0 : true,
             'Should be a non-zero integer divisible by 4'),
         super(size);
 
@@ -113,10 +113,10 @@ class CutTransformation extends Transformation implements VideoTransformation {
   final Duration start;
 
   /// Defines the duration of that fragment.
-  final Duration length;
+  final Duration? length;
 
   /// Includes all the duration of your input starting at [start].
-  final bool end;
+  final bool? end;
 
   CutTransformation(
     this.start, {
@@ -126,7 +126,11 @@ class CutTransformation extends Transformation implements VideoTransformation {
 
   String _digitsWithLeadingZero(int n, [bool isHour = false]) {
     if (isHour) {
-      return n < 10 ? '00$n' : n < 100 ? '0$n' : '$n';
+      return n < 10
+          ? '00$n'
+          : n < 100
+              ? '0$n'
+              : '$n';
     }
 
     return n >= 10 ? '$n' : '0$n';
@@ -146,8 +150,8 @@ class CutTransformation extends Transformation implements VideoTransformation {
   @override
   List<String> get params => [
         _formatDuration(start),
-        if (length != null) _formatDuration(length),
-        if (length == null && end) 'end',
+        if (length != null) _formatDuration(length!),
+        if (length == null && end != null && end!) 'end',
       ];
 }
 

@@ -58,15 +58,18 @@ class ResizeTransformation extends Transformation {
   ResizeTransformation(this.size)
       : assert(
           size.width != null
-              ? size.width <= 5000
-              : true && size.height != null ? size.height <= 5000 : true,
+              ? size.width! <= 5000
+              : true && size.height != null
+                  ? size.height! <= 5000
+                  : true,
           'Max transform dimension is 5000x5000 in jpeg format',
         );
 
   String get _width =>
-      size.width != null && size.width.isFinite ? size.width.toString() : '';
-  String get _height =>
-      size.height != null && size.height.isFinite ? size.height.toString() : '';
+      size.width != null && size.width!.isFinite ? size.width.toString() : '';
+  String get _height => size.height != null && size.height!.isFinite
+      ? size.height.toString()
+      : '';
 
   @override
   String get operation => 'resize';

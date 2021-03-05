@@ -7,9 +7,9 @@ class AuthSchemeSimple extends AuthScheme {
   static const String _name = 'Uploadcare.Simple';
 
   AuthSchemeSimple({
-    @required String publicKey,
-    @required String apiVersion,
-    String privateKey,
+    required String publicKey,
+    required String apiVersion,
+    String privateKey = '',
   }) : super(
           apiVersion: apiVersion,
           publicKey: publicKey,

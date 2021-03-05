@@ -12,9 +12,9 @@ class FacesEntity extends Equatable {
   final List<FaceRect> faces;
 
   const FacesEntity({
-    @required this.originalSize,
+    required this.originalSize,
     this.faces = const [],
-  }) : assert(originalSize != null);
+  });
 
   factory FacesEntity.fromJson(Map<String, dynamic> json) => FacesEntity(
         originalSize: Dimensions(

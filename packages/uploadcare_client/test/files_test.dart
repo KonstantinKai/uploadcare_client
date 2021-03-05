@@ -8,7 +8,7 @@ import 'package:uploadcare_client/src/file/file.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
 void main() {
-  UploadcareClient client;
+  late UploadcareClient client;
 
   setUpAll(() {
     load();

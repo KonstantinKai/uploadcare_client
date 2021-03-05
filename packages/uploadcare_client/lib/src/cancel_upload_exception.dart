@@ -1,5 +1,5 @@
 class CancelUploadException implements Exception {
-  final String message;
+  final String? message;
 
   const CancelUploadException([this.message]);
 

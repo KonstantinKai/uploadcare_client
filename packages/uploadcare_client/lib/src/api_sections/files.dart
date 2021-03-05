@@ -10,8 +10,8 @@ import '../options.dart';
 /// Provides API for working with files
 class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   ApiFiles({
-    @required this.options,
-  }) : assert(options != null);
+    required this.options,
+  });
 
   @override
   final ClientOptions options;
@@ -69,7 +69,7 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
     bool stored = true,
     bool removed = false,
     int limit = 100,
-    int offset,
+    int? offset,
     FilesOrdering ordering =
         const FilesOrdering(FilesFilterValue.DatetimeUploaded),
     dynamic fromFilter,
@@ -102,8 +102,8 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
           buildUri('$apiUrl/files/', {
             'limit': limit.toString(),
             'ordering': ordering.toString(),
-            if (stored != null) 'stored': stored.toString(),
-            if (removed != null) 'removed': removed.toString(),
+            'stored': stored.toString(),
+            'removed': removed.toString(),
             if (offset != null) 'offset': offset.toString(),
             if (fromFilter != null) 'from': fromFilter,
             if (includeRecognitionInfo) 'add_fields': 'rekognition_info',
@@ -178,9 +178,10 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   }
 
   void _assertRecongtionApiWithApiVersion(bool includeRecognitionInfo) {
-    assert(includeRecognitionInfo
-        ? double.tryParse(options.authorizationScheme.apiVersion.substring(1)) >
-            0.5
-        : true);
+    final double version =
+        double.tryParse(options.authorizationScheme.apiVersion.substring(1)) ??
+            0.5;
+
+    assert(includeRecognitionInfo ? version > 0.5 : true);
   }
 }

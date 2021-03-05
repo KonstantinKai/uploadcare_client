@@ -168,15 +168,11 @@ void main() {
           equals('stretch/fill'));
       expect(StretchTransformation(StretchTValue.Off).toString(),
           equals('stretch/off'));
-      expect(() => StretchTransformation(null),
-          throwsA(TypeMatcher<AssertionError>()));
     });
 
     test('SetFillTransformation', () {
       testDelimiter(SetFillTransformation());
       expect(SetFillTransformation().toString(), equals('setfill/ffffff'));
-      expect(() => SetFillTransformation(null),
-          throwsA(TypeMatcher<AssertionError>()));
     });
 
     test('ScaleCropTransformation', () {

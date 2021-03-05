@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:isolate';
-import 'package:meta/meta.dart';
 import 'api_sections/upload.dart';
 import 'cancel_token.dart';
 import 'cancel_upload_exception.dart';
@@ -10,7 +9,7 @@ import 'entities/progress.dart';
 import 'options.dart';
 
 class IsolateWorker {
-  static IsolateWorker _instance;
+  static IsolateWorker? _instance;
 
   IsolateWorker._(this.maxPoolSize) : assert(maxPoolSize > 0);
 
@@ -23,11 +22,11 @@ class IsolateWorker {
   int _inProgress = 0;
 
   Future<String> upload({
-    @required ClientOptions options,
-    @required Object resource,
-    bool storeMode,
-    ProgressListener onProgress,
-    CancelToken cancelToken,
+    required ClientOptions options,
+    required Object resource,
+    bool? storeMode,
+    ProgressListener? onProgress,
+    CancelToken? cancelToken,
   }) {
     final completer = Completer<String>();
 
@@ -60,23 +59,24 @@ class IsolateWorker {
   }
 
   Future<String> _uploadInIsolate({
-    @required ClientOptions options,
-    @required Object resource,
-    bool storeMode,
-    ProgressListener onProgress,
-    CancelToken cancelToken,
+    required ClientOptions options,
+    required Object resource,
+    bool? storeMode,
+    ProgressListener? onProgress,
+    CancelToken? cancelToken,
   }) async {
     final resultPort = ReceivePort();
     final errorPort = ReceivePort();
+    final cancellable = cancelToken != null;
 
     final Isolate isolate = await Isolate.spawn<_UploadConfiguration>(
       _upload,
       _UploadConfiguration(
         options: options,
-        storeMode: storeMode,
         resultSendPort: resultPort.sendPort,
-        cancellable: cancelToken != null,
+        cancellable: cancellable,
         resource: resource,
+        storeMode: storeMode,
       ),
       errorsAreFatal: true,
       onExit: resultPort.sendPort,
@@ -89,9 +89,10 @@ class IsolateWorker {
       assert(errorData is List<dynamic>);
       assert(errorData.length == 2);
 
-      final Exception exception = errorData[0] == 'CancelUploadException'
-          ? CancelUploadException(cancelToken.cancelMessage)
-          : Exception(errorData[0]);
+      final Exception exception =
+          errorData[0] == 'CancelUploadException' && cancellable
+              ? CancelUploadException(cancelToken!.cancelMessage)
+              : Exception(errorData[0]);
       final StackTrace stack = StackTrace.fromString(errorData[1]);
 
       if (result.isCompleted) {
@@ -128,31 +129,31 @@ class IsolateWorker {
 
 class _UploadConfiguration {
   const _UploadConfiguration({
-    this.options,
-    this.resultSendPort,
-    this.resource,
+    required this.options,
+    required this.resultSendPort,
+    required this.resource,
+    required this.cancellable,
     this.storeMode,
-    this.cancellable,
   });
 
   final ClientOptions options;
   final SendPort resultSendPort;
   final Object resource;
-  final bool storeMode;
   final bool cancellable;
+  final bool? storeMode;
 }
 
 Future<void> _upload(_UploadConfiguration configuration) async {
   final uploader = ApiUpload(options: configuration.options);
 
-  CancelToken cancelToken;
-  ReceivePort cancelRecievePort;
+  CancelToken? cancelToken;
+  ReceivePort? cancelRecievePort;
 
   if (configuration.cancellable) {
     cancelToken = CancelToken();
     cancelRecievePort = ReceivePort()
       ..listen((message) {
-        if (message is CancelUploadException) cancelToken.cancel();
+        if (message is CancelUploadException) cancelToken!.cancel();
       });
     configuration.resultSendPort.send(cancelRecievePort.sendPort);
   }

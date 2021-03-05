@@ -17,7 +17,7 @@ class ProgressEntity extends Equatable {
   /// returns 0..1 double
   double get value => double.parse((uploaded / total).toStringAsFixed(2));
 
-  ProgressEntity copyWith({int uploaded, int total}) =>
+  ProgressEntity copyWith({int? uploaded, int? total}) =>
       ProgressEntity(uploaded ?? this.uploaded, total ?? this.total);
 
   /// @nodoc
