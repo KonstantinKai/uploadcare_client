@@ -8,10 +8,11 @@ import '../cancel_upload_exception.dart';
 import '../concurrent_runner.dart';
 import '../entities/entities.dart';
 import '../file/file.dart';
-import '../isolate_worker.dart';
 import '../mixins/mixins.dart';
 import '../options.dart';
 import '../transport.dart';
+import '../isolate/isolate_worker_stub.dart'
+    if (dart.library.io) '../isolate/isolate_worker.dart';
 
 const int _kChunkSize = 5242880;
 const int _kRecomendedMaxFilesizeForBaseUpload = 10000000;

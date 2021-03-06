@@ -143,6 +143,7 @@ class _UploadScreenState extends State<UploadScreen> {
           cancelToken: _cancelToken,
           storeMode: false,
           onProgress: (progress) => _progressController.add(progress),
+          runInIsolate: true,
         );
         _fileInfoEntity = await widget.uploadcareClient.files.file(_fileId);
         _uploadState = UploadState.Uploaded;

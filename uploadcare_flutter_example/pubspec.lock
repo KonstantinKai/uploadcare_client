@@ -248,17 +248,17 @@ packages:
   uploadcare_client:
     dependency: transitive
     description:
-      name: uploadcare_client
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0"
+      path: "../uploadcare_client"
+      relative: true
+    source: path
+    version: "3.0.1"
   uploadcare_flutter:
     dependency: "direct main"
     description:
       path: "../uploadcare_flutter"
       relative: true
     source: path
-    version: "1.0.0"
+    version: "1.0.1"
   url_launcher:
     dependency: "direct main"
     description:

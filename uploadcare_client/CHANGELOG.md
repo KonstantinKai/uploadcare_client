@@ -1,3 +1,6 @@
+## [3.0.2] - Sat Mar 6 2021
+* Dropped 'dart:isolate' import for unsupported platforms
+
 ## [3.0.1] - Sat Mar 6 2021
 * Removed all unnecessary links to HTTP headers from `dart:io`
 
