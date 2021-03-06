@@ -1,6 +1,7 @@
 import 'package:flutter/rendering.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
+/// Extension for [FacesEntity]
 extension FacesEntityExtension on FacesEntity {
   /// Retrieve rectangles relative to the specific size
   List<Rect> getRelativeFaces(Size size) => faces.map((face) {

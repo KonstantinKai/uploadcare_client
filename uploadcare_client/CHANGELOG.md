@@ -1,13 +1,13 @@
 ## [3.0.0] - Sat Mar 6 2021
-* **Breaking change with 2**
+* **Breaking changes with 2.x.x**
   * Added `Null safety`, updated all dependencies
-  * Replaced `mime_type` package with `mime` that supports `Null safety`
   * Package has been split into 2 libraries, `uploadcare_client` can be used in non-flutter environments, install `uploadcare_flutter` to use with flutter
-  * Added new entities `Dimensions, Offsets, FaceRect` to drop flutter dependency
-  * Made the main repository as a monorepo
+* Replaced `mime_type` package with `mime` that supports `Null safety`
+* Added new entities `Dimensions, Offsets, FaceRect` to drop flutter dependency
+* Made the main repository as a monorepo
 
 ## [2.1.0] - Sat May 23 2020
-* **Breaking change with 2.0.0**
+* **Breaking changes with 2.0.0**
   * Changed `ScaleCropTransformation` constructor parameters, accepts the required `size` and optional named `offset`, `type`, `center`
 * Added `ScaleCropTypeTValue` as `type`, `Offset` as `offset`, `bool` as `center` parameters to the `ScaleCropTransformation` class
 * Added `QualityTValue.Smart` value to the `QualityTransformation` class, but you can use it only with `ImageTransformation`

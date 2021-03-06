@@ -1,13 +1,15 @@
-![alt flutter uploadcare client](https://drive.google.com/uc?export=download&id=1aUeEPWSFwzPVeMn6NGRf7B4x-bPKOkHM)
+## Uploadcare Client
 
-## Flutter Uploadcare Client
+**!!! IMPORTANT !!!**
+
+Release of `uploadcare_client@^3.0.0` has breaking changes. `Null safety` was introduced. The library has been split into 2 packages, this package can be used in non-flutter environments (web, server, .etc) and for use with flutter please install only `uploadcare_flutter@^1.0.0` which has this package as a dependency, see. [see](https://pub.dev/packages/uploadcare_flutter).
 
 ### Limitations
-* It's impossible to use `AuthSchemeRegular` auth scheme in `flutter_web` with fetch API because `Date` request header is forbidden for XMLRequest https://fetch.spec.whatwg.org/#forbidden-header-name.
-* It's impossible to run the upload process in the separate isolate.
+* It's impossible to use `AuthSchemeRegular` auth scheme on the `web` with fetch API because `Date` request header is forbidden for XMLRequest https://fetch.spec.whatwg.org/#forbidden-header-name.
+* It's impossible to run the upload process in the separate isolate on the `web` environment.
 
 ## Introduction
-Uploadcare is a complete file handling platform that helps you ship products faster and focus on your business goals, not files. With Uploadcare, you can build an infrastructure, optimize content, conversions, load times, traffic, and user experience. [Read more...](https://uploadcare.com/docs/)
+Uploadcare is a complete file handling platform that helps you ship products faster and focus on your business goals, not files. With Uploadcare, you can build infrastructure, optimize content, conversions, load times, traffic, and user experience. [Read more...](https://uploadcare.com/docs/)
 
 #### Implemented features:
 - authorization
@@ -27,6 +29,7 @@ Uploadcare is a complete file handling platform that helps you ship products fas
   - store multiple files
   - [gif to video](#gif-to-video), [read more](https://uploadcare.com/docs/image_transformations/gif2video/)
   - [face recognition](#face-recognition), [read more](https://uploadcare.com/docs/image_transformations/face_recognition/)
+  - [object recognition](#object-recognition), [read more](https://uploadcare.com/docs/intelligence/object-recognition/)
 - groups API
   - get one group
   - get list of groups
@@ -39,19 +42,11 @@ Uploadcare is a complete file handling platform that helps you ship products fas
   - image transformations, [read more](https://uploadcare.com/docs/api_reference/cdn/)
   - group transformations, [read more](https://uploadcare.com/docs/delivery/group_api/)
   - video transformations
-- Flutter (mobile/web)
-  - [UploadcareImageProvider](#using-with-widgets) (**since `2.0.0`**)
 
 #### Roadmap:
+- code improuvements
+- new transformation api
 - document conversion
-
-![alt flutter uploadcare example](https://drive.google.com/uc?export=download&id=1nj2rLUgbanzq-4CfJiRSkvMA_qOi10-s)
-
-![alt flutter uploadcare face rocognition example](https://drive.google.com/uc?export=download&id=1HPIyuq6G_1MI3XN1ll0fHgGnk-J4bSi1)
-
-![alt flutter uploadcare web upload video](https://drive.google.com/uc?export=download&id=188FQUmaf5u18j17iMaMNJ-8CeI2-6m_H)
-
-![alt flutter uploadcare web upload image](https://drive.google.com/uc?export=download&id=1uSYJ4MdBtVmvM4iWsOmyS7mFvyv7818L)
 
 ## Example:
 **Note:** you can omit `privateKey`, but in this case only Upload API will be available. (CDN API also will be available).
@@ -103,23 +98,6 @@ final upload = ApiUpload(options: options);
 final fileId = await upload.base(SharedFile(File('...some/file')));
 // ...etc.
 ```
-## Using with widgets
-The library provides `UploadcareImageProvider` for more effective use in the widget ecosystem, how to use image provider:
-```dart
-Image(
-  image: UploadcareImageProvider(
-    'uploadcare-image-file-uuid',
-    // optional, apply transformations to the image
-    transformations: [
-      BlurTransformation(50),
-      GrayscaleTransformation(),
-      InvertTransformation(),
-      ImageResizeTransformation(Size.square(58))
-    ],
-    // rest image props...
-  ),
-)
-```
 
 ## Cancellation
 You can cancel the upload process by using `CancelToken`, each method from the upload section (`auto, base, multipart`) accepts `cancelToken` property, which you can use to cancel the upload process. This feature works only with files upload because Uploadcare isn't supporting interrupt upload by URL
@@ -145,54 +123,6 @@ try {
 // somewhere in code
 cancelToken.cancel();
 
-```
-## Face Recognition
-```dart
-...
-final files = ApiFiles(options: options);
-
-final FacesEntity entity = await files.detectFacesWithOriginalImageSize('image-id');
-...
-RenderBox renderBox = context.findRenderObject();
-
-return FractionallySizedBox(
-  widthFactor: 1,
-  heightFactor: 1,
-  child: Stack(
-    children: <Widget>[
-      Positioned.fill(
-        child: Image(
-          image: UploadcareImageProvider(widget.imageId),
-          fit: BoxFit.contain,
-          alignment: Alignment.topCenter,
-        ),
-      ),
-      ...entity
-          .getRelativeFaces(
-        Size(
-          renderBox.size.width,
-          renderBox.size.width /
-              entity.originalSize.aspectRatio,
-        ),
-      )
-          .map((face) {
-        return Positioned(
-          top: face.top,
-          left: face.left,
-          child: Container(
-            width: face.size.width,
-            height: face.size.height,
-            decoration: BoxDecoration(
-              color: Colors.black12,
-              border: Border.all(color: Colors.white54, width: 1.0),
-            ),
-          ),
-        );
-      }).toList(),
-    ],
-  ),
-);
-...
 ```
 
 ## Gif to video
@@ -254,4 +184,22 @@ final id = await client.upload.auto(
   SharedFile(File('/some/file')),
   runInIsolate: true,
 );
+```
+
+## Face Recognition 
+```dart
+final files = ApiFiles(options: options);
+
+final FacesEntity entity = await files.detectFacesWithOriginalImageSize('image-id');
+```
+
+## Object Recognition
+```dart
+final files = ApiFiles(options: options);
+
+// With one file
+final FileInfoEntity file = await files.file('image-id', includeRecognitionInfo: true);
+
+// With list of files
+final ListEntity<FileInfoEntity> list = await files.list(includeRecognitionInfo: true);
 ```

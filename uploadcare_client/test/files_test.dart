@@ -1,3 +1,5 @@
+@Skip('Refactor with API providers to drop real UC servers interaction')
+
 import 'dart:io';
 
 import 'package:dotenv/dotenv.dart';
