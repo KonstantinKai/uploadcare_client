@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:http/http.dart';
 import 'authorization/scheme.dart';
 
@@ -55,8 +54,7 @@ class UcMultipartRequest extends MultipartRequest
     required Uri uri,
     this.scheme,
   }) : super(method, uri) {
-    headers.addAll(
-        {HttpHeaders.contentTypeHeader: 'application/x-www-form-urlencoded'});
+    headers.addAll({'content-type': 'application/x-www-form-urlencoded'});
   }
 
   @override
@@ -70,7 +68,7 @@ class UcRequest extends Request
     required Uri uri,
     this.scheme,
   }) : super(method, uri) {
-    headers.addAll({HttpHeaders.contentTypeHeader: 'application/json'});
+    headers.addAll({'content-type': 'application/json'});
   }
 
   @override

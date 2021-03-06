@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:meta/meta.dart';
 import 'scheme.dart';
 
@@ -22,7 +21,7 @@ class AuthSchemeSimple extends AuthScheme {
     request.headers.addAll(Map.fromEntries([
       acceptHeader,
       MapEntry(
-        HttpHeaders.authorizationHeader,
+        'authorization',
         '$_name $publicKey:$privateKey',
       ),
     ]));
