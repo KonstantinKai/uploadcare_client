@@ -147,7 +147,7 @@ final videoEncoding = ApiVideoEncoding(options);
 final VideoEncodingConvertEntity result = await videoEncoding.process({
   'video-id-1': [
     CutTransformation(
-      const const Duration(seconds: 10),
+      const Duration(seconds: 10),
       length: const Duration(
         seconds: 30,
       ),
