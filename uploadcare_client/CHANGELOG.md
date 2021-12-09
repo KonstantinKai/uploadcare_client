@@ -1,9 +1,12 @@
+## [4.0.1] - Thu Dec 9 2021
+* Remove unnecessary check
+
 ## [4.0.0] - Thu Dec 9 2021
 * **Breaking changes with 3.x.x**
   * `OverlayCoordinates` was renamed to `Coordinates` and moved to `/lib/src/measures.dart`;
   * Overridden `toString` method for `Dimensions` and `Offsets` to respect new property `units` in this types
   * Changed the second parameter for `CropTransformation` to `Coordinates` from `Offsets`, removed the third `center` parameter, now use `Coordinates` with a predefined parameter instead.
-  * `OverlayTransformation` doesn't work with `MeasureUnits.Pixel` in `dimensions` and `coordinates`
+  * `OverlayTransformation` doesn't work with `MeasureUnits.Pixel` in `dimensions`
 * Added `BlurRegionTransformation`
 * Added `UnsharpMaskingTransformation`
 * Added `FilterTransformation`

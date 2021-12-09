@@ -414,13 +414,7 @@ class OverlayTransformation extends Transformation
                     opacity >= 0 &&
                     opacity <= 100
                 : true,
-            '`opacity` should be in 0..100 range'),
-        assert(
-          coordinates != null && coordinates.predefined == null
-              ? coordinates.offset.units == MeasureUnits.Percent
-              : true,
-          'Cannot use `MeasureUnits.Pixel` in coordinates with this transformation',
-        );
+            '`opacity` should be in 0..100 range');
 
   /// 'self' or UUID of an image to be layered over input. To be recognized by :uuid, that image should be related to any project of your account.
   /// If you specify 'self' transfomation will be applied to source image

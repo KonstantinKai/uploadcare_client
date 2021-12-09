@@ -2,7 +2,7 @@
 
 **!!! IMPORTANT !!!**
 
-Release of `uploadcare_client@^3.0.0` has breaking changes. `Null safety` was introduced. The library has been split into 2 packages, this package can be used in non-flutter environments (web, server, .etc) and for use with flutter please install only `uploadcare_flutter@^1.0.0` which has this package as a dependency, see. [see](https://pub.dev/packages/uploadcare_flutter).
+Release of `uploadcare_client@^3.0.0` has breaking changes. `Null safety` was introduced. The library has been split into 2 packages, this package can be used in non-flutter environments (web, server, .etc) and for use with flutter please install only `uploadcare_flutter@^1.0.0` which has this package as a dependency, [see](https://pub.dev/packages/uploadcare_flutter).
 
 ### Limitations
 * It's impossible to use `AuthSchemeRegular` auth scheme on the `web` with fetch API because `Date` request header is forbidden for XMLRequest https://fetch.spec.whatwg.org/#forbidden-header-name.
