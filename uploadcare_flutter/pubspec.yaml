@@ -1,6 +1,6 @@
 name: uploadcare_flutter
 description: A flutter/dart library for working with Uploadcare REST API. File uploads, media processing, and adaptive delivery for web and mobile.
-version: 1.0.2
+version: 2.0.0
 homepage: https://github.com/KonstantinKai/uploadcare_client
 repository: https://github.com/KonstantinKai/uploadcare_client
 issue_tracker: https://github.com/KonstantinKai/uploadcare_client/issues
@@ -11,11 +11,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  uploadcare_client: ^3.0.2
+  uploadcare_client: ^4.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  pedantic: 1.11.0
+  flutter_lints: ^1.0.4
 
 flutter:

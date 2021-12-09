@@ -1,3 +1,30 @@
+## [4.0.0] - Thu Dec 9 2021
+* **Breaking changes with 3.x.x**
+  * `OverlayCoordinates` was renamed to `Coordinates` and moved to `/lib/src/measures.dart`;
+  * Overridden `toString` method for `Dimensions` and `Offsets` to respect new property `units` in this types
+  * Changed the second parameter for `CropTransformation` to `Coordinates` from `Offsets`, removed the third `center` parameter, now use `Coordinates` with a predefined parameter instead.
+  * `OverlayTransformation` doesn't work with `MeasureUnits.Pixel` in `dimensions` and `coordinates`
+* Added `BlurRegionTransformation`
+* Added `UnsharpMaskingTransformation`
+* Added `FilterTransformation`
+* Added `ZoomObjectTransformation`
+* Added color adjustment transformations
+  * `ColorBrightnessTransformation`
+  * `ColorExposureTransformation`
+  * `ColorGammaTransformation`
+  * `ColorContrastTransformation`
+  * `ColorSaturationTransformation`
+  * `ColorVibranceTransformation`
+  * `ColorWarmthTransformation`
+* Added `SrgbTransformation`
+* Added `InlineTransformation`
+* You can use overlay transformation to the source image, see https://uploadcare.com/docs/transformations/image/overlay/#overlay-self
+* Made `Transformation` constructor `const`;
+* Added `MeasureUnits` enum to specify units in `Dimensions` and `Offsets` types
+* Added units restrictions for transformations that works with `Dimensions` and `Offsets` types
+* Added links to the official uploadcare site for each transformation
+* Replaced `pedantic` with `lints` for analysis
+
 ## [3.0.2] - Sat Mar 6 2021
 * Dropped 'dart:isolate' import for unsupported platforms
 

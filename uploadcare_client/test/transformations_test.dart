@@ -147,7 +147,7 @@ void main() {
 
     test('BlurTransformation', () {
       testDelimiter(BlurTransformation());
-      expect(BlurTransformation().toString(), equals('blur/5'));
+      expect(BlurTransformation().toString(), equals('blur/10'));
       expect(() => BlurTransformation(5001),
           throwsA(TypeMatcher<AssertionError>()));
       expect(
@@ -216,11 +216,13 @@ void main() {
 
     test('CropTransformation', () {
       testDelimiter(CropTransformation(Dimensions.zero));
-      expect(CropTransformation(Dimensions.zero).toString(),
-          equals('crop/0x0/0,0'));
-      expect(CropTransformation(Dimensions.zero, Offsets(10, 10)).toString(),
+      expect(
+          CropTransformation(Dimensions.zero).toString(), equals('crop/0x0'));
+      expect(
+          CropTransformation(Dimensions.zero, Coordinates(Offsets(10, 10)))
+              .toString(),
           equals('crop/0x0/10,10'));
-      expect(CropTransformation(Dimensions.zero, Offsets.zero, true).toString(),
+      expect(CropTransformation(Dimensions.zero, Coordinates.center).toString(),
           equals('crop/0x0/center'));
     });
 
@@ -237,24 +239,176 @@ void main() {
       expect(
           OverlayTransformation(
             'image-id-2',
-            dimensions: Dimensions(40, 30),
-            coordinates: OverlayCoordinates.center,
+            dimensions: Dimensions(40, 30, units: MeasureUnits.Percent),
+            coordinates: Coordinates.center,
             opacity: 40,
           ).toString(),
           equals('overlay/image-id-2/40px30p/center/40p'));
       expect(
           () => OverlayTransformation(
                 'image-id-2',
-                coordinates: OverlayCoordinates.center,
+                coordinates: Coordinates.center,
               ),
           throwsA(TypeMatcher<AssertionError>()));
       expect(
           () => OverlayTransformation(
                 'image-id-2',
-                dimensions: Dimensions(40, 30),
+                dimensions: Dimensions(40, 30, units: MeasureUnits.Percent),
                 opacity: 40,
               ),
           throwsA(TypeMatcher<AssertionError>()));
+      expect(
+          OverlayTransformation(
+            'self',
+            dimensions: Dimensions(40, 30, units: MeasureUnits.Percent),
+            coordinates: Coordinates.center,
+            opacity: 40,
+          ).toString(),
+          equals('overlay/self/40px30p/center/40p'));
+    });
+
+    test('BlurRegionTransformation', () {
+      testDelimiter(BlurRegionTransformation(type: BlurRegionTValue.Faces));
+      expect(() => BlurRegionTransformation(),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(
+          BlurRegionTransformation(
+                  dimensions: Dimensions(10, 20), coordinates: Offsets(10, 10))
+              .toString(),
+          equals('blur_region/10x20/10,10'));
+      expect(
+          BlurRegionTransformation(
+                  dimensions: Dimensions(10, 20),
+                  coordinates: Offsets(10, 10),
+                  radius: 20)
+              .toString(),
+          equals('blur_region/10x20/10,10/20'));
+      expect(
+          BlurRegionTransformation(
+                  dimensions: Dimensions(10, 20, units: MeasureUnits.Percent),
+                  coordinates: Offsets(10, 10, units: MeasureUnits.Percent))
+              .toString(),
+          equals('blur_region/10px20p/10p,10p'));
+      expect(BlurRegionTransformation(type: BlurRegionTValue.Faces).toString(),
+          equals('blur_region/faces'));
+      expect(
+          BlurRegionTransformation(type: BlurRegionTValue.Faces, radius: 20)
+              .toString(),
+          equals('blur_region/faces/20'));
+    });
+
+    test('UnsharpMaskingTransformation', () {
+      testDelimiter(UnsharpMaskingTransformation());
+      expect(() => UnsharpMaskingTransformation(-201),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(() => UnsharpMaskingTransformation(101),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(UnsharpMaskingTransformation().toString(), equals('blur/10/100'));
+    });
+
+    test('FilterTransformation', () {
+      testDelimiter(FilterTransformation(FilterTValue.Adaris));
+      expect(() => FilterTransformation(FilterTValue.Adaris, -101),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(() => FilterTransformation(FilterTValue.Adaris, 201),
+          throwsA(TypeMatcher<AssertionError>()));
+
+      // ignore: avoid_function_literals_in_foreach_calls
+      FilterTValue.values.forEach((value) {
+        final transformed = value.toString().split('.').last.toLowerCase();
+        expect(FilterTransformation(value).toString(),
+            equals('filter/$transformed/100'));
+      });
+    });
+
+    test('ZoomObjectTransformation', () {
+      testDelimiter(ZoomObjectTransformation(0));
+      expect(() => ZoomObjectTransformation(-1),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(() => ZoomObjectTransformation(101),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(
+          ZoomObjectTransformation(10).toString(), equals('zoom_objects/10'));
+    });
+
+    test('ColorBrightnessTransformation', () {
+      testDelimiter(ColorBrightnessTransformation(10));
+      expect(() => ColorBrightnessTransformation(-101),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(() => ColorBrightnessTransformation(101),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(ColorBrightnessTransformation(10).toString(),
+          equals('brightness/10'));
+    });
+
+    test('ColorExposureTransformation', () {
+      testDelimiter(ColorExposureTransformation(10));
+      expect(() => ColorExposureTransformation(-501),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(() => ColorExposureTransformation(501),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(ColorExposureTransformation(10).toString(), equals('exposure/10'));
+    });
+
+    test('ColorGammaTransformation', () {
+      testDelimiter(ColorGammaTransformation(10));
+      expect(() => ColorGammaTransformation(-1),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(() => ColorGammaTransformation(1001),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(ColorGammaTransformation(10).toString(), equals('gamma/10'));
+    });
+
+    test('ColorContrastTransformation', () {
+      testDelimiter(ColorContrastTransformation(10));
+      expect(() => ColorContrastTransformation(-101),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(() => ColorContrastTransformation(501),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(ColorContrastTransformation(10).toString(), equals('contrast/10'));
+    });
+
+    test('ColorSaturationTransformation', () {
+      testDelimiter(ColorSaturationTransformation(10));
+      expect(() => ColorSaturationTransformation(-101),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(() => ColorSaturationTransformation(501),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(ColorSaturationTransformation(10).toString(),
+          equals('saturation/10'));
+    });
+
+    test('ColorVibranceTransformation', () {
+      testDelimiter(ColorVibranceTransformation(10));
+      expect(() => ColorVibranceTransformation(-101),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(() => ColorVibranceTransformation(501),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(ColorVibranceTransformation(10).toString(), equals('vibrance/10'));
+    });
+
+    test('ColorWarmthTransformation', () {
+      testDelimiter(ColorWarmthTransformation(10));
+      expect(() => ColorWarmthTransformation(-101),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(() => ColorWarmthTransformation(101),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(ColorWarmthTransformation(10).toString(), equals('warmth/10'));
+    });
+
+    test('SrgbTransformation', () {
+      testDelimiter(SrgbTransformation(SrgbTValue.Fast));
+      expect(
+          SrgbTransformation(SrgbTValue.Fast).toString(), equals('srgb/fast'));
+      expect(SrgbTransformation(SrgbTValue.Icc).toString(), equals('srgb/icc'));
+      expect(SrgbTransformation(SrgbTValue.KeepProfile).toString(),
+          equals('srgb/keep_profile'));
+    });
+
+    test('InlineTransformation', () {
+      testDelimiter(InlineTransformation(true));
+      expect(InlineTransformation(true).toString(), equals('inline/yes'));
+      expect(InlineTransformation(false).toString(), equals('inline/no'));
     });
   });
 

@@ -15,7 +15,7 @@ class UploadcareClient {
 
   UploadcareClient({
     required this.options,
-  })   : upload = ApiUpload(options: options),
+  })  : upload = ApiUpload(options: options),
         files = ApiFiles(options: options),
         videoEncoding = ApiVideoEncoding(options: options),
         groups = ApiGroups(options: options);

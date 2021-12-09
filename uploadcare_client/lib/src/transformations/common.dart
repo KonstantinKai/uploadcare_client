@@ -63,18 +63,17 @@ class ResizeTransformation extends Transformation {
                   ? size.height <= 5000
                   : true,
           'Max transform dimension is 5000x5000 in jpeg format',
+        ),
+        assert(
+          size.units != MeasureUnits.Percent,
+          'Cannot use `MeasureUnits.Percent` with this transformation',
         );
-
-  String get _width =>
-      size.width > -1 && size.width.isFinite ? size.width.toString() : '';
-  String get _height =>
-      size.height > -1 && size.height.isFinite ? size.height.toString() : '';
 
   @override
   String get operation => 'resize';
 
   @override
-  List<String> get params => ['${_width}x$_height'];
+  List<String> get params => [size.toString()];
 }
 
 /// GIF to Video conversion that provides better loading times thus reducing your bounce rate.

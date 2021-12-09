@@ -9,6 +9,8 @@ enum ArchiveTValue {
 }
 
 /// Gets a group as an archive: [ArchiveTValue]
+///
+/// See https://uploadcare.com/docs/delivery/cdn/#get-as-archive
 class ArchiveTransformation extends EnumTransformation<ArchiveTValue>
     implements GroupTransformation {
   /// Output filename: you can either specify a name for your archive

@@ -21,6 +21,8 @@ enum VideoFormatTValue {
 }
 
 /// Converts a file to one of the HTML5 video formats: [VideoFormatTValue]
+///
+/// See https://uploadcare.com/docs/transformations/video-encoding/#operation-format
 class VideoFormatTransformation extends EnumTransformation<VideoFormatTValue>
     implements VideoTransformation {
   VideoFormatTransformation([VideoFormatTValue value = VideoFormatTValue.Mp4])
@@ -57,6 +59,8 @@ enum VideoResizeTValue {
 }
 
 /// Resizes a video to the specified dimensions. The operation follows the behavior specified by one of the four presets: [VideoResizeTValue]
+///
+/// See https://uploadcare.com/docs/transformations/video-encoding/#operation-size
 class VideoResizeTransformation extends ResizeTransformation
     implements EnumTransformation<VideoResizeTValue>, VideoTransformation {
   @override
@@ -93,6 +97,8 @@ class VideoResizeTransformation extends ResizeTransformation
 }
 
 /// Cuts out a video fragment based on the following parameters: [start], [length]
+///
+/// See https://uploadcare.com/docs/transformations/video-encoding/#operation-cut
 ///
 /// Example:
 /// ```dart
@@ -160,6 +166,8 @@ class CutTransformation extends Transformation implements VideoTransformation {
 /// If the operation is omitted, a single thumbnail gets generated from the very middle of your video.
 /// If you define another N, thumbnails are generated from the frames evenly distributed along your video timeline.
 /// I.e., if you have a 20-second video with N set to 20, you will get a thumbnail per every second of your video.
+///
+/// See https://uploadcare.com/docs/transformations/video-encoding/#operation-thumbs
 class VideoThumbsGenerateTransformation extends NullParamTransformation
     implements VideoTransformation {
   final int amount;

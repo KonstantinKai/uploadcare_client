@@ -32,6 +32,7 @@ class IsolateWorker {
   }) {
     final completer = Completer<String>();
 
+    // ignore: prefer_function_declarations_over_variables
     final action = () => _uploadInIsolate(
           options: options,
           resource: resource,

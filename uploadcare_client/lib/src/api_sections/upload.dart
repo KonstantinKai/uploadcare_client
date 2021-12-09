@@ -271,9 +271,11 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
         if (cancelToken != null) {
           cancelToken.onCancel = _completeWithError(
             completer: completer,
-            action: () => inProgressActions.forEach(
-              (request) => request.cancel(),
-            ),
+            action: () {
+              for (var request in inProgressActions) {
+                request.cancel();
+              }
+            },
             cancelMessage: cancelToken.cancelMessage,
           );
         }

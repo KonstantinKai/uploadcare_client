@@ -12,7 +12,8 @@ void main() {
       ..transform(ImageResizeTransformation(Dimensions(300, 450)))
       ..transform(QualityTransformation())
       ..transform(ImageFormatTransformation(ImageFormatTValue.Webp))
-      ..transform(CropTransformation(Dimensions.square(64), Offsets.zero));
+      ..transform(
+          CropTransformation(Dimensions.square(64), Coordinates(Offsets.zero)));
 
     expect(
         image.uri.path,
@@ -71,20 +72,34 @@ void main() {
     final image = CdnImage('image-id-1')
       ..transform(OverlayTransformation(
         'image-id-2',
-        dimensions: Dimensions(40, 30),
-        coordinates: OverlayCoordinates.center,
+        dimensions: Dimensions(40, 30, units: MeasureUnits.Percent),
+        coordinates: Coordinates.center,
         opacity: 40,
       ))
       ..transform(OverlayTransformation(
         'image-id-3',
-        dimensions: Dimensions(40, 30),
-        coordinates: OverlayCoordinates(const Offsets(40, 90)),
+        dimensions: Dimensions(40, 30, units: MeasureUnits.Percent),
+        coordinates:
+            Coordinates(const Offsets(40, 90, units: MeasureUnits.Percent)),
       ));
 
     expect(
         image.pathTransformer.path,
         equals(
             'image-id-1/-/overlay/image-id-2/40px30p/center/40p/-/overlay/image-id-3/40px30p/40p,90p/'));
+  });
+
+  test('Self Overlay transformations', () {
+    final image = CdnImage('image-id-1')
+      ..transform(OverlayTransformation(
+        'self',
+        dimensions: Dimensions(40, 30, units: MeasureUnits.Percent),
+        coordinates: Coordinates.center,
+        opacity: 40,
+      ));
+
+    expect(image.pathTransformer.path,
+        equals('image-id-1/-/overlay/self/40px30p/center/40p/'));
   });
 
   test('GifToVideoTransformation transformation', () {

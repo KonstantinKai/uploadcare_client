@@ -2,16 +2,16 @@ import 'base.dart';
 
 /// Provides API to collect destination URL with transformation according to Uploadcare CDN API
 class PathTransformer<T extends Transformation> {
+  PathTransformer(
+    this.id, {
+    List<T>? transformations,
+  }) : _transformations = transformations ?? [];
+
   /// Resource id
   final String id;
 
   /// Collection with [Transformation]
   final List<T> _transformations;
-
-  PathTransformer(
-    this.id, {
-    List<T>? transformations,
-  }) : _transformations = transformations ?? [];
 
   String get path => _transformations.fold<String>(
       '$id/', (prev, next) => '$prev${next.delimiter}$next/');

@@ -1,5 +1,7 @@
 /// Base class for accessing the Uploadcare CDN API
 abstract class Transformation {
+  const Transformation();
+
   /// CDN API operation URL directive
   String get operation;
 
@@ -30,9 +32,9 @@ abstract class GroupTransformation implements Transformation {}
 
 /// An abstraction to make transformation implementation with `enum` values
 abstract class EnumTransformation<T> extends Transformation {
-  final T? value;
+  const EnumTransformation(this.value);
 
-  EnumTransformation(this.value);
+  final T? value;
 
   String get valueAsString;
 
@@ -42,9 +44,9 @@ abstract class EnumTransformation<T> extends Transformation {
 
 /// An abstraction to make transformation implementation with [bool] values which transforms to `yes/no` string
 abstract class BooleanTransformation extends Transformation {
-  final bool value;
+  const BooleanTransformation(this.value);
 
-  BooleanTransformation(this.value);
+  final bool value;
 
   @override
   List<String> get params => [value ? 'yes' : 'no'];
@@ -52,12 +54,14 @@ abstract class BooleanTransformation extends Transformation {
 
 /// An abstraction to make transformation implementation with [int] values
 abstract class IntTransformation extends Transformation {
-  final int value;
+  const IntTransformation(this.value);
 
-  IntTransformation(this.value);
+  final int? value;
 
   @override
-  List<String> get params => [value.toString()];
+  List<String> get params => [
+        if (value != null) value.toString(),
+      ];
 }
 
 /// An abstraction to make transformation implementation with no parameters
