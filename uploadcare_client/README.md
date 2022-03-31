@@ -5,13 +5,16 @@
 Release of `uploadcare_client@^3.0.0` has breaking changes. `Null safety` was introduced. The library has been split into 2 packages, this package can be used in non-flutter environments (web, server, .etc) and for use with flutter please install only `uploadcare_flutter@^1.0.0` which has this package as a dependency, [see](https://pub.dev/packages/uploadcare_flutter).
 
 ### Limitations
-* It's impossible to use `AuthSchemeRegular` auth scheme on the `web` with fetch API because `Date` request header is forbidden for XMLRequest https://fetch.spec.whatwg.org/#forbidden-header-name.
-* It's impossible to run the upload process in the separate isolate on the `web` environment.
+
+- It's impossible to use `AuthSchemeRegular` auth scheme on the `web` with fetch API because `Date` request header is forbidden for XMLRequest https://fetch.spec.whatwg.org/#forbidden-header-name.
+- It's impossible to run the upload process in the separate isolate on the `web` environment.
 
 ## Introduction
+
 Uploadcare is a complete file handling platform that helps you ship products faster and focus on your business goals, not files. With Uploadcare, you can build infrastructure, optimize content, conversions, load times, traffic, and user experience. [Read more...](https://uploadcare.com/docs/)
 
 #### Implemented features:
+
 - authorization
   - simple, [read more](https://uploadcare.com/docs/api_reference/rest/requests_auth/#auth-simple)
   - regular, [read more](https://uploadcare.com/docs/api_reference/rest/requests_auth/#auth-uploadcare)
@@ -44,14 +47,17 @@ Uploadcare is a complete file handling platform that helps you ship products fas
   - video transformations
 
 #### Roadmap:
+
 - code improuvements
 - new transformation api
 - document conversion
 
 ## Example:
+
 **Note:** you can omit `privateKey`, but in this case only Upload API will be available. (CDN API also will be available).
 
 How to use library:
+
 ```dart
 // create client with simple auth scheme
 final client = UploadcareClient.withSimpleAuth(
@@ -77,14 +83,18 @@ final client = UploadcareClient(
   ),
 );
 ```
+
 `UploadcareClient` has at the moment 4 API section
+
 ```dart
 final ApiUpload upload;
 final ApiFiles files;
 final ApiVideoEncoding videoEncoding;
 final ApiGroups groups;
 ```
+
 You can use each api section separately, for example:
+
 ```dart
 final options = ClientOptions(
   authorizationScheme: AuthSchemeRegular(
@@ -100,6 +110,7 @@ final fileId = await upload.base(SharedFile(File('...some/file')));
 ```
 
 ## Cancellation
+
 You can cancel the upload process by using `CancelToken`, each method from the upload section (`auto, base, multipart`) accepts `cancelToken` property, which you can use to cancel the upload process. This feature works only with files upload because Uploadcare isn't supporting interrupt upload by URL
 
 ```dart
@@ -126,6 +137,7 @@ cancelToken.cancel();
 ```
 
 ## Gif to video
+
 ```dart
 final file = CdnFile('gif-id-1')
   ..transform(GifToVideoTransformation([
@@ -138,7 +150,8 @@ final file = CdnFile('gif-id-1')
 VideoPlayerController.network(file.url);
 ```
 
-## Video encoding 
+## Video encoding
+
 ```dart
 ...
 
@@ -168,6 +181,7 @@ final Stream<VideoEncodingJobEntity> processingStream = videoEncoding.statusAsSt
 ```
 
 ## Upload in isolates
+
 ```dart
 final client = UploadcareClient(
   options: ClientOptions(
@@ -186,7 +200,8 @@ final id = await client.upload.auto(
 );
 ```
 
-## Face Recognition 
+## Face Recognition
+
 ```dart
 final files = ApiFiles(options: options);
 
@@ -194,6 +209,7 @@ final FacesEntity entity = await files.detectFacesWithOriginalImageSize('image-i
 ```
 
 ## Object Recognition
+
 ```dart
 final files = ApiFiles(options: options);
 

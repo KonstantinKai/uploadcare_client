@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:isolate';
 
-import '../../uploadcare_client.dart';
+import '../api_sections/upload.dart';
 import '../cancel_token.dart';
 import '../cancel_upload_exception.dart';
 import '../concurrent_runner.dart';
