@@ -12,8 +12,8 @@ void main() {
       ..transform(ImageResizeTransformation(Dimensions(300, 450)))
       ..transform(QualityTransformation())
       ..transform(ImageFormatTransformation(ImageFormatTValue.Webp))
-      ..transform(
-          CropTransformation(Dimensions.square(64), Coordinates(Offsets.zero)));
+      ..transform(CropTransformation(
+          size: Dimensions.square(64), coords: Coordinates(Offsets.zero)));
 
     expect(
         image.uri.path,

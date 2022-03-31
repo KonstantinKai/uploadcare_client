@@ -14,11 +14,30 @@ class Dimensions extends Equatable {
     this.units = MeasureUnits.Pixel,
   });
 
-  const Dimensions.square(int side) : this(side, side);
+  const Dimensions.square(
+    int side, [
+    MeasureUnits units = MeasureUnits.Pixel,
+  ]) : this(
+          side,
+          side,
+          units: units,
+        );
 
-  const Dimensions.fromWidth(int width) : this(width, -1);
+  const Dimensions.fromWidth(int width,
+      [MeasureUnits units = MeasureUnits.Pixel])
+      : this(
+          width,
+          -1,
+          units: units,
+        );
 
-  const Dimensions.fromHeight(int height) : this(-1, height);
+  const Dimensions.fromHeight(int height,
+      [MeasureUnits units = MeasureUnits.Pixel])
+      : this(
+          -1,
+          height,
+          units: units,
+        );
 
   static const Dimensions zero = Dimensions(0, 0);
 
@@ -32,7 +51,11 @@ class Dimensions extends Equatable {
   /// @nodoc
   @protected
   @override
-  List<Object?> get props => [width, height, units];
+  List<Object?> get props => [
+        width,
+        height,
+        units,
+      ];
 
   @override
   String toString() {
@@ -61,7 +84,11 @@ class Offsets extends Equatable {
   /// @nodoc
   @protected
   @override
-  List<Object> get props => [dx, dy, units];
+  List<Object> get props => [
+        dx,
+        dy,
+        units,
+      ];
 
   @override
   String toString() {
@@ -80,8 +107,13 @@ class FaceRect extends Equatable {
   final Offsets topLeft;
   final Dimensions size;
 
+  /// @nodoc
+  @protected
   @override
-  List<Object> get props => [topLeft, size];
+  List<Object> get props => [
+        topLeft,
+        size,
+      ];
 }
 
 class Coordinates extends Equatable {
@@ -104,9 +136,31 @@ class Coordinates extends Equatable {
   @override
   String toString() => predefined ?? offset.toString();
 
+  /// @nodoc
+  @protected
   @override
   List<Object?> get props => [
         offset,
         predefined,
+      ];
+}
+
+class AspectRatio extends Equatable {
+  const AspectRatio(this.sideA, this.sideB);
+
+  final int sideA;
+  final int sideB;
+
+  @override
+  String toString() {
+    return '$sideA:$sideB';
+  }
+
+  /// @nodoc
+  @protected
+  @override
+  List<Object?> get props => [
+        sideA,
+        sideB,
       ];
 }

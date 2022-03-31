@@ -1,6 +1,7 @@
 import '../measures.dart';
 import 'base.dart';
 import 'video.dart';
+import 'image.dart';
 
 enum QualityTValue {
   /// Lowest visual quality yet minimal loading times; smaller than [QualityTValue.Lighter].
@@ -21,6 +22,9 @@ enum QualityTValue {
   /// Automatically set optimal image compression and format settings to preserve visual quality while minimizing the file size, content-aware.
   /// Only for image transformation
   Smart,
+
+  /// Similar to [Smart], yet optimized for double pixel density.
+  SmartRetina
 }
 
 /// Sets the level of source quality that affects file sizes and hence loading times and volumes of generated traffic.
@@ -42,6 +46,8 @@ class QualityTransformation extends EnumTransformation<QualityTValue>
         return 'best';
       case QualityTValue.Smart:
         return 'smart';
+      case QualityTValue.SmartRetina:
+        return 'smart_retina';
       default:
         return 'normal';
     }
@@ -53,8 +59,6 @@ class QualityTransformation extends EnumTransformation<QualityTValue>
 
 /// Base class for resize-related transformations
 class ResizeTransformation extends Transformation {
-  final Dimensions size;
-
   ResizeTransformation(this.size)
       : assert(
           size.width > -1
@@ -69,12 +73,23 @@ class ResizeTransformation extends Transformation {
           'Cannot use `MeasureUnits.Percent` with this transformation',
         );
 
+  final Dimensions size;
+
   @override
   String get operation => 'resize';
 
   @override
   List<String> get params => [size.toString()];
 }
+
+const _kGifToVideoAllowedTransfomations = <Type>[
+  VideoFormatTransformation,
+  QualityTransformation,
+  PreviewTransformation,
+  ResizeTransformation,
+  CropTransformation,
+  ScaleCropTransformation,
+];
 
 /// GIF to Video conversion that provides better loading times thus reducing your bounce rate.
 /// The feature is available on paid plans only. Converts GIF files to video on the fly.
@@ -89,16 +104,17 @@ class ResizeTransformation extends Transformation {
 ///   ]))
 /// ```
 class GifToVideoTransformation extends Transformation {
-  final List<VideoTransformation> transformations;
-
   GifToVideoTransformation([this.transformations = const []])
       : assert(
-            transformations.isNotEmpty
-                ? transformations.every((transformation) =>
-                    transformation is VideoFormatTransformation ||
-                    transformation is QualityTransformation)
-                : true,
-            'You can apply only format or quality transformations');
+          transformations.isNotEmpty
+              ? transformations.every((transformation) =>
+                  _kGifToVideoAllowedTransfomations
+                      .contains(transformation.runtimeType))
+              : true,
+          'You can apply only $_kGifToVideoAllowedTransfomations transformations',
+        );
+
+  final List<Transformation> transformations;
 
   @override
   String get operation => 'gif2video';
@@ -111,4 +127,12 @@ class GifToVideoTransformation extends Transformation {
 
   @override
   String get delimiter => '';
+}
+
+/// Returns file-related information, such as image dimensions or geotagging data in the JSON format.
+///
+/// See https://uploadcare.com/docs/delivery/cdn/#file-info
+class JsonFileInfoTransformation extends NullParamTransformation {
+  @override
+  String get operation => 'json';
 }

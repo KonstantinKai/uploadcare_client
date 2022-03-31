@@ -24,6 +24,8 @@ void main() {
           equals('quality/best'));
       expect(QualityTransformation(QualityTValue.Smart).toString(),
           equals('quality/smart'));
+      expect(QualityTransformation(QualityTValue.SmartRetina).toString(),
+          equals('quality/smart_retina'));
     });
 
     test('ResizeTransformation', () {
@@ -56,6 +58,22 @@ void main() {
                 CutTransformation(const Duration(seconds: 1), end: true),
               ]),
           throwsA(TypeMatcher<AssertionError>()));
+      expect(
+          GifToVideoTransformation([
+            PreviewTransformation(),
+          ]).toString(),
+          equals('gif2video/-/preview/2048x2048'));
+      expect(
+          GifToVideoTransformation([
+            ResizeTransformation(Dimensions.square(360)),
+            CropTransformation(aspectRatio: const AspectRatio(4, 3))
+          ]).toString(),
+          equals('gif2video/-/resize/360x360/-/crop/4:3'));
+    });
+
+    test('JsonFileInfoTransformation', () {
+      testDelimiter(JsonFileInfoTransformation());
+      expect(JsonFileInfoTransformation().toString(), equals('json'));
     });
   });
 
@@ -215,15 +233,44 @@ void main() {
     });
 
     test('CropTransformation', () {
-      testDelimiter(CropTransformation(Dimensions.zero));
+      testDelimiter(CropTransformation(size: Dimensions.zero));
+      expect(() => CropTransformation(coords: Coordinates.center),
+          throwsA(TypeMatcher<AssertionError>()));
+      expect(CropTransformation(size: Dimensions.zero).toString(),
+          equals('crop/0x0'));
       expect(
-          CropTransformation(Dimensions.zero).toString(), equals('crop/0x0'));
-      expect(
-          CropTransformation(Dimensions.zero, Coordinates(Offsets(10, 10)))
-              .toString(),
+          CropTransformation(
+              size: Dimensions.zero,
+              coords: Coordinates(
+                Offsets(10, 10),
+              )).toString(),
           equals('crop/0x0/10,10'));
-      expect(CropTransformation(Dimensions.zero, Coordinates.center).toString(),
+      expect(
+          CropTransformation(
+            size: Dimensions.zero,
+            coords: Coordinates.center,
+          ).toString(),
           equals('crop/0x0/center'));
+      expect(
+          CropTransformation(
+            aspectRatio: AspectRatio(4, 3),
+            coords: Coordinates.bottom,
+          ).toString(),
+          equals('crop/4:3/bottom'));
+      expect(
+          CropTransformation(
+            aspectRatio: AspectRatio(9, 16),
+            coords: Coordinates.bottom,
+            tag: CropTagTValue.Face,
+          ).toString(),
+          equals('crop/face/9:16/bottom'));
+      expect(
+          CropTransformation(
+            size: Dimensions.square(200, MeasureUnits.Percent),
+            coords: Coordinates.bottom,
+            tag: CropTagTValue.Face,
+          ).toString(),
+          equals('crop/face/200px200p/bottom'));
     });
 
     test('ImageResizeTransformation', () {
@@ -409,6 +456,17 @@ void main() {
       testDelimiter(InlineTransformation(true));
       expect(InlineTransformation(true).toString(), equals('inline/yes'));
       expect(InlineTransformation(false).toString(), equals('inline/no'));
+    });
+
+    test('StripMetaTransformation', () {
+      testDelimiter(StripMetaTransformation());
+      expect(StripMetaTransformation().toString(), equals('strip_meta/'));
+      expect(StripMetaTransformation(StripMetaTValue.All).toString(),
+          equals('strip_meta/all'));
+      expect(StripMetaTransformation(StripMetaTValue.None).toString(),
+          equals('strip_meta/none'));
+      expect(StripMetaTransformation(StripMetaTValue.Sensitive).toString(),
+          equals('strip_meta/sensitive'));
     });
   });
 

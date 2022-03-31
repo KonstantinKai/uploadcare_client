@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'package:meta/meta.dart';
 import '../api_sections/cdn_file.dart';
 import '../entities/entities.dart';
-import '../entities/file_info.dart';
-import '../entities/list.dart';
 import '../mixins/mixins.dart';
 import '../options.dart';
 

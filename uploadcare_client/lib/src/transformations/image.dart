@@ -340,25 +340,55 @@ class PreviewTransformation extends ResizeTransformation
   String get operation => 'preview';
 }
 
+/// Possible [CropTransformation.tag] values
+enum CropTagTValue {
+  /// The largest detected face in the image is used as a crop basis.
+  Face,
+
+  /// The whole image is used as a crop basis.
+  Image,
+}
+
+const _kCropTagValuesMap = {
+  CropTagTValue.Face: 'face',
+  CropTagTValue.Image: 'image',
+};
+
 /// Crop an image to fit into specified dimensions, implement optional offsets.
 ///
 /// See https://uploadcare.com/docs/transformations/image/resize-crop/#operation-crop
-class CropTransformation extends ResizeTransformation
-    implements ImageTransformation {
-  CropTransformation(
-    Dimensions size, [
-    this.coordinates,
-  ]) : super(size);
+class CropTransformation extends Transformation implements ImageTransformation {
+  CropTransformation({
+    this.size,
+    this.aspectRatio,
+    this.coords,
+    this.tag,
+  }) : assert(
+          size != null || aspectRatio != null,
+          'One of `size` or `aspectRatio` should be provided',
+        );
 
-  final Coordinates? coordinates;
+  final Coordinates? coords;
+
+  final Dimensions? size;
+
+  /// See https://uploadcare.com/docs/transformations/image/resize-crop/#operation-crop-aspect-ratio
+  final AspectRatio? aspectRatio;
+
+  /// Crops the image to the object specified by the [tag] parameter. The found object fits into the given aspect ratio if [aspectRatio] is specified.
+  ///
+  /// See https://uploadcare.com/docs/transformations/image/resize-crop/#operation-crop-tags
+  final CropTagTValue? tag;
 
   @override
   String get operation => 'crop';
 
   @override
   List<String> get params => [
-        ...super.params,
-        if (coordinates != null) coordinates.toString(),
+        if (tag != null) _kCropTagValuesMap[tag]!,
+        if (size != null) size.toString(),
+        if (aspectRatio != null) aspectRatio.toString(),
+        if (coords != null) coords.toString(),
       ];
 }
 
@@ -732,4 +762,44 @@ class InlineTransformation extends BooleanTransformation
 
   @override
   String get operation => 'inline';
+}
+
+enum StripMetaTValue {
+  /// The default behavior when no strip_meta operation is applied. No meta information will be added to the processed file.
+  All,
+
+  /// Copies the EXIF from the original file. The orientation tag will be set to 1 (normal orientation).
+  None,
+
+  /// Copies the EXIF from the original file but skips geolocation. The orientation tag will be set to 1 (normal orientation).
+  Sensitive
+}
+
+/// The original image often comes with additional information built into the image file.
+/// In most cases, this information doesn't affect image rendering and thus can be safely stripped from the processed images.
+/// However, you can control this behavior with this option.
+/// This could be helpful if you want to keep meta information in the processed image.
+///
+/// Currently, you can keep only EXIF meta information. Other storages, such as XMP or IPTC, will always be stripped.
+///
+/// See https://uploadcare.com/docs/transformations/image/compression/#meta-information-control
+class StripMetaTransformation extends EnumTransformation<StripMetaTValue> {
+  const StripMetaTransformation([StripMetaTValue? value]) : super(value);
+
+  @override
+  String get operation => 'strip_meta';
+
+  @override
+  String get valueAsString {
+    switch (value) {
+      case StripMetaTValue.All:
+        return 'all';
+      case StripMetaTValue.None:
+        return 'none';
+      case StripMetaTValue.Sensitive:
+        return 'sensitive';
+      default:
+        return '';
+    }
+  }
 }

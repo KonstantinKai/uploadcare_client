@@ -53,8 +53,9 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
           assert(() {
             return !entry.value.any((transformation) =>
                 transformation is QualityTransformation &&
-                transformation.value == QualityTValue.Smart);
-          }(), 'QualityTValue.Smart cannot be used with VideoTransformation');
+                [QualityTValue.Smart, QualityTValue.SmartRetina]
+                    .contains(transformation.value));
+          }(), '"smart" value cannot be used with VideoTransformation');
 
           return PathTransformer('${entry.key}/video',
                   transformations: entry.value
