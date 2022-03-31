@@ -6,4 +6,4 @@ A flutter library for working with Uploadcare REST API. File uploads, media proc
 
 [`uploadcare_flutter`](https://github.com/KonstantinKai/uploadcare_client/tree/master/uploadcare_flutter)
 
-[Say thanks :)](https://www.paypal.com/donate/?hosted_button_id=JVABTPLJASZWJ)
+<!-- [Say thanks :)](https://www.paypal.com/donate/?hosted_button_id=JVABTPLJASZWJ) -->
