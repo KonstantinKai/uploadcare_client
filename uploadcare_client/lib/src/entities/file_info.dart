@@ -73,6 +73,32 @@ class FileInfoEntity extends Equatable {
     this.variations,
   });
 
+  /// If your file is an image and can be processed via Image Processing, Please note, our processing engine does not treat all image files as such.
+  /// Some of those may not be supported due to file sizes, resolutions or formats.
+  /// In the case, the flag is set to false. false otherwise.
+  bool get isImage => imageInfo != null;
+
+  bool get isVideo => videoInfo != null;
+
+  /// @nodoc
+  @protected
+  @override
+  List get props => [
+        isStored,
+        id,
+        filename,
+        isReady,
+        size,
+        datetimeRemoved,
+        datetimeStored,
+        datetimeUploaded,
+        imageInfo,
+        videoInfo,
+        recognitionInfo,
+        metadata,
+        variations,
+      ];
+
   factory FileInfoEntity.fromJson(Map<String, dynamic> json) => FileInfoEntity(
         isStored: json['is_stored'] ?? json['datetime_stored'] != null,
         id: json['uuid'],
@@ -123,29 +149,6 @@ class FileInfoEntity extends Equatable {
             ? (json['variations'] as Map).cast<String, String>()
             : null,
       );
-
-  /// If your file is an image and can be processed via Image Processing, Please note, our processing engine does not treat all image files as such.
-  /// Some of those may not be supported due to file sizes, resolutions or formats.
-  /// In the case, the flag is set to false. false otherwise.
-  bool get isImage => imageInfo != null;
-
-  bool get isVideo => videoInfo != null;
-
-  /// @nodoc
-  @protected
-  @override
-  List get props => [
-        isStored,
-        id,
-        filename,
-        isReady,
-        size,
-        datetimeRemoved,
-        datetimeStored,
-        datetimeUploaded,
-        imageInfo,
-        recognitionInfo,
-      ];
 }
 
 enum ImageColorMode {
@@ -239,6 +242,20 @@ class ImageInfo extends Equatable {
     this.dpi,
   });
 
+  /// @nodoc
+  @protected
+  @override
+  List<Object?> get props => [
+        colorMode,
+        orientation,
+        format,
+        sequence,
+        size,
+        geoLocation,
+        datetimeOriginal,
+        dpi,
+      ];
+
   factory ImageInfo.fromJson(Map<String, dynamic> json) => ImageInfo(
         colorMode: json['color_mode'] != null
             ? ImageColorMode.parse(json['color_mode'])
@@ -258,20 +275,6 @@ class ImageInfo extends Equatable {
               )
             : null,
       );
-
-  /// @nodoc
-  @protected
-  @override
-  List<Object?> get props => [
-        colorMode,
-        orientation,
-        format,
-        sequence,
-        size,
-        geoLocation,
-        datetimeOriginal,
-        dpi,
-      ];
 }
 
 class AudioStreamMetadata extends Equatable {
@@ -310,7 +313,7 @@ class VideoStreamMetadata extends Equatable {
   final Dimensions size;
 
   /// Video stream's frame rate
-  final int frameRate;
+  final num frameRate;
 
   /// Video stream's bitrate
   final int bitrate;
@@ -360,6 +363,17 @@ class VideoInfo extends Equatable {
     this.audio,
   });
 
+  /// @nodoc
+  @protected
+  @override
+  List<Object?> get props => [
+        duration,
+        format,
+        bitrate,
+        audio,
+        video,
+      ];
+
   factory VideoInfo.fromJson(Map<String, dynamic> json) {
     final videoMetadata = json['video'] is List
         ? (json['video'] as List).cast<Map<String, dynamic>>().first
@@ -394,13 +408,4 @@ class VideoInfo extends Equatable {
           : null,
     );
   }
-
-  @override
-  List<Object?> get props => [
-        duration,
-        format,
-        bitrate,
-        audio,
-        video,
-      ];
 }

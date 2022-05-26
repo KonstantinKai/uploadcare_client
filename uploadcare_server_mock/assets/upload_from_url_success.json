@@ -1,0 +1,60 @@
+{
+  "status": "success",
+  "uuid": "be3b4d5e-179d-460e-8a5d-69112ac86cbb",
+  "file_id": "be3b4d5e-179d-460e-8a5d-69112ac86cbb",
+  "size": 2667636,
+  "total": 2667636,
+  "done": 2667636,
+  "original_filename": "IMG-0412_123.JPG",
+  "filename": "IMG0412_123.JPG",
+  "mime_type": "image/jpeg",
+  "image_info": {
+    "color_mode": "RGB",
+    "orientation": 6,
+    "format": "JPEG",
+    "height": 4032,
+    "width": 3024,
+    "sequence": false,
+    "geo_location": {
+      "latitude": 55.62013611111111,
+      "longitude": 37.66299166666666
+    },
+    "datetime_original": "2018-08-20T08:59:50",
+    "dpi": [
+      72,
+      72
+    ]
+  },
+  "video_info": null,
+  "content_info": {
+    "mime": {
+      "mime": "image/jpeg",
+      "type": "image",
+      "subtype": "jpeg"
+    },
+    "image": {
+      "color_mode": "RGB",
+      "orientation": 6,
+      "format": "JPEG",
+      "height": 4032,
+      "width": 3024,
+      "sequence": false,
+      "geo_location": {
+        "latitude": 55.62013611111111,
+        "longitude": 37.66299166666666
+      },
+      "datetime_original": "2018-08-20T08:59:50",
+      "dpi": [
+        72,
+        72
+      ]
+    }
+  },
+  "metadata": {
+    "subsystem": "uploader",
+    "pet": "cat"
+  },
+  "is_image": true,
+  "is_stored": true,
+  "is_ready": true
+}

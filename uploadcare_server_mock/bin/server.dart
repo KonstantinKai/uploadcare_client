@@ -28,7 +28,7 @@ void main(List<String> args) async {
   GroupsRoutes(_router, _assetsDir);
   ConvertingRoutes(_router, _assetsDir);
   FileMetadataRoutes(_router);
-  UploadRoutes(_router);
+  UploadRoutes(_router, _assetsDir);
 
   // Configure a pipeline that logs requests.
   final handler = (!args.contains('--disable-logs')

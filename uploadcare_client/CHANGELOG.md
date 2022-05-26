@@ -1,3 +1,8 @@
+## [6.0.1] - Thu May 26 2022
+
+- Changed `VideoStreamMetadata.frameRate` from `int` to `num`
+- Added new fields to `FileInfoEntity.props`
+
 ## [6.0.0] - Thu May 26 2022
 
 - **Breaking changes with 5.x.x**
