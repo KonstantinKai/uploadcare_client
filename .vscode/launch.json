@@ -6,10 +6,7 @@
       "request": "launch",
       "type": "dart",
       "program": "uploadcare_flutter_example/lib/main.dart",
-      "flutterMode": "debug",
-      "args": [
-        "--no-sound-null-safety"
-      ]
+      "flutterMode": "debug"
     }
   ]
 }

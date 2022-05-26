@@ -14,14 +14,14 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   @override
   final ClientOptions options;
 
-  /// Retrieve file by [fileId]
+  /// Retreive file by [fileId]
   Future<FileInfoEntity> file(
     String fileId, {
 
-    /// Only available since v0.6
+    /// Since v0.6
     @experimental bool includeRecognitionInfo = false,
   }) async {
-    _assertRecongtionApiWithApiVersion(includeRecognitionInfo);
+    _ensureRightVersionForRecognitionApi(includeRecognitionInfo);
     return FileInfoEntity.fromJson(
       await resolveStreamedResponse(
         createRequest(
@@ -72,11 +72,11 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
         const FilesOrdering(FilesFilterValue.DatetimeUploaded),
     dynamic fromFilter,
 
-    /// Only available since v0.6
+    /// Since v0.6
     @experimental bool includeRecognitionInfo = false,
   }) async {
     assert(limit > 0 && limit <= 1000, 'Should be in 1..1000 range');
-    _assertRecongtionApiWithApiVersion(includeRecognitionInfo);
+    _ensureRightVersionForRecognitionApi(includeRecognitionInfo);
 
     if (fromFilter != null) {
       if (ordering.field == FilesFilterValue.DatetimeUploaded) {
@@ -167,8 +167,8 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
     return FacesEntity.fromJson(response);
   }
 
-  Future<Map<String, dynamic>> _detectFaces(String imageId) {
-    final cdnFile = CdnFile(imageId);
+  Future<dynamic> _detectFaces(String imageId) {
+    final cdnFile = CdnFile(imageId, cdnUrl: cdnUrl);
 
     return resolveStreamedResponse(
       createRequest('GET', buildUri('${cdnFile.url}detect_faces/'), false)
@@ -176,11 +176,68 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
     );
   }
 
-  void _assertRecongtionApiWithApiVersion(bool includeRecognitionInfo) {
-    final double version =
-        double.tryParse(options.authorizationScheme.apiVersion.substring(1)) ??
-            0.5;
+  /// **Since v0.7**
+  Future<Map<String, String>> getFileMetadata(String fileId) async {
+    _ensureRightVersionForMetadataApi();
 
-    assert(includeRecognitionInfo ? version > 0.5 : true);
+    final result = await resolveStreamedResponse(
+      createRequest(
+        'GET',
+        buildUri('$apiUrl/files/$fileId/metadata/'),
+      ).send(),
+    );
+
+    return (result as Map).cast<String, String>();
+  }
+
+  /// **Since v0.7**
+  Future<String> getFileMetadataValue(String fileId, String metadataKey) async {
+    _ensureRightVersionForMetadataApi();
+
+    final result = await resolveStreamedResponse(
+      createRequest(
+        'GET',
+        buildUri('$apiUrl/files/$fileId/metadata/$metadataKey/'),
+      ).send(),
+    );
+
+    return result as String;
+  }
+
+  /// **Since v0.7**
+  Future<String> updateFileMetadataValue(
+      String fileId, String metadataKey, String value) async {
+    _ensureRightVersionForMetadataApi();
+
+    final request = createRequest(
+      'PUT',
+      buildUri('$apiUrl/files/$fileId/metadata/$metadataKey/'),
+    )..body = jsonEncode(value);
+
+    final result = await resolveStreamedResponse(request.send());
+    return result as String;
+  }
+
+  /// **Since v0.7**
+  Future<void> deleteFileMetadataValue(
+      String fileId, String metadataKey) async {
+    _ensureRightVersionForMetadataApi();
+
+    await resolveStreamedResponse(
+      createRequest(
+        'DELETE',
+        buildUri('$apiUrl/files/$fileId/metadata/$metadataKey/'),
+      ).send(),
+    );
+  }
+
+  void _ensureRightVersionForRecognitionApi(bool includeRecognitionInfo) {
+    if (!includeRecognitionInfo) return;
+
+    ensureRightVersion(0.6, 'Recognition API');
+  }
+
+  void _ensureRightVersionForMetadataApi() {
+    ensureRightVersion(0.7, 'Metadata API');
   }
 }

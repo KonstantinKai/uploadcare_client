@@ -1,0 +1,15 @@
+{
+  "next": "http://localhost:7070/groups/?limit=3&from=2016-11-09T14%3A30%3A22.421889%2B00%3A00&offset=0",
+  "previous": null,
+  "total": 100,
+  "per_page": 2,
+  "results": [
+    {
+      "id": "dd43982b-5447-44b2-86f6-1c3b52afa0ff~1",
+      "datetime_created": "2018-11-27T14:14:37.583654Z",
+      "files_count": 1,
+      "cdn_url": "http://localhost:7070/dd43982b-5447-44b2-86f6-1c3b52afa0ff~1/",
+      "url": "http://localhost:7070/groups/dd43982b-5447-44b2-86f6-1c3b52afa0ff~1/"
+    }
+  ]
+}

@@ -5,3 +5,5 @@ export 'video_encoding.dart';
 export 'upload.dart';
 export 'files.dart';
 export 'groups.dart';
+export 'webhooks.dart';
+export 'document_converting.dart';

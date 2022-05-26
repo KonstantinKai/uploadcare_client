@@ -1,4 +1,4 @@
-import '../../uploadcare_client.dart';
+import '../api_sections/upload.dart';
 import '../cancel_token.dart';
 import '../options.dart';
 
@@ -13,6 +13,9 @@ class IsolateWorker {
     bool? storeMode,
     ProgressListener? onProgress,
     CancelToken? cancelToken,
+
+    /// **Since v0.7**
+    Map<String, String>? metadata,
   }) {
     throw UnsupportedError('`dart:isolate` is not supported by this platform');
   }

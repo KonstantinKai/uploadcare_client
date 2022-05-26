@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
+
+@internal
 typedef ConcurrentAction<T> = Future<T> Function();
 
-/// Replace with [TaskRunner] in future
+@internal
 class ConcurrentRunner<T> {
   final int _limit;
   final List<ConcurrentAction<T>> actions;

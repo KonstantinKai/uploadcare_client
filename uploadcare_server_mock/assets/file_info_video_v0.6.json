@@ -1,0 +1,33 @@
+{
+  "datetime_removed": null,
+  "datetime_stored": "2021-09-21T11:24:33.159663Z",
+  "datetime_uploaded": "2021-09-21T11:24:33.159663Z",
+  "image_info": null,
+  "is_image": false,
+  "is_ready": true,
+  "mime_type": "video/mp4",
+  "original_file_url": "https://ucarecdn.com/7ed2aed0-0482-4c13-921b-0557b193edc2/16317390663260.mp4",
+  "original_filename": "16317390663260.mp4",
+  "size": 14479722,
+  "url": "https://api.uploadcare.com/files/7ed2aed0-0482-4c13-921b-0557b193edc2/",
+  "uuid": "7ed2aed0-0482-4c13-921b-0557b193edc2",
+  "variations": null,
+  "video_info": {
+    "audio": {
+      "codec": "aac",
+      "bitrate": 129,
+      "channels": "2",
+      "sample_rate": 44100
+    },
+    "video": {
+      "codec": "h264",
+      "width": 640,
+      "height": 480,
+      "bitrate": 433,
+      "frame_rate": 30
+    },
+    "format": "mp4",
+    "bitrate": 579,
+    "duration": 200044
+  }
+}

@@ -1,9 +1,5 @@
 import 'package:test/test.dart';
-import 'package:uploadcare_client/src/measures.dart';
-import 'package:uploadcare_client/src/transformations/common.dart';
-import 'package:uploadcare_client/src/transformations/image.dart';
 import 'package:uploadcare_client/src/transformations/path_transformer.dart';
-import 'package:uploadcare_client/src/transformations/video.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
 void main() {
@@ -117,5 +113,17 @@ void main() {
     final file = CdnFile('some-long-group-id');
 
     expect(file.pathTransformer.path, equals('some-long-group-id/'));
+  });
+
+  test('CdnPathBuilderMixin ensure right cdn url', () {
+    expect(
+        CdnFile('some-long-group-id', cdnUrl: 'http://localhost/custom-cdn')
+            .url,
+        equals('http://localhost/custom-cdn/some-long-group-id/'));
+
+    expect(
+        CdnFile('some-long-group-id', cdnUrl: 'http://localhost/custom-cdn/')
+            .url,
+        equals('http://localhost/custom-cdn/some-long-group-id/'));
   });
 }

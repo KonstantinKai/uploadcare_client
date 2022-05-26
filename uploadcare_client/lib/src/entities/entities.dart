@@ -7,3 +7,6 @@ export 'common.dart';
 export 'faces.dart';
 export 'group.dart';
 export 'cdn.dart';
+export 'webhook.dart';
+export 'document_converting.dart';
+export 'convert.dart';

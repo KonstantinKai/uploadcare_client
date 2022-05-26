@@ -1,0 +1,90 @@
+{
+  "next": "https://api.uploadcare.com/files/?limit=3&from=2018-11-27T01%3A00%3A43.001705%2B00%3A00&offset=0",
+  "previous": "https://api.uploadcare.com/files/?limit=3&to=2018-11-27T01%3A00%3A36.436838%2B00%3A00&offset=0",
+  "total": 2484,
+  "totals": {
+    "removed": 1,
+    "stored": 2480,
+    "unstored": 4
+  },
+  "per_page": 2,
+  "results": [
+    {
+      "rekognition_info": {
+        "Art": 0.60401,
+        "Home Decor": 0.719,
+        "Ornament": 0.60401,
+        "Shutter": 0.719,
+        "Arabesque Pattern": 0.60401,
+        "Window": 0.719,
+        "Curtain": 0.719,
+        "Brick": 0.75331,
+        "Window Shade": 0.719,
+        "Balcony": 0.70572
+      },
+      "datetime_removed": null,
+      "datetime_stored": "2018-11-26T12:49:10.477888Z",
+      "datetime_uploaded": "2018-11-26T12:49:09.945335Z",
+      "image_info": {
+        "color_mode": "RGB",
+        "orientation": 6,
+        "format": "JPEG",
+        "sequence": false,
+        "height": 500,
+        "width": 500,
+        "geo_location": {
+          "latitude": 55.62013611111111,
+          "longitude": 37.66299166666666
+        },
+        "datetime_original": "2018-08-20T08:59:50",
+        "dpi": [
+          144,
+          144
+        ]
+      },
+      "is_image": true,
+      "is_ready": true,
+      "mime_type": "image/jpeg",
+      "original_file_url": "https://ucarecdn.com/3c269810-c17b-4e2c-92b6-25622464d866/papaya.jpg",
+      "original_filename": "papaya.jpg",
+      "size": 642,
+      "url": "https://api.uploadcare.com/files/3c269810-c17b-4e2c-92b6-25622464d866/",
+      "uuid": "3c269810-c17b-4e2c-92b6-25622464d866",
+      "variations": null,
+      "video_info": null
+    },
+    {
+      "datetime_removed": null,
+      "datetime_stored": "2021-09-21T11:24:33.159663Z",
+      "datetime_uploaded": "2021-09-21T11:24:33.159663Z",
+      "image_info": null,
+      "is_image": false,
+      "is_ready": true,
+      "mime_type": "video/mp4",
+      "original_file_url": "https://ucarecdn.com/7ed2aed0-0482-4c13-921b-0557b193edc2/16317390663260.mp4",
+      "original_filename": "16317390663260.mp4",
+      "size": 14479722,
+      "url": "https://api.uploadcare.com/files/7ed2aed0-0482-4c13-921b-0557b193edc2/",
+      "uuid": "7ed2aed0-0482-4c13-921b-0557b193edc2",
+      "variations": null,
+      "video_info": {
+        "audio": {
+          "codec": "aac",
+          "bitrate": 129,
+          "channels": "2",
+          "sample_rate": 44100
+        },
+        "video": {
+          "codec": "h264",
+          "width": 640,
+          "height": 480,
+          "bitrate": 433,
+          "frame_rate": 30
+        },
+        "format": "mp4",
+        "bitrate": 579,
+        "duration": 200044
+      }
+    }
+  ]
+}

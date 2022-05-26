@@ -5,26 +5,33 @@ import 'image.dart';
 
 enum QualityTValue {
   /// Lowest visual quality yet minimal loading times; smaller than [QualityTValue.Lighter].
-  Lightest,
+  Lightest('lightest'),
 
   /// Saves traffic without a significant subjective quality loss; smaller file size compared to [QualityTValue.Normal].
-  Lighter,
+  Lighter('lighter'),
 
   /// Suits most cases.
-  Normal,
+  Normal('normal'),
 
   /// Better video quality, larger file size compared to [QualityTValue.Normal].
-  Better,
+  Better('better'),
 
   /// Useful when you want to get perfect quality without paying much attention to file sizes; larger than [QualityTValue.Better] maximum size.
-  Best,
+  Best('best'),
 
   /// Automatically set optimal image compression and format settings to preserve visual quality while minimizing the file size, content-aware.
   /// Only for image transformation
-  Smart,
+  Smart('smart'),
 
   /// Similar to [Smart], yet optimized for double pixel density.
-  SmartRetina
+  SmartRetina('smart_retina');
+
+  const QualityTValue(this._value);
+
+  final String _value;
+
+  @override
+  String toString() => _value;
 }
 
 /// Sets the level of source quality that affects file sizes and hence loading times and volumes of generated traffic.
@@ -34,24 +41,7 @@ class QualityTransformation extends EnumTransformation<QualityTValue>
       : super(value);
 
   @override
-  String get valueAsString {
-    switch (value) {
-      case QualityTValue.Lightest:
-        return 'lightest';
-      case QualityTValue.Lighter:
-        return 'lighter';
-      case QualityTValue.Better:
-        return 'better';
-      case QualityTValue.Best:
-        return 'best';
-      case QualityTValue.Smart:
-        return 'smart';
-      case QualityTValue.SmartRetina:
-        return 'smart_retina';
-      default:
-        return 'normal';
-    }
-  }
+  String get valueAsString => value.toString();
 
   @override
   String get operation => 'quality';
@@ -135,4 +125,15 @@ class GifToVideoTransformation extends Transformation {
 class JsonFileInfoTransformation extends NullParamTransformation {
   @override
   String get operation => 'json';
+}
+
+/// By default, CDN instructs browsers to show images and download other file types.
+/// The inline control allows you to change this behavior.
+///
+/// See https://uploadcare.com/docs/delivery/cdn/#inline
+class InlineTransformation extends BooleanTransformation {
+  const InlineTransformation(bool inline) : super(inline);
+
+  @override
+  String get operation => 'inline';
 }

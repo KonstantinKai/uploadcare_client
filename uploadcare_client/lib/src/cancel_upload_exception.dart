@@ -5,7 +5,7 @@ class CancelUploadException implements Exception {
 
   @override
   String toString() {
-    if (message.isNotEmpty) {
+    if (message.isEmpty) {
       return 'CancelUploadException';
     }
 

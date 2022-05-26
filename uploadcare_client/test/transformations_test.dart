@@ -1,10 +1,5 @@
 import 'package:test/test.dart';
-import 'package:uploadcare_client/src/measures.dart';
-import 'package:uploadcare_client/src/transformations/base.dart';
-import 'package:uploadcare_client/src/transformations/common.dart';
-import 'package:uploadcare_client/src/transformations/group.dart';
-import 'package:uploadcare_client/src/transformations/image.dart';
-import 'package:uploadcare_client/src/transformations/video.dart';
+import 'package:uploadcare_client/uploadcare_client.dart';
 
 void testDelimiter(Transformation transform, [String expected = '-/']) =>
     expect(transform.delimiter, equals(expected));
@@ -530,6 +525,23 @@ void main() {
       expect(() => VideoThumbsGenerateTransformation(0),
           throwsA(TypeMatcher<AssertionError>()));
       expect(() => VideoThumbsGenerateTransformation(51),
+          throwsA(TypeMatcher<AssertionError>()));
+    });
+  });
+
+  group('Document', () {
+    test('DocumentFormatTransformation', () {
+      testDelimiter(DocumentFormatTransformation(DucumentOutFormatTValue.DOC));
+      expect(
+          DocumentFormatTransformation(DucumentOutFormatTValue.DOC).toString(),
+          equals('format/doc'));
+      expect(
+          DocumentFormatTransformation(DucumentOutFormatTValue.PNG, page: 1)
+              .toString(),
+          equals('format/png/-/page/1'));
+      expect(
+          () => DocumentFormatTransformation(DucumentOutFormatTValue.DOC,
+              page: 1),
           throwsA(TypeMatcher<AssertionError>()));
     });
   });

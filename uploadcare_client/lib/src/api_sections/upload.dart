@@ -1,13 +1,15 @@
 import 'dart:async';
+
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
+
 import '../cancel_token.dart';
 import '../cancel_upload_exception.dart';
 import '../concurrent_runner.dart';
 import '../entities/entities.dart';
-import '../file/file.dart';
+import '../file/uc_file.dart';
 import '../mixins/mixins.dart';
 import '../options.dart';
 import '../transport.dart';
@@ -24,7 +26,7 @@ typedef ProgressListener = void Function(ProgressEntity progress);
 /// ```dart
 /// final upload = ApiUpload(options: options);
 /// ...
-/// final file1 = SharedFile(File('/some/file'));
+/// final file1 = UCFile(File('/some/file'));
 /// final file2 = 'https://some/file';
 ///
 /// final id1 = await upload.auto(file1); // File instance
@@ -36,7 +38,7 @@ typedef ProgressListener = void Function(ProgressEntity progress);
 /// ```dart
 /// final upload = ApiUpload(options: options);
 /// ...
-/// final id = await upload.auto(SharedFile(File('/some/file')), runInIsolate: true);
+/// final id = await upload.auto(UCFile(File('/some/file')), runInIsolate: true);
 /// ```
 class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   @override
@@ -47,16 +49,19 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   });
 
   /// Upload file [resource] according to type
-  /// if `String` makes [fromUrl] upload if it is http/https url or try retrieve [SharedFile] if path is absolute, otherwise make an `SharedFile` request according to size
+  /// if `String` makes [fromUrl] upload if it is http/https url or try retrieve [UCFile] if path is absolute, otherwise make an `UCFile` request according to size
   Future<String> auto(
     Object resource, {
     bool runInIsolate = false,
     bool? storeMode,
     ProgressListener? onProgress,
     CancelToken? cancelToken,
+
+    /// **Since v0.7**
+    Map<String, String>? metadata,
   }) async {
-    assert(resource is String || resource is SharedFile,
-        'The resource should be one of File or URL and File path');
+    assert(resource is String || resource is UCFile,
+        'The resource should be one of `UCFile` or `URL` and `File` path');
 
     if (runInIsolate) {
       return _runInIsolate(
@@ -64,6 +69,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
         storeMode: storeMode,
         onProgress: onProgress,
         cancelToken: cancelToken,
+        metadata: metadata,
       );
     }
 
@@ -76,16 +82,17 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
             resource,
             storeMode: storeMode,
             onProgress: onProgress,
+            metadata: metadata,
           );
         } else if (uri.hasAbsolutePath) {
-          resource = SharedFile.fromUri(uri);
+          resource = UCFile.fromUri(uri);
         } else {
-          throw Exception('Cannot parse URL from string');
+          throw ArgumentError('Cannot parse URL from string');
         }
       }
     }
 
-    if (resource is SharedFile) {
+    if (resource is UCFile) {
       final file = resource;
       final filesize = await file.length();
 
@@ -95,6 +102,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
           storeMode: storeMode,
           onProgress: onProgress,
           cancelToken: cancelToken,
+          metadata: metadata,
         );
       }
 
@@ -103,10 +111,11 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
         storeMode: storeMode,
         onProgress: onProgress,
         cancelToken: cancelToken,
+        metadata: metadata,
       );
     }
 
-    throw Exception('Make sure you passed File or URL string');
+    throw ArgumentError('Make sure you passed File or URL string');
   }
 
   /// Make upload to `/base` endpoint
@@ -117,13 +126,20 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   /// [onProgress] subscribe to progress event
   /// [cancelToken] make cancelable request
   Future<String> base(
-    SharedFile file, {
+    UCFile file, {
     bool? storeMode,
     ProgressListener? onProgress,
     CancelToken? cancelToken,
+
+    /// **Since v0.7**
+    Map<String, String>? metadata,
   }) async {
+    _ensureRightVersionForMetadata(metadata);
+
     final filename = file.name;
     final filesize = await file.length();
+
+    metadata ??= {};
 
     ProgressEntity progress = ProgressEntity(0, filesize);
 
@@ -133,6 +149,8 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
             'UPLOADCARE_PUB_KEY': publicKey,
             'UPLOADCARE_STORE': resolveStoreModeParam(storeMode),
             if (options.useSignedUploads) ..._signUpload(),
+            for (MapEntry entry in metadata.entries)
+              'metadata[${entry.key}]': entry.value,
           })
           ..files.add(
             MultipartFile(
@@ -186,13 +204,19 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   /// [maxConcurrentChunkRequests] maximum concurrent requests
   /// [cancelToken] make cancelable request
   Future<String> multipart(
-    SharedFile file, {
+    UCFile file, {
     bool? storeMode,
     ProgressListener? onProgress,
     CancelToken? cancelToken,
     int? maxConcurrentChunkRequests,
+
+    /// **Since v0.7**
+    Map<String, String>? metadata,
   }) async {
+    _ensureRightVersionForMetadata(metadata);
+
     maxConcurrentChunkRequests ??= options.multipartMaxConcurrentChunkRequests;
+    metadata ??= {};
 
     final filename = file.name;
     final filesize = await file.length();
@@ -212,6 +236,8 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
         'size': filesize.toString(),
         'content_type': mimeType,
         if (options.useSignedUploads) ..._signUpload(),
+        for (MapEntry entry in metadata.entries)
+          'metadata[${entry.key}]': entry.value,
       });
 
     if (cancelToken != null) {
@@ -311,7 +337,22 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     Duration checkInterval = const Duration(seconds: 1),
     bool? storeMode,
     ProgressListener? onProgress,
+
+    /// **Since v0.7**
+    Map<String, String>? metadata,
+
+    /// If set to `true`, enables the [url] duplicates prevention.
+    /// Specifically, if the [url] had already been fetched and uploaded previously, this request will return information about the already uploaded file.
+    bool? checkURLDuplicates,
+
+    /// Determines if the requested [url] should be kept in the history of fetched/uploaded URLs.
+    /// If the value is not defined explicitly, it is set to the value of the [checkURLDuplicates] parameter.
+    bool? saveURLDuplicates,
   }) async {
+    _ensureRightVersionForMetadata(metadata);
+
+    metadata ??= {};
+
     final request = createMultipartRequest(
       'POST',
       buildUri('$uploadUrl/from_url/'),
@@ -320,11 +361,22 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
         'pub_key': publicKey,
         'store': resolveStoreModeParam(storeMode),
         'source_url': url,
+        if (checkURLDuplicates != null)
+          'check_URL_duplicates': resolveStoreModeParam(checkURLDuplicates),
+        if (saveURLDuplicates != null)
+          'save_URL_duplicates': resolveStoreModeParam(saveURLDuplicates),
         if (options.useSignedUploads) ..._signUpload(),
+        for (MapEntry entry in metadata.entries)
+          'metadata[${entry.key}]': entry.value,
       });
 
-    final token =
-        (await resolveStreamedResponse(request.send()))['token'] as String;
+    final result = await resolveStreamedResponse(request.send());
+
+    if (result['uuid'] != null) {
+      return result['uuid'] as String;
+    }
+
+    final token = result['token'] as String;
 
     await for (UrlUploadStatusEntity response
         in _urlUploadStatusAsStream(token, checkInterval)) {
@@ -366,7 +418,8 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
 
     controller.add(response);
 
-    if (response.status == UrlUploadStatusValue.Progress) {
+    if ([UrlUploadStatusValue.Progress, UrlUploadStatusValue.Waiting]
+        .contains(response.status)) {
       Timer(
         checkInterval,
         () => _statusTimerCallback(token, checkInterval, controller),
@@ -424,7 +477,12 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     bool? storeMode,
     ProgressListener? onProgress,
     CancelToken? cancelToken,
+
+    /// **Since v0.7**
+    Map<String, String>? metadata,
   }) {
+    _ensureRightVersionForMetadata(metadata);
+
     final poolSize = options.maxIsolatePoolSize;
     final isolateWorker = IsolateWorker(poolSize);
 
@@ -434,6 +492,13 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
       storeMode: storeMode,
       onProgress: onProgress,
       cancelToken: cancelToken,
+      metadata: metadata,
     );
+  }
+
+  void _ensureRightVersionForMetadata(Map<String, String>? metadata) {
+    if (metadata == null) return;
+
+    ensureRightVersion(0.7, 'Save metadata');
   }
 }

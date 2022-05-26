@@ -5,8 +5,8 @@ import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
-Future<List<SharedFile>> pickFiles(BuildContext context) async {
-  final completer = Completer<List<SharedFile>>();
+Future<List<UCFile>> pickFiles(BuildContext context) async {
+  final completer = Completer<List<UCFile>>();
   final uploadInput = InputElement()..type = 'file';
 
   uploadInput.click();
@@ -14,9 +14,8 @@ Future<List<SharedFile>> pickFiles(BuildContext context) async {
   uploadInput.onChange.listen((e) {
     final files = uploadInput.files;
 
-    completer.complete(files != null && files.isNotEmpty
-        ? [SharedFile(files.first)]
-        : const []);
+    completer.complete(
+        files != null && files.isNotEmpty ? [UCFile(files.first)] : const []);
   });
 
   return completer.future;

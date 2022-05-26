@@ -1,4 +1,12 @@
-## [3.0.0] - Sat Mar 6 2021
+## [4.0.0] - Thu May 26 2022
+
+- Updated `uploadcare_client` dependency
+
+## [3.0.1] - Fri Apr 1 2022
+
+- Updated `uploadcare_client` dependency
+
+## [3.0.0] - Thu Mar 31 2022
 
 - Updated `uploadcare_client` dependency with Breaking changes
 

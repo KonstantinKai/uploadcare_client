@@ -4,7 +4,10 @@ import 'file_info.dart';
 import 'progress.dart';
 
 enum UrlUploadStatusValue {
-  /// progress, upload is in progress.
+  /// The field is set to waiting initially
+  Waiting,
+
+  /// Progress, upload is in progress.
   /// You also get the additional [ProgressEntity.total] and [ProgressEntity.uploaded] fields holding file size in bytes.
   /// [ProgressEntity.total] can be null, e.g. when an origin server does not provide the needed info.
   Progress,
@@ -13,13 +16,22 @@ enum UrlUploadStatusValue {
   Error,
 
   /// everything went smoothly
-  Success,
+  Success;
+
+  factory UrlUploadStatusValue.parse(String? value) {
+    if (value == 'waiting') return UrlUploadStatusValue.Waiting;
+    if (value == 'progress') return UrlUploadStatusValue.Progress;
+    if (value == 'error') return UrlUploadStatusValue.Error;
+    if (value == 'success') return UrlUploadStatusValue.Success;
+
+    throw ArgumentError('Unknown stats "$value"');
+  }
 }
 
 /// Provides status data from `fromUrl` uploading
 class UrlUploadStatusEntity extends Equatable {
   /// Upload status
-  final UrlUploadStatusValue? status;
+  final UrlUploadStatusValue status;
 
   /// Error message if status equal [UrlUploadStatusValue.Error]
   final String errorMessage;
@@ -31,19 +43,14 @@ class UrlUploadStatusEntity extends Equatable {
   final ProgressEntity? progress;
 
   const UrlUploadStatusEntity({
+    required this.status,
     this.errorMessage = '',
-    this.status,
     this.fileInfo,
     this.progress,
   });
 
   factory UrlUploadStatusEntity.fromJson(Map<String, dynamic> json) {
-    final stringStatus = json['status'];
-    UrlUploadStatusValue? status;
-
-    if (stringStatus == 'progress') status = UrlUploadStatusValue.Progress;
-    if (stringStatus == 'error') status = UrlUploadStatusValue.Error;
-    if (stringStatus == 'success') status = UrlUploadStatusValue.Success;
+    final status = UrlUploadStatusValue.parse(json['status']);
 
     return UrlUploadStatusEntity(
       status: status,

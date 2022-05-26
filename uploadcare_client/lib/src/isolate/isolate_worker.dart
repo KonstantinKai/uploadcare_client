@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:isolate';
 
+import 'package:meta/meta.dart';
+
 import '../api_sections/upload.dart';
 import '../cancel_token.dart';
 import '../cancel_upload_exception.dart';
@@ -9,7 +11,7 @@ import '../concurrent_runner.dart';
 import '../options.dart';
 import '../entities/progress.dart';
 
-/// Replace with [TaskRunner] in future
+@internal
 class IsolateWorker {
   static IsolateWorker? _instance;
 
@@ -29,6 +31,9 @@ class IsolateWorker {
     bool? storeMode,
     ProgressListener? onProgress,
     CancelToken? cancelToken,
+
+    /// **Since v0.7**
+    Map<String, String>? metadata,
   }) {
     final completer = Completer<String>();
 
@@ -39,6 +44,7 @@ class IsolateWorker {
           storeMode: storeMode,
           onProgress: onProgress,
           cancelToken: cancelToken,
+          metadata: metadata,
         ).then((id) {
           if (!completer.isCompleted) completer.complete(id);
         }).catchError((error) {
@@ -67,6 +73,9 @@ class IsolateWorker {
     bool? storeMode,
     ProgressListener? onProgress,
     CancelToken? cancelToken,
+
+    /// **Since v0.7**
+    Map<String, String>? metadata,
   }) async {
     final resultPort = ReceivePort();
     final errorPort = ReceivePort();
@@ -80,6 +89,7 @@ class IsolateWorker {
         cancellable: cancellable,
         resource: resource,
         storeMode: storeMode,
+        metadata: metadata,
       ),
       errorsAreFatal: true,
       onExit: resultPort.sendPort,
@@ -94,7 +104,7 @@ class IsolateWorker {
 
       final Exception exception =
           errorData[0] == 'CancelUploadException' && cancellable
-              ? CancelUploadException(cancelToken!.cancelMessage)
+              ? CancelUploadException(cancelToken.cancelMessage)
               : Exception(errorData[0]);
       final StackTrace stack = StackTrace.fromString(errorData[1]);
 
@@ -137,6 +147,7 @@ class _UploadConfiguration {
     required this.resource,
     required this.cancellable,
     this.storeMode,
+    this.metadata,
   });
 
   final ClientOptions options;
@@ -144,6 +155,7 @@ class _UploadConfiguration {
   final Object resource;
   final bool cancellable;
   final bool? storeMode;
+  final Map<String, String>? metadata;
 }
 
 Future<void> _upload(_UploadConfiguration configuration) async {
@@ -167,6 +179,7 @@ Future<void> _upload(_UploadConfiguration configuration) async {
       storeMode: configuration.storeMode,
       onProgress: configuration.resultSendPort.send,
       cancelToken: cancelToken,
+      metadata: configuration.metadata,
     );
 
     cancelRecievePort?.close();

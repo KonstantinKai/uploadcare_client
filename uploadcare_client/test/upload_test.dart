@@ -1,143 +1,134 @@
-@Skip('Refactor with API providers to drop real UC servers interaction')
-
 import 'dart:io';
 
 import 'package:dotenv/dotenv.dart';
 import 'package:test/test.dart';
-import 'package:uploadcare_client/src/cancel_token.dart';
-import 'package:uploadcare_client/src/cancel_upload_exception.dart';
-import 'package:uploadcare_client/src/file/file.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
 void main() {
-  late UploadcareClient client;
-  late UploadcareClient clientSigned;
-  final List<String> ids = [];
-  final List<String> signedIds = [];
+  late ApiUpload apiV05;
+  late ApiUpload apiV05Signed;
+  late ApiUpload apiV07;
 
   setUpAll(() {
     load();
 
-    client = UploadcareClient(
+    apiV05 = ApiUpload(
       options: ClientOptions(
+        uploadUrl: 'http://localhost:7070/upload',
         maxIsolatePoolSize: 3,
         authorizationScheme: AuthSchemeRegular(
           apiVersion: 'v0.5',
-          publicKey: env['UPLOADCARE_PUBLIC_KEY'] ?? '',
-          privateKey: env['UPLOADCARE_PRIVATE_KEY'] ?? '',
+          publicKey: 'public_key',
+          privateKey: 'private_key',
         ),
       ),
     );
 
-    clientSigned = UploadcareClient(
+    apiV07 = ApiUpload(
       options: ClientOptions(
+        uploadUrl: 'http://localhost:7070/upload',
+        authorizationScheme: AuthSchemeRegular(
+          apiVersion: 'v0.7',
+          publicKey: 'public_key',
+          privateKey: 'private_key',
+        ),
+      ),
+    );
+
+    apiV05Signed = ApiUpload(
+      options: ClientOptions(
+        uploadUrl: 'http://localhost:7070/upload',
+        apiUrl: 'http://localhost:7070',
         authorizationScheme: AuthSchemeRegular(
           apiVersion: 'v0.5',
-          publicKey: env['UPLOADCARE_PUBLIC_KEY_SIGNED'] ?? '',
-          privateKey: env['UPLOADCARE_PRIVATE_KEY_SIGNED'] ?? '',
+          publicKey: 'public_key',
+          privateKey: 'private_key',
         ),
         useSignedUploads: true,
       ),
     );
   });
 
-  tearDownAll(() async {
-    if (ids.isNotEmpty) await client.files.remove(ids);
-    if (signedIds.isNotEmpty) await clientSigned.files.remove(signedIds);
-  });
-
   test('Simple auto upload', () async {
-    final _ids = await Future.wait([
-      client.upload.auto(
-        SharedFile(File(env['UPLOAD_BASE'] ?? '')),
+    final internalIds = await Future.wait([
+      apiV05.auto(
+        UCFile(File(env['UPLOAD_BASE']!)),
         storeMode: false,
       ),
-      client.upload.auto(
-        env['UPLOAD_BASE'] ?? '',
+      apiV05.auto(
+        env['UPLOAD_BASE']!,
         storeMode: false,
       ),
-      client.upload.auto(
-        env['UPLOAD_URL'] ?? '',
+      apiV05.auto(
+        env['UPLOAD_URL']!,
         storeMode: false,
       ),
     ]);
 
-    expect(_ids.every((id) => id is String), isTrue);
-
-    ids.addAll(_ids);
+    // ignore: unnecessary_type_check
+    expect(internalIds.every((id) => id is String), isTrue);
   });
 
   test('Simple base upload', () async {
-    final id = await client.upload.base(
-      SharedFile(File(env['UPLOAD_BASE'] ?? '')),
+    final id = await apiV05.base(
+      UCFile(File(env['UPLOAD_BASE']!)),
       storeMode: false,
     );
 
     expect(id, isA<String>());
-
-    ids.add(id);
   });
 
   test('Simple multipart upload', () async {
-    final id = await client.upload.multipart(
-      SharedFile(File(env['UPLOAD_MULTIPART'] ?? '')),
+    final id = await apiV05.multipart(
+      UCFile(File(env['UPLOAD_MULTIPART']!)),
       storeMode: false,
     );
 
     expect(id, isA<String>());
-
-    ids.add(id);
   });
 
   test('Simple url upload', () async {
-    final id = await client.upload.fromUrl(
-      env['UPLOAD_URL'] ?? '',
+    final id = await apiV05.fromUrl(
+      env['UPLOAD_URL']!,
       storeMode: false,
+      checkInterval: Duration(milliseconds: 1),
     );
 
     expect(id, isA<String>());
-
-    ids.add(id);
   });
 
   test('Signed base upload', () async {
-    final id = await clientSigned.upload.base(
-      SharedFile(File(env['UPLOAD_BASE'] ?? '')),
+    final id = await apiV05Signed.base(
+      UCFile(File(env['UPLOAD_BASE']!)),
       storeMode: false,
     );
 
     expect(id, isA<String>());
-
-    signedIds.add(id);
   });
 
   test('Signed multipart upload', () async {
-    final id = await clientSigned.upload.multipart(
-      SharedFile(File(env['UPLOAD_MULTIPART'] ?? '')),
+    final id = await apiV05Signed.multipart(
+      UCFile(File(env['UPLOAD_MULTIPART']!)),
       storeMode: false,
     );
 
     expect(id, isA<String>());
-
-    signedIds.add(id);
   });
 
   test('Signed url upload', () async {
-    final id = await clientSigned.upload.fromUrl(
+    final id = await apiV05Signed.fromUrl(
       env['UPLOAD_URL'] ?? '',
       storeMode: false,
     );
 
     expect(id, isA<String>());
-
-    signedIds.add(id);
   });
 
   test('Base upload with CancelToken', () async {
     final String cancelMessage = 'some cancel message';
     final cancelToken = CancelToken(cancelMessage);
-    final future = client.upload.base(
-      SharedFile(File(env['UPLOAD_BASE'] ?? '')),
+    final future = apiV05.base(
+      UCFile(File(env['UPLOAD_BASE'] ?? '')),
       storeMode: false,
       cancelToken: cancelToken,
     );
@@ -155,8 +146,8 @@ void main() {
 
   test('Multipart upload with CancelToken', () async {
     final cancelToken = CancelToken();
-    final future = client.upload.multipart(
-      SharedFile(File(env['UPLOAD_MULTIPART'] ?? '')),
+    final future = apiV05.multipart(
+      UCFile(File(env['UPLOAD_MULTIPART']!)),
       storeMode: false,
       cancelToken: cancelToken,
       onProgress: (progress) {
@@ -174,21 +165,19 @@ void main() {
   });
 
   test('Simple multipart upload in Isolate', () async {
-    final id = await client.upload.auto(
-      File(env['UPLOAD_MULTIPART'] ?? ''),
+    final id = await apiV05.auto(
+      UCFile(File(env['UPLOAD_MULTIPART']!)),
       storeMode: false,
       runInIsolate: true,
     );
 
     expect(id, isA<String>());
-
-    ids.add(id);
   });
 
   test('Multipart upload with CancelToken in Isolate', () async {
     final cancelToken = CancelToken();
-    final future = client.upload.auto(
-      File(env['UPLOAD_MULTIPART'] ?? ''),
+    final future = apiV05.auto(
+      UCFile(File(env['UPLOAD_MULTIPART']!)),
       storeMode: false,
       runInIsolate: true,
       cancelToken: cancelToken,
@@ -206,43 +195,127 @@ void main() {
     }
   });
 
-  test('Concurrent upload in Isolate', () async {
-    final _ids = await Future.wait([
-      client.upload.auto(
-        File(env['UPLOAD_BASE'] ?? ''),
-        storeMode: false,
-        runInIsolate: true,
-      ),
-      client.upload.auto(
-        env['UPLOAD_BASE'] ?? '',
-        storeMode: false,
-        runInIsolate: true,
-      ),
-      client.upload.auto(
-        env['UPLOAD_MULTIPART'] ?? '',
-        storeMode: false,
-        runInIsolate: true,
-      ),
-      client.upload.auto(
-        File(env['UPLOAD_BASE'] ?? ''),
-        storeMode: false,
-        runInIsolate: true,
-      ),
-      client.upload.auto(
-        env['UPLOAD_BASE'] ?? '',
-        storeMode: false,
-        runInIsolate: true,
-      ),
-      client.upload.auto(
-        env['UPLOAD_MULTIPART'] ?? '',
-        storeMode: false,
-        runInIsolate: true,
-      ),
-    ]);
+  test(
+    'Concurrent upload in Isolate',
+    () async {
+      final internalIds = await Future.wait([
+        apiV05.auto(
+          UCFile(File(env['UPLOAD_BASE']!)),
+          storeMode: false,
+          runInIsolate: true,
+        ),
+        apiV05.auto(
+          env['UPLOAD_BASE']!,
+          storeMode: false,
+          runInIsolate: true,
+        ),
+        apiV05.auto(
+          env['UPLOAD_MULTIPART']!,
+          storeMode: false,
+          runInIsolate: true,
+        ),
+        apiV05.auto(
+          UCFile(File(env['UPLOAD_BASE']!)),
+          storeMode: false,
+          runInIsolate: true,
+        ),
+        apiV05.auto(
+          env['UPLOAD_BASE']!,
+          storeMode: false,
+          runInIsolate: true,
+        ),
+        apiV05.auto(
+          env['UPLOAD_MULTIPART']!,
+          storeMode: false,
+          runInIsolate: true,
+        ),
+      ]);
 
-    expect(_ids.length, equals(6));
-    expect(_ids.every((id) => id is String), isTrue);
+      expect(internalIds.length, equals(6));
+      // ignore: unnecessary_type_check
+      expect(internalIds.every((id) => id is String), isTrue);
+    },
+    timeout: Timeout.factor(2),
+  );
 
-    ids.addAll(_ids);
-  }, timeout: Timeout.factor(2));
+  test('Ensure metadata version for base upload', () async {
+    expect(
+        () => apiV05.base(
+              UCFile(File(env['UPLOAD_BASE']!)),
+              storeMode: false,
+              metadata: {'test': 'value'},
+            ),
+        throwsA(TypeMatcher<AssertionError>()));
+  });
+
+  test('Ensure metadata version for multipart upload', () async {
+    expect(
+        () => apiV05.multipart(
+              UCFile(File(env['UPLOAD_MULTIPART']!)),
+              storeMode: false,
+              metadata: {'test': 'value'},
+            ),
+        throwsA(TypeMatcher<AssertionError>()));
+  });
+
+  test('Ensure metadata version for url upload', () async {
+    expect(
+        () => apiV05.fromUrl(
+              env['UPLOAD_URL']!,
+              storeMode: false,
+              metadata: {'test': 'value'},
+            ),
+        throwsA(TypeMatcher<AssertionError>()));
+  });
+
+  test('Base upload with metadata', () async {
+    final id = await apiV07.base(
+      UCFile(File(env['UPLOAD_BASE']!)),
+      storeMode: false,
+      metadata: {'test': 'value'},
+    );
+
+    expect(id, isA<String>());
+  });
+
+  test('Ensure metadata version for base upload in isolate', () async {
+    expect(
+        () => apiV05.auto(
+              UCFile(File(env['UPLOAD_BASE']!)),
+              storeMode: false,
+              metadata: {'test': 'value'},
+              runInIsolate: true,
+            ),
+        throwsA(TypeMatcher<AssertionError>()));
+  });
+
+  test('Base upload with metadata in isolate', () async {
+    final id = await apiV07.auto(
+      UCFile(File(env['UPLOAD_BASE']!)),
+      storeMode: false,
+      metadata: {'test': 'value'},
+      runInIsolate: true,
+    );
+
+    expect(id, isA<String>());
+  });
+
+  test('Multipart upload with metadata', () async {
+    final id = await apiV07.multipart(
+      UCFile(File(env['UPLOAD_MULTIPART']!)),
+      storeMode: false,
+      metadata: {'test': 'value'},
+    );
+
+    expect(id, isA<String>());
+  });
+
+  test('Url upload with metadata', () async {
+    final id = await apiV07.fromUrl(env['UPLOAD_URL']!,
+        storeMode: false,
+        metadata: {'test': 'value'},
+        checkURLDuplicates: false);
+
+    expect(id, isA<String>());
+  });
 }

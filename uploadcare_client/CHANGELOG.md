@@ -1,3 +1,49 @@
+## [6.0.0] - Thu May 26 2022
+
+- **Breaking changes with 5.x.x**
+  - Increased dart SDK to the latest stable, not compatible with lower versions
+  - Made `ListEntity.nextUrl` and `nextUrl.previousUrl` nullable according to the official documentation
+  - Made `UrlUploadStatusEntity.status` non nullable
+  - Changed error type from `Exception` to `AssertionError` which can be thrown from `ApiUpload.auto`
+  - Changed `FileInfoEntity.imageInfo` from `Map` to `ImageInfo`
+  - Renamed `SharedFile` to `UCFile`
+  - Removed `implements ImageTransformation` from `InlineTransformation` and moved it to the common folder
+  - Refactored whole video encoding API due to the similar functionality with the document conversion API
+    - Removed `VideoEncodingJobStatusValue` use `ConvertJobStatusValue` instead
+    - Removed `VideoEncodingJobEntity` use `ConvertJobEntity<VideoEncodingResultEntity>` instead
+    - Removed `VideoEncodingConvertEntity` use `ConvertEntity<VideoEncodingResultEntity>` instead
+    - Createt `ConvertMixin` that simplify creating of conversion API
+- **Features**
+  - Added `ApiWebhooks` section, respectively added as a field to `UploadcareClient.webhooks`. See https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Webhook
+  - Added `ApiDocumentConverting` section, respectively added as a field to `UploadcareClient.documentConverting`. See https://uploadcare.com/docs/transformations/document-conversion/
+  - Added `DocumentTransformation` as a base transformation for documents
+  - Added `DocumentFormatTransformation`
+  - Added metadata methods to the `ApiFiles` section. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/File-Metadata, respectively added `metadata` field to the `FileInfoEntity`
+  - Added ability to save file metadata while uploading
+  - Added `checkURLDuplicates` and `saveURLDuplicates` parameters for `ApiUploads.fromUrl` method
+  - Added `VideoInfo` to the `FileInfoEntity`. Works since `v0.6` API
+  - Added `ListEntityTotals` to the `ListEntity`
+  - Added `FileInfoEntity.variations` field
+  - Added `FileInfoEntity.isVideo` field
+  - Added `ApiGroups.delete` method
+  - Improved `uploadcare_flutter_example` (works on web/mobile/desktop)
+    - Added buttons for work with `v0.6` and `v0.7` API
+    - Added `FileInfoScreen` with file metadata and the ability to download a file
+    - Added `PreviewFileScreen` only for images at the moment
+  - Created uc server mock for tests
+  - Covered more API with tests
+- **Fixes**
+  - Added `UrlUploadStatusValue.Waiting` status
+  - Fixed `ApiUpload.fromUrl` when status has `UrlUploadStatusValue.Waiting` value
+  - Fixed `ApiUpload.fromUrl` when the URL was previously downloaded, and no need to wait for the status again
+  - Fixed `CdnPathBuilderMixin.uri` field when url has an initial pathname
+  - Fixed `TransportHelperMixin` when the server returns a status code greater than 201 (till 204 is a valid status response)
+  - Fixed `CancelUploadException.toString` method that returned the wrong value for an empty message
+
+## [5.0.1] - Fri Apr 1 2022
+
+- Fixed analyzer warnings
+
 ## [5.0.0] - Thu Mar 31 2022
 
 - **Breaking changes with 4.x.x**
@@ -78,7 +124,7 @@
   - The Flutter team made a breaking change with the ImageProvider in Flutter `1.10.15`.
 - Changed `UploadcareImageProvider.load` method arguments, related to the SDK changes for `ImageProvider`
 - Added ability to upload in `flutter_web` environment
-  - Added `SharedFile` abstraction, which works on both `mobile` & `web`
+  - Added `UCFile` abstraction, which works on both `mobile` & `web`
   - Changed `res` argument type in `ApiSectionUpload.auto` method
   - Changed `file` argument type in `ApiSectionUpload.base` & `ApiSectionUpload.multipart` methods
 - Added ability to upload files in example project in `flutter_web` environment

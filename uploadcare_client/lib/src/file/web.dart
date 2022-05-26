@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
-import 'file.dart';
+import 'uc_file.dart';
 
-SharedFile createFile(Object file) => _WebFile(file as File);
+UCFile createFile(Object file) => _WebFile(file as File);
 
-SharedFile createFileFromUri(Uri uri) =>
+UCFile createFileFromUri(Uri uri) =>
     throw UnsupportedError('Cannot create a file from uri with dart:html');
 
-class _WebFile implements SharedFile {
+class _WebFile implements UCFile {
   final File _file;
 
   _WebFile(this._file);

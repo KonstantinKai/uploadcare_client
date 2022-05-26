@@ -1,5 +1,7 @@
-import 'dart:async';
 import 'dart:convert';
+import 'package:meta/meta.dart';
+
+import '../entities/convert.dart';
 import '../entities/video_encoding.dart';
 import '../mixins/mixins.dart';
 import '../options.dart';
@@ -7,9 +9,16 @@ import '../transformations/base.dart';
 import '../transformations/common.dart';
 import '../transformations/path_transformer.dart';
 import '../transformations/video.dart';
+import 'convert_mixin.dart';
 
 /// Provides API for working with video encoding
-class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
+///
+/// See https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/videoConvert
+class ApiVideoEncoding
+    with
+        OptionsShortcutMixin,
+        TransportHelperMixin,
+        ConvertMixin<VideoEncodingResultEntity, VideoTransformation> {
   @override
   final ClientOptions options;
 
@@ -43,85 +52,56 @@ class ApiVideoEncoding with OptionsShortcutMixin, TransportHelperMixin {
   /// })
   /// ...
   /// ```
-  Future<VideoEncodingConvertEntity> process(
+  @override
+  Future<ConvertEntity<VideoEncodingResultEntity>> process(
     Map<String, List<VideoTransformation>> transformers, {
     bool? storeMode,
   }) async {
     final request = createRequest('POST', buildUri('$apiUrl/convert/video/'))
       ..body = jsonEncode({
-        'paths': transformers.entries.map((entry) {
-          assert(() {
-            return !entry.value.any((transformation) =>
-                transformation is QualityTransformation &&
-                [QualityTValue.Smart, QualityTValue.SmartRetina]
-                    .contains(transformation.value));
-          }(), '"smart" value cannot be used with VideoTransformation');
-
-          return PathTransformer('${entry.key}/video',
-                  transformations: entry.value
-                    ..sort((a, b) =>
-                        b is VideoThumbsGenerateTransformation ? -1 : 1))
-              .path;
-        }).toList(),
+        'paths': transformToPaths(transformers),
         'store': resolveStoreModeParam(storeMode),
       });
 
-    return VideoEncodingConvertEntity.fromJson(
+    return ConvertEntity.fromJson(
       await resolveStreamedResponse(request.send()),
+      VideoEncodingResultEntity.fromJson,
     );
+  }
+
+  @visibleForTesting
+  List<String> transformToPaths(
+      Map<String, List<VideoTransformation>> transformers) {
+    return transformers.entries.map((entry) {
+      assert(() {
+        return !entry.value.any((transformation) =>
+            transformation is QualityTransformation &&
+            [QualityTValue.Smart, QualityTValue.SmartRetina]
+                .contains(transformation.value));
+      }(), '"smart" value cannot be used with VideoTransformation');
+
+      return PathTransformer('${entry.key}/video',
+              transformations: entry.value
+                ..sort(
+                    (a, b) => b is VideoThumbsGenerateTransformation ? -1 : 1))
+          .path;
+    }).toList();
   }
 
   /// Checking processing job status
   ///
-  /// [token] from [VideoEncodingResultEntity.token]
-  Future<VideoEncodingJobEntity> status(
-    int token,
+  /// [token] from [ConvertResultEntity.token]
+  @override
+  Future<ConvertJobEntity<VideoEncodingResultEntity>> status(
+    token,
   ) async =>
-      VideoEncodingJobEntity.fromJson(
+      ConvertJobEntity.fromJson(
         await resolveStreamedResponse(
           createRequest(
             'GET',
             buildUri('$apiUrl/convert/video/status/$token/'),
           ).send(),
         ),
+        VideoEncodingResultEntity.fromJson,
       );
-
-  Future<void> _statusTimerCallback(
-    int token,
-    Duration checkInterval,
-    StreamController<VideoEncodingJobEntity> controller,
-  ) async {
-    final response = await status(token);
-
-    controller.add(response);
-
-    if ([
-      VideoEncodingJobStatusValue.Processing,
-      VideoEncodingJobStatusValue.Pending
-    ].contains(response.status)) {
-      Timer(checkInterval,
-          () => _statusTimerCallback(token, checkInterval, controller));
-      return;
-    }
-
-    // ignore: unawaited_futures
-    controller.close();
-  }
-
-  /// Returns processing job as `Stream`
-  ///
-  /// [token] from [VideoEncodingResultEntity.token]
-  /// [checkInterval] check status interval
-  Stream<VideoEncodingJobEntity> statusAsStream(
-    int token, {
-    Duration checkInterval = const Duration(seconds: 5),
-  }) {
-    final StreamController<VideoEncodingJobEntity> controller =
-        StreamController.broadcast();
-
-    Timer(checkInterval,
-        () => _statusTimerCallback(token, checkInterval, controller));
-
-    return controller.stream;
-  }
 }

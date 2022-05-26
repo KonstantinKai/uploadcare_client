@@ -5,5 +5,6 @@
   "dart.flutterSdkPaths": [
     "/Users/kai/Dev/flutter",
     "/Users/kai/Dev/flutter_dev",
-  ]
+  ],
+  "dart.runPubGetOnPubspecChanges": false
 }

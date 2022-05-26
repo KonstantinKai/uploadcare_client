@@ -1,0 +1,60 @@
+{
+  "files": [
+    {
+      "datetime_removed": null,
+      "datetime_stored": "2018-11-26T12:49:10.477888Z",
+      "datetime_uploaded": "2018-11-26T12:49:09.945335Z",
+      "is_image": true,
+      "is_ready": true,
+      "mime_type": "image/jpeg",
+      "original_file_url": "http://localhost:7070/3c269810-c17b-4e2c-92b6-25622464d866/papaya.jpg",
+      "original_filename": "papaya.jpg",
+      "size": 642,
+      "url": "http://localhost:7070/files/3c269810-c17b-4e2c-92b6-25622464d866/",
+      "uuid": "3c269810-c17b-4e2c-92b6-25622464d866",
+      "variations": null,
+      "content_info": {
+        "mime": {
+          "mime": "image/jpeg",
+          "type": "image",
+          "subtype": "jpeg"
+        },
+        "image": {
+          "format": "JPEG",
+          "width": 500,
+          "height": 500,
+          "sequence": false,
+          "orientation": 6,
+          "geo_location": {
+            "latitude": 55.62013611111111,
+            "longitude": 37.66299166666666
+          },
+          "datetime_original": "2018-08-20T08:59:50",
+          "dpi": [
+            72,
+            72
+          ]
+        }
+      },
+      "metadata": {
+        "subsystem": "uploader",
+        "pet": "cat"
+      },
+      "appdata": {
+        "uc_clamav_virus_scan": {
+          "data": {
+            "infected": true,
+            "infected_with": "Win.Test.EICAR_HDB-1"
+          },
+          "datetime_created": "2021-09-21T11:24:33.159663Z",
+          "datetime_updated": "2021-09-21T11:24:33.159663Z"
+        }
+      }
+    }
+  ],
+  "id": "dd43982b-5447-44b2-86f6-1c3b52afa0ff~1",
+  "datetime_created": "2018-11-27T14:14:37.583654Z",
+  "files_count": 1,
+  "cdn_url": "http://localhost:7070/dd43982b-5447-44b2-86f6-1c3b52afa0ff~1/",
+  "url": "http://localhost:7070/groups/dd43982b-5447-44b2-86f6-1c3b52afa0ff~1/"
+}

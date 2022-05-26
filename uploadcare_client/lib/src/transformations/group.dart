@@ -2,10 +2,17 @@ import 'base.dart';
 
 enum ArchiveTValue {
   /// `zip` archive
-  Zip,
+  Zip('zip'),
 
   /// `tar` archive
-  Tar,
+  Tar('tar');
+
+  const ArchiveTValue(this._value);
+
+  final String _value;
+
+  @override
+  String toString() => _value;
 }
 
 /// Gets a group as an archive: [ArchiveTValue]
@@ -29,7 +36,7 @@ class ArchiveTransformation extends EnumTransformation<ArchiveTValue>
       ];
 
   @override
-  String get valueAsString => value == ArchiveTValue.Zip ? 'zip' : 'tar';
+  String get valueAsString => value?.toString() ?? '';
 
   @override
   String get delimiter => '';

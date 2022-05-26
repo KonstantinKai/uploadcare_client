@@ -7,17 +7,24 @@ enum VideoFormatTValue {
   /// Video streams are compressed via VP8 or VP9 video codec.
   /// Audio gets compressed with Vorbis or Opus, more.
   /// WebM is compatible with many of the current devices and browsers and backed by Google.
-  Webm,
+  Webm('webm'),
 
   /// Ogg/Theora is a free and open video compression format from Xiph.org.
   /// Theora is considered competitive at low bitrates, which makes it suitable for the web, more.
   /// Theora is backed by the community is supported by fewer browsers than webm.
-  Ogg,
+  Ogg('ogg'),
 
   /// MPEG-4 with its H.264 or H.265 video codec is widely supported across devices and browsers.
   /// Videos encoded with mp4 will work on Android and iOS, in Safari, Chrome, and IE.
   /// Choose it when you want to go universal or in case you need a fallback.
-  Mp4,
+  Mp4('mp4');
+
+  const VideoFormatTValue(this._value);
+
+  final String _value;
+
+  @override
+  String toString() => _value;
 }
 
 /// Converts a file to one of the HTML5 video formats: [VideoFormatTValue]
@@ -29,16 +36,7 @@ class VideoFormatTransformation extends EnumTransformation<VideoFormatTValue>
       : super(value);
 
   @override
-  String get valueAsString {
-    switch (value) {
-      case VideoFormatTValue.Webm:
-        return 'webm';
-      case VideoFormatTValue.Ogg:
-        return 'ogg';
-      default:
-        return 'mp4';
-    }
-  }
+  String get valueAsString => value?.toString() ?? '';
 
   @override
   String get operation => 'format';
@@ -46,16 +44,23 @@ class VideoFormatTransformation extends EnumTransformation<VideoFormatTValue>
 
 enum VideoResizeTValue {
   /// Preserve the aspect ratio of the original file.
-  PreserveRatio,
+  PreserveRatio('preserve_ratio'),
 
   /// Match the output video to provided dimensions, no matter the original aspect ratio.
-  BreakRatio,
+  BreakRatio('break_ratio'),
 
   /// Match the output video to provided dimensions, crop the rest of the pixels along one of the axes (top/bottom or left/right).
-  ScaleCrop,
+  ScaleCrop('scale_crop'),
 
   /// Letterbox the video to match the output frame size exactly (add black bars).
-  AddPadding,
+  AddPadding('add_padding');
+
+  const VideoResizeTValue(this._value);
+
+  final String _value;
+
+  @override
+  String toString() => _value;
 }
 
 /// Resizes a video to the specified dimensions. The operation follows the behavior specified by one of the four presets: [VideoResizeTValue]
@@ -74,20 +79,7 @@ class VideoResizeTransformation extends ResizeTransformation
         super(size);
 
   @override
-  String get valueAsString {
-    switch (value) {
-      case VideoResizeTValue.PreserveRatio:
-        return 'preserve_ratio';
-      case VideoResizeTValue.BreakRatio:
-        return 'break_ratio';
-      case VideoResizeTValue.ScaleCrop:
-        return 'scale_crop';
-      case VideoResizeTValue.AddPadding:
-        return 'add_padding';
-      default:
-        return '';
-    }
-  }
+  String get valueAsString => value?.toString() ?? '';
 
   @override
   List<String> get params => [

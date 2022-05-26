@@ -41,5 +41,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+  <key>NSCameraUsageDescription</key>
+  <string>$(APP_DISPLAY_NAME)  Would Like to Access Your Camera. Camera access required in order to be able to send messages with multimedia attached, as well as to upload videos and pictures taken to your profile page.</string>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>$(APP_DISPLAY_NAME)  Would Like to Access Your Photos. Access to your photo library is required so you can share photos and videos.</string>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>$(APP_DISPLAY_NAME)  Would Like to Access Your Microphone. Access is required for sound while recording.</string>
 </dict>
 </plist>

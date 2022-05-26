@@ -4,16 +4,23 @@ import 'common.dart';
 
 enum ImageFormatTValue {
   /// Convert an image to JPEG.
-  Jpeg,
+  Jpeg('jpeg'),
 
   /// Convert an image to PNG.
-  Png,
+  Png('png'),
 
   /// Convert an image to WebP.
-  Webp,
+  Webp('webp'),
 
   /// Try converting to WebP and fall back to JPEG when a user browser provides no WebP support.
-  Auto,
+  Auto('auto');
+
+  const ImageFormatTValue(this._value);
+
+  final String _value;
+
+  @override
+  String toString() => _value;
 }
 
 /// Convert an image to one of the supported output formats: [ImageFormatTValue]
@@ -24,20 +31,7 @@ class ImageFormatTransformation extends EnumTransformation<ImageFormatTValue>
   const ImageFormatTransformation(ImageFormatTValue value) : super(value);
 
   @override
-  String get valueAsString {
-    switch (value) {
-      case ImageFormatTValue.Auto:
-        return 'auto';
-      case ImageFormatTValue.Jpeg:
-        return 'jpeg';
-      case ImageFormatTValue.Png:
-        return 'png';
-      case ImageFormatTValue.Webp:
-        return 'webp';
-      default:
-        return '';
-    }
-  }
+  String get valueAsString => value?.toString() ?? '';
 
   @override
   String get operation => 'format';
@@ -177,13 +171,20 @@ class MaxIccSizeTransformation extends IntTransformation
 
 enum StretchTValue {
   /// stretch the source image.
-  On,
+  On('on'),
 
   /// forbid stretching the source image.
-  Off,
+  Off('off'),
 
   /// forbid stretching the source image, render color-filled frame around.
-  Fill,
+  Fill('fill');
+
+  const StretchTValue(this._value);
+
+  final String _value;
+
+  @override
+  String toString() => _value;
 }
 
 /// Set the [ImageResizeTransformation] behavior when provided [Size] are greater than the source image dimensions.
@@ -196,16 +197,7 @@ class StretchTransformation extends EnumTransformation<StretchTValue>
       : super(value);
 
   @override
-  String get valueAsString {
-    switch (value) {
-      case StretchTValue.Fill:
-        return 'fill';
-      case StretchTValue.Off:
-        return 'off';
-      default:
-        return 'on';
-    }
-  }
+  String get valueAsString => value?.toString() ?? '';
 
   @override
   String get operation => 'stretch';
@@ -231,34 +223,41 @@ class SetFillTransformation extends Transformation
 /// Type value which enables smart image analysis for [ScaleCropTransformation]
 enum ScaleCropTypeTValue {
   /// default image analysis mode, face detection, object detection and corner points detection
-  Smart,
+  Smart('smart'),
 
   /// same as [ScaleCropTypeTValue.Smart], face detection, object detection and corner points detection
-  SmartFacesObjectsPoints,
+  SmartFacesObjectsPoints('smart_faces_objects_points'),
 
   /// face detection, followed by object detection
-  SmartFacesObjects,
+  SmartFacesObjects('smart_faces_objects'),
 
   /// face detection, followed by corner points detection
-  SmartFacesPoints,
+  SmartFacesPoints('smart_faces_points'),
 
   /// object detection, followed by face detection, followed by corner points detection
-  SmartObjectsFacesPoints,
+  SmartObjectsFacesPoints('smart_objects_faces_points'),
 
   /// object detection, followed by face detection
-  SmartObjectsFaces,
+  SmartObjectsFaces('smart_objects_faces'),
 
   /// object detection, followed by corner points detection
-  SmartObjectsPoints,
+  SmartObjectsPoints('smart_objects_points'),
 
   /// corner points detection or manual region specified by offset parameter
-  SmartPoints,
+  SmartPoints('smart_points'),
 
   /// object detection or manual region specified by offset parameter
-  SmartObjects,
+  SmartObjects('smart_objects'),
 
   /// face detection or manual region specified by offset parameter
-  SmartFaces,
+  SmartFaces('smart_faces');
+
+  const ScaleCropTypeTValue(this._value);
+
+  final String _value;
+
+  @override
+  String toString() => _value;
 }
 
 /// Downscale an image along one of the axes (the one with smaller linear size) and crop the rest.
@@ -300,32 +299,7 @@ class ScaleCropTransformation extends ResizeTransformation
       ];
 
   @override
-  String get valueAsString {
-    switch (value) {
-      case ScaleCropTypeTValue.Smart:
-        return 'smart';
-      case ScaleCropTypeTValue.SmartFacesObjectsPoints:
-        return 'smart_faces_objects_points';
-      case ScaleCropTypeTValue.SmartFacesObjects:
-        return 'smart_faces_objects';
-      case ScaleCropTypeTValue.SmartFacesPoints:
-        return 'smart_faces_points';
-      case ScaleCropTypeTValue.SmartObjectsFacesPoints:
-        return 'smart_objects_faces_points';
-      case ScaleCropTypeTValue.SmartObjectsFaces:
-        return 'smart_objects_faces';
-      case ScaleCropTypeTValue.SmartObjectsPoints:
-        return 'smart_objects_points';
-      case ScaleCropTypeTValue.SmartPoints:
-        return 'smart_points';
-      case ScaleCropTypeTValue.SmartObjects:
-        return 'smart_objects';
-      case ScaleCropTypeTValue.SmartFaces:
-        return 'smart_faces';
-      default:
-        return '';
-    }
-  }
+  String get valueAsString => value?.toString() ?? '';
 }
 
 /// Resize an image to fit into specified dimensions, proportional.
@@ -343,16 +317,18 @@ class PreviewTransformation extends ResizeTransformation
 /// Possible [CropTransformation.tag] values
 enum CropTagTValue {
   /// The largest detected face in the image is used as a crop basis.
-  Face,
+  Face('face'),
 
   /// The whole image is used as a crop basis.
-  Image,
-}
+  Image('image');
 
-const _kCropTagValuesMap = {
-  CropTagTValue.Face: 'face',
-  CropTagTValue.Image: 'image',
-};
+  const CropTagTValue(this._value);
+
+  final String _value;
+
+  @override
+  String toString() => _value;
+}
 
 /// Crop an image to fit into specified dimensions, implement optional offsets.
 ///
@@ -385,7 +361,7 @@ class CropTransformation extends Transformation implements ImageTransformation {
 
   @override
   List<String> get params => [
-        if (tag != null) _kCropTagValuesMap[tag]!,
+        if (tag != null) tag.toString(),
         if (size != null) size.toString(),
         if (aspectRatio != null) aspectRatio.toString(),
         if (coords != null) coords.toString(),
@@ -722,9 +698,16 @@ class ColorWarmthTransformation extends IntTransformation
 }
 
 enum SrgbTValue {
-  Fast,
-  Icc,
-  KeepProfile,
+  Fast('fast'),
+  Icc('icc'),
+  KeepProfile('keep_profile');
+
+  const SrgbTValue(this._value);
+
+  final String _value;
+
+  @override
+  String toString() => _value;
 }
 
 /// The operation sets how Uploadcare behaves depending on different color profiles of uploaded images.
@@ -738,41 +721,25 @@ class SrgbTransformation extends EnumTransformation<SrgbTValue>
   String get operation => 'srgb';
 
   @override
-  String get valueAsString {
-    switch (value) {
-      case SrgbTValue.Fast:
-        return 'fast';
-      case SrgbTValue.Icc:
-        return 'icc';
-      case SrgbTValue.KeepProfile:
-        return 'keep_profile';
-      default:
-        return '';
-    }
-  }
-}
-
-/// By default, CDN instructs browsers to show images and download other file types.
-/// The inline control allows you to change this behavior.
-///
-/// See https://uploadcare.com/docs/delivery/cdn/#inline
-class InlineTransformation extends BooleanTransformation
-    implements ImageTransformation {
-  const InlineTransformation(bool inline) : super(inline);
-
-  @override
-  String get operation => 'inline';
+  String get valueAsString => value?.toString() ?? '';
 }
 
 enum StripMetaTValue {
   /// The default behavior when no strip_meta operation is applied. No meta information will be added to the processed file.
-  All,
+  All('all'),
 
   /// Copies the EXIF from the original file. The orientation tag will be set to 1 (normal orientation).
-  None,
+  None('none'),
 
   /// Copies the EXIF from the original file but skips geolocation. The orientation tag will be set to 1 (normal orientation).
-  Sensitive
+  Sensitive('sensitive');
+
+  const StripMetaTValue(this._value);
+
+  final String _value;
+
+  @override
+  String toString() => _value;
 }
 
 /// The original image often comes with additional information built into the image file.
@@ -790,16 +757,5 @@ class StripMetaTransformation extends EnumTransformation<StripMetaTValue> {
   String get operation => 'strip_meta';
 
   @override
-  String get valueAsString {
-    switch (value) {
-      case StripMetaTValue.All:
-        return 'all';
-      case StripMetaTValue.None:
-        return 'none';
-      case StripMetaTValue.Sensitive:
-        return 'sensitive';
-      default:
-        return '';
-    }
-  }
+  String get valueAsString => value?.toString() ?? '';
 }

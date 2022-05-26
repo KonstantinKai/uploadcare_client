@@ -30,6 +30,9 @@ abstract class VideoTransformation implements Transformation {}
 /// An abstraction for group transformations
 abstract class GroupTransformation implements Transformation {}
 
+/// An abstraction for document transformations
+abstract class DocumentTransformation implements Transformation {}
+
 /// An abstraction to make transformation implementation with `enum` values
 abstract class EnumTransformation<T> extends Transformation {
   const EnumTransformation(this.value);

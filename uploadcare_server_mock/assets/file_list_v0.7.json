@@ -1,0 +1,138 @@
+{
+  "next": "http://localhost:7070/files/?limit=3&from=2018-11-27T01%3A00%3A43.001705%2B00%3A00&offset=0",
+  "previous": "http://localhost:7070/files/?limit=3&to=2018-11-27T01%3A00%3A36.436838%2B00%3A00&offset=0",
+  "total": 2484,
+  "totals": {
+    "removed": 1,
+    "stored": 2480,
+    "unstored": 4
+  },
+  "per_page": 2,
+  "results": [
+    {
+      "datetime_removed": null,
+      "datetime_stored": "2018-11-26T12:49:10.477888Z",
+      "datetime_uploaded": "2018-11-26T12:49:09.945335Z",
+      "is_image": true,
+      "is_ready": true,
+      "mime_type": "image/jpeg",
+      "original_file_url": "http://localhost:7070/3c269810-c17b-4e2c-92b6-25622464d866/papaya.jpg",
+      "original_filename": "papaya.jpg",
+      "size": 642,
+      "url": "http://localhost:7070/files/3c269810-c17b-4e2c-92b6-25622464d866/",
+      "uuid": "3c269810-c17b-4e2c-92b6-25622464d866",
+      "variations": null,
+      "content_info": {
+        "mime": {
+          "mime": "image/jpeg",
+          "type": "image",
+          "subtype": "jpeg"
+        },
+        "image": {
+          "format": "JPEG",
+          "width": 500,
+          "height": 500,
+          "sequence": false,
+          "orientation": 6,
+          "geo_location": {
+            "latitude": 55.62013611111111,
+            "longitude": 37.66299166666666
+          },
+          "datetime_original": "2018-08-20T08:59:50",
+          "dpi": [
+            72,
+            72
+          ]
+        }
+      },
+      "metadata": {
+        "subsystem": "uploader",
+        "pet": "cat"
+      }
+    },
+    {
+      "datetime_removed": null,
+      "datetime_stored": "2021-09-21T11:24:33.159663Z",
+      "datetime_uploaded": "2021-09-21T11:24:33.159663Z",
+      "is_image": false,
+      "is_ready": true,
+      "mime_type": "video/mp4",
+      "original_file_url": "http://localhost:7070/7ed2aed0-0482-4c13-921b-0557b193edc2/16317390663260.mp4",
+      "original_filename": "16317390663260.mp4",
+      "size": 14479722,
+      "url": "http://localhost:7070/files/7ed2aed0-0482-4c13-921b-0557b193edc2/",
+      "uuid": "7ed2aed0-0482-4c13-921b-0557b193edc2",
+      "variations": null,
+      "content_info": {
+        "mime": {
+          "mime": "video/mp4",
+          "type": "video",
+          "subtype": "mp4"
+        },
+        "video": {
+          "audio": [],
+          "video": [
+            {
+              "codec": "h264",
+              "width": 640,
+              "height": 480,
+              "bitrate": 433,
+              "frame_rate": 30
+            }
+          ],
+          "format": "mp4",
+          "bitrate": 579,
+          "duration": 200044
+        }
+      },
+      "metadata": {
+        "subsystem": "tester",
+        "pet": "dog"
+      }
+    },
+    {
+      "datetime_removed": null,
+      "datetime_stored": "2021-09-21T11:24:33.159663Z",
+      "datetime_uploaded": "2021-09-21T11:24:33.159663Z",
+      "is_image": false,
+      "is_ready": true,
+      "mime_type": "video/mp4",
+      "original_file_url": "http://localhost:7070/7ed2aed0-0482-4c13-921b-0557b193edc2/16317390663260.mp4",
+      "original_filename": "16317390663260.mp4",
+      "size": 14479722,
+      "url": "http://localhost:7070/files/7ed2aed0-0482-4c13-921b-0557b193edc2/",
+      "uuid": "7ed2aed0-0482-4c13-921b-0557b193edc2",
+      "variations": null,
+      "content_info": {
+        "mime": {
+          "mime": "video/mp4",
+          "type": "video",
+          "subtype": "mp4"
+        },
+        "video": {
+          "audio": [
+            {
+              "codec": "aac",
+              "bitrate": 129,
+              "channels": 2,
+              "sample_rate": 44100
+            }
+          ],
+          "video": [
+            {
+              "codec": "h264",
+              "width": 640,
+              "height": 480,
+              "bitrate": 433,
+              "frame_rate": 30
+            }
+          ],
+          "format": "mp4",
+          "bitrate": 579,
+          "duration": 200044
+        }
+      },
+      "metadata": {}
+    }
+  ]
+}

@@ -1,9 +1,5 @@
 ## Uploadcare Client
 
-**!!! IMPORTANT !!!**
-
-Release of `uploadcare_client@^3.0.0` has breaking changes. `Null safety` was introduced. The library has been split into 2 packages, this package can be used in non-flutter environments (web, server, .etc) and for use with flutter please install only `uploadcare_flutter@^1.0.0` which has this package as a dependency, [see](https://pub.dev/packages/uploadcare_flutter).
-
 ### Limitations
 
 - It's impossible to use `AuthSchemeRegular` auth scheme on the `web` with fetch API because `Date` request header is forbidden for XMLRequest https://fetch.spec.whatwg.org/#forbidden-header-name.
@@ -41,16 +37,14 @@ Uploadcare is a complete file handling platform that helps you ship products fas
 - video encoding, [read more](https://uploadcare.com/docs/video_encoding/#process-operations)
   - [create processing tasks](#video-encoding)
   - retrieve processing status
+- document conversion, [read more](https://uploadcare.com/docs/transformations/document-conversion/)
+  - create processing tasks
+  - retrieve processing status
 - CDN API
   - image transformations, [read more](https://uploadcare.com/docs/api_reference/cdn/)
   - group transformations, [read more](https://uploadcare.com/docs/delivery/group_api/)
   - video transformations
-
-#### Roadmap:
-
-- code improuvements
-- new transformation api
-- document conversion
+- Webhooks API
 
 ## Example:
 
@@ -105,7 +99,7 @@ final options = ClientOptions(
 );
 
 final upload = ApiUpload(options: options);
-final fileId = await upload.base(SharedFile(File('...some/file')));
+final fileId = await upload.base(UCFile(File('...some/file')));
 // ...etc.
 ```
 
@@ -122,7 +116,7 @@ final cancelToken = CancelToken();
 
 try {
   final fileId = await client.upload.multipart(
-    SharedFile(File('/some/file')),
+    UCFile(File('/some/file')),
     cancelToken: cancelToken,
   );
 } on CancelUploadException catch (e) {
@@ -195,7 +189,7 @@ final client = UploadcareClient(
 );
 
 final id = await client.upload.auto(
-  SharedFile(File('/some/file')),
+  UCFile(File('/some/file')),
   runInIsolate: true,
 );
 ```

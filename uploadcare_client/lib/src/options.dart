@@ -27,6 +27,11 @@ class ClientOptions {
   /// Max concurrent running isolates. If you are using [ApiUpload.auto] with `runInIsolate` parameter
   final int maxIsolatePoolSize;
 
+  double? _apiVersion;
+
+  double get apiVersion =>
+      _apiVersion ??= double.parse(authorizationScheme.apiVersion.substring(1));
+
   ClientOptions({
     required this.authorizationScheme,
     this.apiUrl = kAPIEndpoint,

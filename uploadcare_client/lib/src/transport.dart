@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:http/http.dart';
+import 'package:meta/meta.dart';
 import 'authorization/scheme.dart';
 
 mixin _AuthorizedRequestMixin on BaseRequest {
@@ -47,6 +48,7 @@ mixin _CancelableRequestMixin on BaseRequest, _AuthorizedRequestMixin {
       }));
 }
 
+@internal
 class UcMultipartRequest extends MultipartRequest
     with _AuthorizedRequestMixin, _CancelableRequestMixin {
   UcMultipartRequest({
@@ -61,6 +63,7 @@ class UcMultipartRequest extends MultipartRequest
   final AuthScheme? scheme;
 }
 
+@internal
 class UcRequest extends Request
     with _AuthorizedRequestMixin, _CancelableRequestMixin {
   UcRequest({

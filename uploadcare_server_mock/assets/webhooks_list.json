@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "project": 13,
+    "created": "2016-04-27T11:49:54.948615Z",
+    "updated": "2016-04-27T12:04:57.819933Z",
+    "event": "file.uploaded",
+    "target_url": "http://example.com/hooks/receiver",
+    "is_active": true,
+    "signing_secret": "7kMVZivndx0ErgvhRKAr",
+    "version": "0.6"
+  }
+]

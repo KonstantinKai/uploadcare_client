@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 import '../options.dart';
 
+@internal
 mixin OptionsShortcutMixin {
   @protected
   ClientOptions get options;
@@ -16,4 +17,12 @@ mixin OptionsShortcutMixin {
   String get apiUrl => options.apiUrl;
   @protected
   String get cdnUrl => options.cdnUrl;
+
+  @protected
+  void ensureRightVersion(double since, String prefix) {
+    assert(
+      options.apiVersion >= since,
+      '$prefix available since v$since version',
+    );
+  }
 }

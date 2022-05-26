@@ -29,14 +29,18 @@ final client = UploadcareClient(
   ),
 );
 ```
+
 `UploadcareClient` has at the moment 4 API section
+
 ```dart
 final ApiUpload upload;
 final ApiFiles files;
 final ApiVideoEncoding videoEncoding;
 final ApiGroups groups;
 ```
+
 You can use each api section separately, for example:
+
 ```dart
 final options = ClientOptions(
   authorizationScheme: AuthSchemeRegular(
@@ -47,11 +51,12 @@ final options = ClientOptions(
 );
 
 final upload = ApiUpload(options: options);
-final fileId = await upload.base(SharedFile(File('...some/file')));
+final fileId = await upload.base(UCFile(File('...some/file')));
 // ...etc.
 ```
 
 ## Cancellation
+
 You can cancel the upload process by using `CancelToken`, each method from the upload section (`auto, base, multipart`) accepts `cancelToken` property, which you can use to cancel the upload process. This feature works only with files upload because Uploadcare isn't supporting interrupt upload by URL
 
 ```dart
@@ -63,7 +68,7 @@ final cancelToken = CancelToken();
 
 try {
   final fileId = await client.upload.multipart(
-    SharedFile(File('/some/file')),
+    UCFile(File('/some/file')),
     cancelToken: cancelToken,
   );
 } on CancelUploadException catch (e) {
@@ -78,6 +83,7 @@ cancelToken.cancel();
 ```
 
 ## Gif to video
+
 ```dart
 final file = CdnFile('gif-id-1')
   ..transform(GifToVideoTransformation([
@@ -90,7 +96,8 @@ final file = CdnFile('gif-id-1')
 VideoPlayerController.network(file.url);
 ```
 
-## Video encoding 
+## Video encoding
+
 ```dart
 ...
 
@@ -120,6 +127,7 @@ final Stream<VideoEncodingJobEntity> processingStream = videoEncoding.statusAsSt
 ```
 
 ## Upload in isolates
+
 ```dart
 final client = UploadcareClient(
   options: ClientOptions(
@@ -133,12 +141,13 @@ final client = UploadcareClient(
 );
 
 final id = await client.upload.auto(
-  SharedFile(File('/some/file')),
+  UCFile(File('/some/file')),
   runInIsolate: true,
 );
 ```
 
-## Face Recognition 
+## Face Recognition
+
 ```dart
 final files = ApiFiles(options: options);
 
@@ -146,6 +155,7 @@ final FacesEntity entity = await files.detectFacesWithOriginalImageSize('image-i
 ```
 
 ## Object Recognition
+
 ```dart
 final files = ApiFiles(options: options);
 

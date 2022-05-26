@@ -1,0 +1,41 @@
+{
+  "datetime_removed": null,
+  "datetime_stored": "2018-11-26T12:49:10.477888Z",
+  "datetime_uploaded": "2018-11-26T12:49:09.945335Z",
+  "is_image": true,
+  "is_ready": true,
+  "mime_type": "image/jpeg",
+  "original_file_url": "http://localhost:7070/3c269810-c17b-4e2c-92b6-25622464d866/papaya.jpg",
+  "original_filename": "papaya.jpg",
+  "size": 642,
+  "url": "http://localhost:7070/files/3c269810-c17b-4e2c-92b6-25622464d866/",
+  "uuid": "3c269810-c17b-4e2c-92b6-25622464d866",
+  "variations": null,
+  "content_info": {
+    "mime": {
+      "mime": "image/jpeg",
+      "type": "image",
+      "subtype": "jpeg"
+    },
+    "image": {
+      "format": "JPEG",
+      "width": 500,
+      "height": 500,
+      "sequence": false,
+      "orientation": 6,
+      "geo_location": {
+        "latitude": 55.62013611111111,
+        "longitude": 37.66299166666666
+      },
+      "datetime_original": "2018-08-20T08:59:50",
+      "dpi": [
+        72,
+        72
+      ]
+    }
+  },
+  "metadata": {
+    "subsystem": "uploader",
+    "pet": "cat"
+  }
+}

@@ -1,3 +1,5 @@
+import 'package:meta/meta.dart';
+
 /// Provides cancel mechanism to upload process
 ///
 /// Example:
@@ -5,7 +7,7 @@
 /// final String cancelMessage = 'some cancel message';
 /// final cancelToken = CancelToken(cancelMessage);
 /// final future = client.upload.auto(
-///   SharedFile(File('/some/file')),
+///   UCFile(File('/some/file')),
 ///   cancelToken: cancelToken,
 /// );
 ///
@@ -24,6 +26,7 @@ class CancelToken {
   final String cancelMessage;
 
   /// Internal property to handle cancel message **DON'T USE IT IN YOUR CODE**
+  @internal
   void Function()? onCancel;
 
   bool _isCanceled = false;

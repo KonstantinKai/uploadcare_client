@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:mime/mime.dart';
-import 'file.dart';
+import 'uc_file.dart';
 
-SharedFile createFile(Object file) => _IOFile(file as File);
+UCFile createFile(Object file) => _IOFile(file as File);
 
-SharedFile createFileFromUri(Uri uri) => _IOFile(File.fromUri(uri));
+UCFile createFileFromUri(Uri uri) => _IOFile(File.fromUri(uri));
 
-class _IOFile implements SharedFile {
+class _IOFile implements UCFile {
   final File _file;
   final String _name;
 

@@ -79,4 +79,9 @@ class ApiGroups with OptionsShortcutMixin, TransportHelperMixin {
             .map((item) => GroupInfoEntity.fromJson(item))
             .toList());
   }
+
+  Future<void> delete(String id) async {
+    await resolveStreamedResponse(
+        createRequest('DELETE', buildUri('$apiUrl/groups/$id/')).send());
+  }
 }

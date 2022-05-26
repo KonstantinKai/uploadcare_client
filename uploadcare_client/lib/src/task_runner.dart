@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:meta/meta.dart';
+
 int _internalIdCounter = 0;
 
+@internal
 typedef TaskAction<T> = Future<T> Function();
 
 class _Task<T> {
@@ -32,6 +35,7 @@ class _Task<T> {
   }
 }
 
+@internal
 class TaskRunner {
   TaskRunner([this._maxConcurrentTasks = 5]);
 

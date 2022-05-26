@@ -1,0 +1,30 @@
+{
+  "id": "5128ec65-9957-47b8-a6ad-4c2f172ef660",
+  "orientation": null,
+  "format": "JPEG",
+  "height": 450,
+  "width": 1200,
+  "geo_location": null,
+  "datetime_original": null,
+  "dpi": null,
+  "faces": [
+    [
+      482,
+      105,
+      199,
+      271
+    ],
+    [
+      74,
+      124,
+      194,
+      261
+    ],
+    [
+      890,
+      54,
+      260,
+      316
+    ]
+  ]
+}

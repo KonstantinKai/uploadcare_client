@@ -1,0 +1,28 @@
+name: uploadcare_client
+
+packages:
+  - uploadcare_client/**
+  - uploadcare_flutter/**
+  - uploadcare_flutter_example/**
+  - uploadcare_server_mock/**
+
+ide:
+  intellij: false
+
+command:
+  version:
+    workspaceChangelog: false
+    updateGitTagRefs: false
+    linkToCommits: false
+    branch: master
+
+scripts:
+  postbootstrap: |
+    ./tool/generate_bin_assets.sh
+
+  analyze:
+    run: |
+      melos exec -c 1 -- \
+        dart analyze .
+    description: |
+      Run `dart analyze` in all packages.

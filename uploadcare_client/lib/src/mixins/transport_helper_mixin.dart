@@ -11,6 +11,7 @@ void assertAuthorization(bool authorizeRequest, AuthScheme scheme) {
       'Please provide a non empty `privateKey` for using authorized requests');
 }
 
+@internal
 mixin TransportHelperMixin on OptionsShortcutMixin {
   @protected
   UcMultipartRequest createMultipartRequest(
@@ -43,16 +44,22 @@ mixin TransportHelperMixin on OptionsShortcutMixin {
   Future<Response> _resolveResponseStatusCode(FutureOr<Response> resp) async {
     final response = await resp;
 
-    if (response.statusCode > 201) {
+    if (response.statusCode > 204) {
       throw ClientException(
-          'Unexpected status ${response.statusCode} from "${response.request?.url ?? 'unknown url'}" with reason "${String.fromCharCodes(response.bodyBytes)}"');
+        'Unexpected status ${response.statusCode} from "${response.request?.url ?? 'unknown url'}" with reason "${String.fromCharCodes(response.bodyBytes)}"',
+        response.request?.url,
+      );
     }
 
     return response;
   }
 
-  Future<Map<String, dynamic>> _resolveResponse(FutureOr<Response> resp) async {
+  Future<dynamic> _resolveResponse(FutureOr<Response> resp) async {
     final response = await _resolveResponseStatusCode(resp);
+
+    if (response.statusCode == 204) {
+      return '';
+    }
 
     try {
       return jsonDecode(response.body);
@@ -68,7 +75,7 @@ mixin TransportHelperMixin on OptionsShortcutMixin {
       _resolveResponseStatusCode(Response.fromStream(await streamedResponse));
 
   @protected
-  Future<Map<String, dynamic>> resolveStreamedResponse(
+  Future<dynamic> resolveStreamedResponse(
           FutureOr<StreamedResponse> streamedResponse) =>
       _resolveResponse(resolveStreamedResponseStatusCode(streamedResponse));
 

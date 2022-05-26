@@ -3,7 +3,7 @@ import 'stub.dart'
     if (dart.library.io) 'io.dart';
 
 /// Base class which describes cross-platform file implementation
-abstract class SharedFile {
+abstract class UCFile {
   /// Filename
   String get name;
 
@@ -11,11 +11,11 @@ abstract class SharedFile {
   String get mimeType;
 
   /// Create cross-platform file
-  factory SharedFile(Object file) => createFile(file);
+  factory UCFile(Object file) => createFile(file);
 
-  /// Trying to resolve file from [URI]
+  /// Trying to resolve file from [Uri]
   /// Not working with `web`
-  factory SharedFile.fromUri(Uri uri) => createFileFromUri(uri);
+  factory UCFile.fromUri(Uri uri) => createFileFromUri(uri);
 
   /// Retrieve file size in bytes
   Future<int> length();

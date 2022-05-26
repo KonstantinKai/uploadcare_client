@@ -11,5 +11,5 @@ linter:
     constant_identifier_names: false
 
 analyzer:
-#   exclude:
-#     - path/to/excluded/files/**
+  exclude:
+    - /**/*.mocks.dart

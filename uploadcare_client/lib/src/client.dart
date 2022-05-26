@@ -1,6 +1,5 @@
 import 'api_sections/api_sections.dart';
-import 'authorization/regular.dart';
-import 'authorization/simple.dart';
+import 'authorization/authorization.dart';
 import 'options.dart';
 
 /// Provides centralized access to `Uploadcare API`
@@ -12,13 +11,17 @@ class UploadcareClient {
   final ApiFiles files;
   final ApiVideoEncoding videoEncoding;
   final ApiGroups groups;
+  final ApiWebhooks webhooks;
+  final ApiDocumentConverting documentConverting;
 
   UploadcareClient({
     required this.options,
   })  : upload = ApiUpload(options: options),
         files = ApiFiles(options: options),
         videoEncoding = ApiVideoEncoding(options: options),
-        groups = ApiGroups(options: options);
+        groups = ApiGroups(options: options),
+        webhooks = ApiWebhooks(options: options),
+        documentConverting = ApiDocumentConverting(options: options);
 
   /// With omitted [privateKey], only upload API is available
   UploadcareClient.withSimpleAuth({
