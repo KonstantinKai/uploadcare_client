@@ -1,6 +1,5 @@
 import 'dart:io';
-
-import 'package:dotenv/dotenv.dart';
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
@@ -8,9 +7,17 @@ void main() {
   late ApiUpload apiV05;
   late ApiUpload apiV05Signed;
   late ApiUpload apiV07;
+  late String assets;
+
+  late String uploadBase;
+  late String uploadMultipart;
+  final String uploadUrl = 'http://localhost:7070/fakefile/base.jpeg';
 
   setUpAll(() {
-    load();
+    assets = path.normalize(
+        path.join(path.current, '../' 'uploadcare_server_mock', 'assets'));
+    uploadBase = path.join(assets, 'base.jpeg');
+    uploadMultipart = path.join(assets, 'multipart.mp4');
 
     apiV05 = ApiUpload(
       options: ClientOptions(
@@ -52,15 +59,15 @@ void main() {
   test('Simple auto upload', () async {
     final internalIds = await Future.wait([
       apiV05.auto(
-        UCFile(File(env['UPLOAD_BASE']!)),
+        UCFile(File(uploadBase)),
         storeMode: false,
       ),
       apiV05.auto(
-        env['UPLOAD_BASE']!,
+        uploadBase,
         storeMode: false,
       ),
       apiV05.auto(
-        env['UPLOAD_URL']!,
+        uploadUrl,
         storeMode: false,
       ),
     ]);
@@ -71,7 +78,7 @@ void main() {
 
   test('Simple base upload', () async {
     final id = await apiV05.base(
-      UCFile(File(env['UPLOAD_BASE']!)),
+      UCFile(File(uploadBase)),
       storeMode: false,
     );
 
@@ -80,7 +87,7 @@ void main() {
 
   test('Simple multipart upload', () async {
     final id = await apiV05.multipart(
-      UCFile(File(env['UPLOAD_MULTIPART']!)),
+      UCFile(File(uploadMultipart)),
       storeMode: false,
     );
 
@@ -89,7 +96,7 @@ void main() {
 
   test('Simple url upload', () async {
     final id = await apiV05.fromUrl(
-      env['UPLOAD_URL']!,
+      uploadUrl,
       storeMode: false,
       checkInterval: Duration(milliseconds: 1),
     );
@@ -99,7 +106,7 @@ void main() {
 
   test('Signed base upload', () async {
     final id = await apiV05Signed.base(
-      UCFile(File(env['UPLOAD_BASE']!)),
+      UCFile(File(uploadBase)),
       storeMode: false,
     );
 
@@ -108,7 +115,7 @@ void main() {
 
   test('Signed multipart upload', () async {
     final id = await apiV05Signed.multipart(
-      UCFile(File(env['UPLOAD_MULTIPART']!)),
+      UCFile(File(uploadMultipart)),
       storeMode: false,
     );
 
@@ -117,7 +124,7 @@ void main() {
 
   test('Signed url upload', () async {
     final id = await apiV05Signed.fromUrl(
-      env['UPLOAD_URL'] ?? '',
+      uploadUrl,
       storeMode: false,
     );
 
@@ -128,7 +135,7 @@ void main() {
     final String cancelMessage = 'some cancel message';
     final cancelToken = CancelToken(cancelMessage);
     final future = apiV05.base(
-      UCFile(File(env['UPLOAD_BASE'] ?? '')),
+      UCFile(File(uploadBase)),
       storeMode: false,
       cancelToken: cancelToken,
     );
@@ -147,7 +154,7 @@ void main() {
   test('Multipart upload with CancelToken', () async {
     final cancelToken = CancelToken();
     final future = apiV05.multipart(
-      UCFile(File(env['UPLOAD_MULTIPART']!)),
+      UCFile(File(uploadMultipart)),
       storeMode: false,
       cancelToken: cancelToken,
       onProgress: (progress) {
@@ -166,7 +173,7 @@ void main() {
 
   test('Simple multipart upload in Isolate', () async {
     final id = await apiV05.auto(
-      UCFile(File(env['UPLOAD_MULTIPART']!)),
+      UCFile(File(uploadMultipart)),
       storeMode: false,
       runInIsolate: true,
     );
@@ -177,7 +184,7 @@ void main() {
   test('Multipart upload with CancelToken in Isolate', () async {
     final cancelToken = CancelToken();
     final future = apiV05.auto(
-      UCFile(File(env['UPLOAD_MULTIPART']!)),
+      UCFile(File(uploadMultipart)),
       storeMode: false,
       runInIsolate: true,
       cancelToken: cancelToken,
@@ -200,32 +207,32 @@ void main() {
     () async {
       final internalIds = await Future.wait([
         apiV05.auto(
-          UCFile(File(env['UPLOAD_BASE']!)),
+          UCFile(File(uploadBase)),
           storeMode: false,
           runInIsolate: true,
         ),
         apiV05.auto(
-          env['UPLOAD_BASE']!,
+          uploadBase,
           storeMode: false,
           runInIsolate: true,
         ),
         apiV05.auto(
-          env['UPLOAD_MULTIPART']!,
+          uploadMultipart,
           storeMode: false,
           runInIsolate: true,
         ),
         apiV05.auto(
-          UCFile(File(env['UPLOAD_BASE']!)),
+          UCFile(File(uploadBase)),
           storeMode: false,
           runInIsolate: true,
         ),
         apiV05.auto(
-          env['UPLOAD_BASE']!,
+          uploadBase,
           storeMode: false,
           runInIsolate: true,
         ),
         apiV05.auto(
-          env['UPLOAD_MULTIPART']!,
+          uploadMultipart,
           storeMode: false,
           runInIsolate: true,
         ),
@@ -241,7 +248,7 @@ void main() {
   test('Ensure metadata version for base upload', () async {
     expect(
         () => apiV05.base(
-              UCFile(File(env['UPLOAD_BASE']!)),
+              UCFile(File(uploadBase)),
               storeMode: false,
               metadata: {'test': 'value'},
             ),
@@ -251,7 +258,7 @@ void main() {
   test('Ensure metadata version for multipart upload', () async {
     expect(
         () => apiV05.multipart(
-              UCFile(File(env['UPLOAD_MULTIPART']!)),
+              UCFile(File(uploadMultipart)),
               storeMode: false,
               metadata: {'test': 'value'},
             ),
@@ -261,7 +268,7 @@ void main() {
   test('Ensure metadata version for url upload', () async {
     expect(
         () => apiV05.fromUrl(
-              env['UPLOAD_URL']!,
+              uploadUrl,
               storeMode: false,
               metadata: {'test': 'value'},
             ),
@@ -270,7 +277,7 @@ void main() {
 
   test('Base upload with metadata', () async {
     final id = await apiV07.base(
-      UCFile(File(env['UPLOAD_BASE']!)),
+      UCFile(File(uploadBase)),
       storeMode: false,
       metadata: {'test': 'value'},
     );
@@ -281,7 +288,7 @@ void main() {
   test('Ensure metadata version for base upload in isolate', () async {
     expect(
         () => apiV05.auto(
-              UCFile(File(env['UPLOAD_BASE']!)),
+              UCFile(File(uploadBase)),
               storeMode: false,
               metadata: {'test': 'value'},
               runInIsolate: true,
@@ -291,7 +298,7 @@ void main() {
 
   test('Base upload with metadata in isolate', () async {
     final id = await apiV07.auto(
-      UCFile(File(env['UPLOAD_BASE']!)),
+      UCFile(File(uploadBase)),
       storeMode: false,
       metadata: {'test': 'value'},
       runInIsolate: true,
@@ -302,7 +309,7 @@ void main() {
 
   test('Multipart upload with metadata', () async {
     final id = await apiV07.multipart(
-      UCFile(File(env['UPLOAD_MULTIPART']!)),
+      UCFile(File(uploadMultipart)),
       storeMode: false,
       metadata: {'test': 'value'},
     );
@@ -311,7 +318,7 @@ void main() {
   });
 
   test('Url upload with metadata', () async {
-    final id = await apiV07.fromUrl(env['UPLOAD_URL']!,
+    final id = await apiV07.fromUrl(uploadUrl,
         storeMode: false,
         metadata: {'test': 'value'},
         checkURLDuplicates: false);

@@ -1,4 +1,3 @@
-import 'package:dotenv/dotenv.dart';
 import 'package:test/test.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
@@ -8,8 +7,6 @@ void main() {
   late ApiFiles apiV07;
 
   setUpAll(() {
-    load();
-
     apiV05 = ApiFiles(
       options: ClientOptions(
         apiUrl: 'http://localhost:7070',
