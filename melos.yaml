@@ -17,8 +17,11 @@ command:
 
 scripts:
   postbootstrap: |
-    melos run pubspec:gen
     melos run mock_file:gen
+
+  version: |
+    melos run pubspec:gen
+    melos run test
 
   pubspec:gen:
     run: |
