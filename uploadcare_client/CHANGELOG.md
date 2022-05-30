@@ -1,8 +1,4 @@
-## 6.1.0
-
- - **FEAT**: added project API, file application data API.
-
-## [6.1.0] - Thu May 30 2022
+## [6.1.0] - Mon May 30 2022
 
 - Added `file's application data` methods to `ApiFiles` section. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Application-Data
 - Added `ApiProject` section. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Project

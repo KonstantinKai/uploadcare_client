@@ -1,6 +1,6 @@
-## 4.1.0
+## [4.1.0] - Thu May 30 2022
 
- - **FEAT**: added project API, file application data API.
+- Updated `uploadcare_client` dependency
 
 ## [4.0.1] - Thu May 26 2022
 
