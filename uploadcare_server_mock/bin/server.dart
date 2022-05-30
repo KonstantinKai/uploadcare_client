@@ -9,6 +9,7 @@ import 'package:uploadcare_server_mock/converting_routes.dart';
 import 'package:uploadcare_server_mock/file_metadata_routes.dart';
 import 'package:uploadcare_server_mock/file_routes.dart';
 import 'package:uploadcare_server_mock/groups_routes.dart';
+import 'package:uploadcare_server_mock/project_routes.dart';
 import 'package:uploadcare_server_mock/upload_routes.dart';
 import 'package:uploadcare_server_mock/version_middleware.dart';
 import 'package:uploadcare_server_mock/webhooks_routes.dart';
@@ -29,6 +30,7 @@ void main(List<String> args) async {
   ConvertingRoutes(_router, _assetsDir);
   FileMetadataRoutes(_router);
   UploadRoutes(_router, _assetsDir);
+  ProjectRoutes(_router, _assetsDir);
 
   // Configure a pipeline that logs requests.
   final handler = (!args.contains('--disable-logs')

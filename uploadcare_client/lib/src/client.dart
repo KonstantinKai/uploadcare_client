@@ -13,6 +13,7 @@ class UploadcareClient {
   final ApiGroups groups;
   final ApiWebhooks webhooks;
   final ApiDocumentConverting documentConverting;
+  final ApiProject project;
 
   UploadcareClient({
     required this.options,
@@ -21,7 +22,8 @@ class UploadcareClient {
         videoEncoding = ApiVideoEncoding(options: options),
         groups = ApiGroups(options: options),
         webhooks = ApiWebhooks(options: options),
-        documentConverting = ApiDocumentConverting(options: options);
+        documentConverting = ApiDocumentConverting(options: options),
+        project = ApiProject(options: options);
 
   /// With omitted [privateKey], only upload API is available
   UploadcareClient.withSimpleAuth({

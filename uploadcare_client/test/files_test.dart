@@ -170,4 +170,29 @@ void main() {
     expect(() => apiV06.deleteFileMetadataValue('file-id', 'meta-key'),
         throwsA(TypeMatcher<AssertionError>()));
   });
+
+  test('Get file application data', () async {
+    final result = await apiV07.getApplicationData('file-id');
+
+    expect(result, isMap);
+    expect(result, contains('uc_clamav_virus_scan'));
+
+    expect(() => apiV06.getApplicationData('file-id'),
+        throwsA(TypeMatcher<AssertionError>()));
+  });
+
+  test('Get file application data by appName', () async {
+    final result = await apiV07.getApplicationDataByAppName(
+        'file-id', 'uc_clamav_virus_scan');
+
+    expect(result, isMap);
+    expect(result, contains('data'));
+    expect(result, contains('datetime_created'));
+    expect(result, contains('datetime_updated'));
+
+    expect(
+        () => apiV06.getApplicationDataByAppName(
+            'file-id', 'uc_clamav_virus_scan'),
+        throwsA(TypeMatcher<AssertionError>()));
+  });
 }

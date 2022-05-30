@@ -55,8 +55,12 @@ class UcMultipartRequest extends MultipartRequest
     required String method,
     required Uri uri,
     this.scheme,
+    Map<String, String>? headers,
   }) : super(method, uri) {
-    headers.addAll({'content-type': 'application/x-www-form-urlencoded'});
+    this.headers.addAll({
+      'content-type': 'application/x-www-form-urlencoded',
+      ...(headers ?? {}),
+    });
   }
 
   @override
@@ -70,8 +74,12 @@ class UcRequest extends Request
     required String method,
     required Uri uri,
     this.scheme,
+    Map<String, String>? headers,
   }) : super(method, uri) {
-    headers.addAll({'content-type': 'application/json'});
+    this.headers.addAll({
+      'content-type': 'application/json',
+      ...(headers ?? {}),
+    });
   }
 
   @override

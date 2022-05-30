@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-./tool/generate_bin_assets.sh
-
 if [[ -z $PORT ]];then
   PORT=7070
 fi

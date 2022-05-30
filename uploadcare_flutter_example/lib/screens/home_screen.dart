@@ -6,6 +6,7 @@ import '../picker_stub.dart'
     if (dart.library.io) '../picker_io.dart';
 import 'files_screen.dart';
 import 'upload_screen.dart';
+import 'project_info_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key, required this.title}) : super(key: key);
@@ -52,6 +53,11 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
+              child: const Text('Project info'),
+              onPressed: () => _onProjectInfo(_apiV05),
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
               child: const Text('Upload with v0.5'),
               onPressed: () => _onUpload(_apiV05),
             ),
@@ -84,6 +90,19 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  Future _onProjectInfo(UploadcareClient client) async {
+    final info = await client.project.info();
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          fullscreenDialog: true,
+          builder: (context) => ProjectInfoScreen(
+            project: info,
+          ),
+        ));
   }
 
   Future _onUpload(UploadcareClient client) async {

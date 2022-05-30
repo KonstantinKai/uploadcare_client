@@ -18,7 +18,13 @@ command:
 
 scripts:
   postbootstrap: |
-    ./tool/generate_bin_assets.sh
+    melos run pubspec:gen
+    melos run mock_file:gen
+
+  pubspec:gen:
+    run: |
+      melos exec -c 1 --scope="*uploadcare_client*" -- \
+        dart run pubspec_extract --filter="name,version" -d "lib/src/pubspec.dart"
 
   analyze:
     run: |
@@ -26,3 +32,11 @@ scripts:
         dart analyze .
     description: |
       Run `dart analyze` in all packages.
+
+  test:
+    run: |
+      ./tool/test.sh
+
+  mock_file:gen:
+    run: |
+      ./tool/generate_bin_assets.sh

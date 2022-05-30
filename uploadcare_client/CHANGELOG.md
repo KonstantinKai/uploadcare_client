@@ -1,3 +1,9 @@
+## [6.1.0] - Thu May 30 2022
+
+- Added `file's application data` methods to `ApiFiles` section. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Application-Data
+- Added `ApiProject` section. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Project
+- Added `X-UC-User-Agent` header to requests
+
 ## [6.0.1] - Thu May 26 2022
 
 - Changed `VideoStreamMetadata.frameRate` from `int` to `num`

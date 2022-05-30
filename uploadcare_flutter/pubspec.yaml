@@ -17,5 +17,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.4
+  pubspec_extract:
+    git:
+      url: https://github.com/KonstantinKai/pubspec_extract
+      ref: feat/fields-filter
 
 flutter:

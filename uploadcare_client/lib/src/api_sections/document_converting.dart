@@ -11,7 +11,7 @@ import '../transformations/base.dart';
 import '../transformations/path_transformer.dart';
 import 'convert_mixin.dart';
 
-/// Provides API for working with video encoding
+/// Provides API for working with document converting
 ///
 /// See https://uploadcare.com/api-refs/rest-api/v0.6.0/#operation/documentConvert
 class ApiDocumentConverting

@@ -231,6 +231,41 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
     );
   }
 
+  /// **Since v0.7**
+  ///
+  /// Get file's application data from all applications at once
+  /// See https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/getAllApplicationData
+  Future<Map<String, dynamic>> getApplicationData(String fileId) async {
+    _ensureRightVersionForApplicationData();
+
+    final result = await resolveStreamedResponse(
+      createRequest(
+        'GET',
+        buildUri('$apiUrl/files/$fileId/appdata/'),
+      ).send(),
+    );
+
+    return (result as Map).cast<String, dynamic>();
+  }
+
+  /// **Since v0.7**
+  ///
+  /// Get file's application data from a single application
+  /// See https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/getSingleApplicationData
+  Future<Map<String, dynamic>> getApplicationDataByAppName(
+      String fileId, String appName) async {
+    _ensureRightVersionForApplicationData();
+
+    final result = await resolveStreamedResponse(
+      createRequest(
+        'GET',
+        buildUri('$apiUrl/files/$fileId/appdata/$appName/'),
+      ).send(),
+    );
+
+    return (result as Map).cast<String, dynamic>();
+  }
+
   void _ensureRightVersionForRecognitionApi(bool includeRecognitionInfo) {
     if (!includeRecognitionInfo) return;
 
@@ -239,5 +274,9 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
 
   void _ensureRightVersionForMetadataApi() {
     ensureRightVersion(0.7, 'Metadata API');
+  }
+
+  void _ensureRightVersionForApplicationData() {
+    ensureRightVersion(0.7, 'File application data API');
   }
 }

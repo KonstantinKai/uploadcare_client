@@ -2,8 +2,6 @@
 
 set -e
 
-./tool/generate_bin_assets.sh
-
 SERVER_PID=
 
 onExit () {

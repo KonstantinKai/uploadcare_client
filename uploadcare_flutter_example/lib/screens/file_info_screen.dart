@@ -1,17 +1,36 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:uploadcare_flutter/uploadcare_flutter.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-class FileInfoScreen extends StatelessWidget {
+class FileInfoScreen extends StatefulWidget {
   const FileInfoScreen({
     Key? key,
     required this.file,
+    this.api,
   }) : super(key: key);
 
   final FileInfoEntity file;
+  final UploadcareClient? api;
+
+  @override
+  State<FileInfoScreen> createState() => _FileInfoScreenState();
+}
+
+class _FileInfoScreenState extends State<FileInfoScreen> {
+  Map<String, dynamic>? _appData;
+
+  Future<void> _fetchAppData() async {
+    final appData = await widget.api!.files.getApplicationData(widget.file.id);
+
+    setState(() {
+      _appData = appData;
+    });
+  }
 
   Future<void> _onTryToDownload() async {
-    final cdnFile = CdnFile(file.id)
+    final cdnFile = CdnFile(widget.file.id)
       ..transform(const InlineTransformation(false));
     final url = cdnFile.url;
 
@@ -32,13 +51,20 @@ class FileInfoScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('File info: "${file.filename}"'),
+              Text('File info: "${widget.file.filename}"'),
               const SizedBox(width: 20),
               ElevatedButton(
                 child: const Text('Try to download'),
                 onPressed: _onTryToDownload,
               ),
               const SizedBox(height: 10),
+              if (widget.api != null && _appData == null) ...[
+                ElevatedButton(
+                  child: const Text('Get file application data'),
+                  onPressed: _fetchAppData,
+                ),
+                const SizedBox(height: 10),
+              ],
               Table(
                 border: TableBorder.all(),
                 columnWidths: const {
@@ -54,7 +80,7 @@ class FileInfoScreen extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(file.id),
+                        child: Text(widget.file.id),
                       ),
                     ],
                   ),
@@ -66,7 +92,7 @@ class FileInfoScreen extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(file.mimeType),
+                        child: Text(widget.file.mimeType),
                       ),
                     ],
                   ),
@@ -78,11 +104,11 @@ class FileInfoScreen extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(file.size.toString()),
+                        child: Text(widget.file.size.toString()),
                       ),
                     ],
                   ),
-                  if (file.datetimeUploaded != null)
+                  if (widget.file.datetimeUploaded != null)
                     TableRow(
                       children: [
                         const Padding(
@@ -91,7 +117,7 @@ class FileInfoScreen extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(file.datetimeUploaded.toString()),
+                          child: Text(widget.file.datetimeUploaded.toString()),
                         ),
                       ],
                     ),
@@ -103,7 +129,7 @@ class FileInfoScreen extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(file.isStored.toString()),
+                        child: Text(widget.file.isStored.toString()),
                       ),
                     ],
                   ),
@@ -115,13 +141,13 @@ class FileInfoScreen extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(file.isReady.toString()),
+                        child: Text(widget.file.isReady.toString()),
                       ),
                     ],
                   ),
                 ],
               ),
-              if (file.metadata != null) ...[
+              if (widget.file.metadata != null) ...[
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text('File metadata:'),
@@ -133,7 +159,7 @@ class FileInfoScreen extends StatelessWidget {
                     1: IntrinsicColumnWidth(flex: 3),
                   },
                   children: [
-                    for (MapEntry entry in file.metadata!.entries)
+                    for (MapEntry entry in widget.file.metadata!.entries)
                       TableRow(
                         children: [
                           Padding(
@@ -149,7 +175,7 @@ class FileInfoScreen extends StatelessWidget {
                   ],
                 ),
               ],
-              if (file.isImage) ...[
+              if (widget.file.isImage) ...[
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text('Image metadata:'),
@@ -169,7 +195,7 @@ class FileInfoScreen extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(file.imageInfo!.size.toString()),
+                          child: Text(widget.file.imageInfo!.size.toString()),
                         ),
                       ],
                     ),
@@ -181,7 +207,7 @@ class FileInfoScreen extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(file.imageInfo!.format),
+                          child: Text(widget.file.imageInfo!.format),
                         ),
                       ],
                     ),
@@ -193,11 +219,12 @@ class FileInfoScreen extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(file.imageInfo!.sequence.toString()),
+                          child:
+                              Text(widget.file.imageInfo!.sequence.toString()),
                         ),
                       ],
                     ),
-                    if (file.imageInfo!.colorMode != null)
+                    if (widget.file.imageInfo!.colorMode != null)
                       TableRow(
                         children: [
                           const Padding(
@@ -206,11 +233,12 @@ class FileInfoScreen extends StatelessWidget {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(file.imageInfo!.colorMode.toString()),
+                            child: Text(
+                                widget.file.imageInfo!.colorMode.toString()),
                           ),
                         ],
                       ),
-                    if (file.imageInfo!.datetimeOriginal != null)
+                    if (widget.file.imageInfo!.datetimeOriginal != null)
                       TableRow(
                         children: [
                           const Padding(
@@ -219,12 +247,12 @@ class FileInfoScreen extends StatelessWidget {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                                file.imageInfo!.datetimeOriginal.toString()),
+                            child: Text(widget.file.imageInfo!.datetimeOriginal
+                                .toString()),
                           ),
                         ],
                       ),
-                    if (file.imageInfo!.dpi != null)
+                    if (widget.file.imageInfo!.dpi != null)
                       TableRow(
                         children: [
                           const Padding(
@@ -233,11 +261,11 @@ class FileInfoScreen extends StatelessWidget {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(file.imageInfo!.dpi.toString()),
+                            child: Text(widget.file.imageInfo!.dpi.toString()),
                           ),
                         ],
                       ),
-                    if (file.imageInfo!.orientation != null)
+                    if (widget.file.imageInfo!.orientation != null)
                       TableRow(
                         children: [
                           const Padding(
@@ -246,11 +274,12 @@ class FileInfoScreen extends StatelessWidget {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(file.imageInfo!.orientation.toString()),
+                            child: Text(
+                                widget.file.imageInfo!.orientation.toString()),
                           ),
                         ],
                       ),
-                    if (file.imageInfo!.geoLocation != null)
+                    if (widget.file.imageInfo!.geoLocation != null)
                       TableRow(
                         children: [
                           const Padding(
@@ -259,14 +288,15 @@ class FileInfoScreen extends StatelessWidget {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(file.imageInfo!.geoLocation.toString()),
+                            child: Text(
+                                widget.file.imageInfo!.geoLocation.toString()),
                           ),
                         ],
                       ),
                   ],
                 ),
               ],
-              if (file.isVideo) ...[
+              if (widget.file.isVideo) ...[
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text('Video metadata:'),
@@ -286,7 +316,7 @@ class FileInfoScreen extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(file.videoInfo!.format),
+                          child: Text(widget.file.videoInfo!.format),
                         ),
                       ],
                     ),
@@ -298,7 +328,8 @@ class FileInfoScreen extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(file.videoInfo!.duration.toString()),
+                          child:
+                              Text(widget.file.videoInfo!.duration.toString()),
                         ),
                       ],
                     ),
@@ -310,7 +341,8 @@ class FileInfoScreen extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(file.videoInfo!.bitrate.toString()),
+                          child:
+                              Text(widget.file.videoInfo!.bitrate.toString()),
                         ),
                       ],
                     ),
@@ -322,7 +354,8 @@ class FileInfoScreen extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(file.videoInfo!.video.size.toString()),
+                          child: Text(
+                              widget.file.videoInfo!.video.size.toString()),
                         ),
                       ],
                     ),
@@ -334,7 +367,8 @@ class FileInfoScreen extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(file.videoInfo!.video.codec.toString()),
+                          child: Text(
+                              widget.file.videoInfo!.video.codec.toString()),
                         ),
                       ],
                     ),
@@ -346,12 +380,12 @@ class FileInfoScreen extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child:
-                              Text(file.videoInfo!.video.frameRate.toString()),
+                          child: Text(widget.file.videoInfo!.video.frameRate
+                              .toString()),
                         ),
                       ],
                     ),
-                    if (file.videoInfo!.audio?.channels != null)
+                    if (widget.file.videoInfo!.audio?.channels != null)
                       TableRow(
                         children: [
                           const Padding(
@@ -360,12 +394,12 @@ class FileInfoScreen extends StatelessWidget {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                                file.videoInfo!.audio!.channels!.toString()),
+                            child: Text(widget.file.videoInfo!.audio!.channels!
+                                .toString()),
                           ),
                         ],
                       ),
-                    if (file.videoInfo!.audio?.bitrate != null)
+                    if (widget.file.videoInfo!.audio?.bitrate != null)
                       TableRow(
                         children: [
                           const Padding(
@@ -374,12 +408,12 @@ class FileInfoScreen extends StatelessWidget {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                                file.videoInfo!.audio!.bitrate!.toString()),
+                            child: Text(widget.file.videoInfo!.audio!.bitrate!
+                                .toString()),
                           ),
                         ],
                       ),
-                    if (file.videoInfo!.audio?.codec != null)
+                    if (widget.file.videoInfo!.audio?.codec != null)
                       TableRow(
                         children: [
                           const Padding(
@@ -388,11 +422,11 @@ class FileInfoScreen extends StatelessWidget {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(file.videoInfo!.audio!.codec!),
+                            child: Text(widget.file.videoInfo!.audio!.codec!),
                           ),
                         ],
                       ),
-                    if (file.videoInfo!.audio?.sampleRate != null)
+                    if (widget.file.videoInfo!.audio?.sampleRate != null)
                       TableRow(
                         children: [
                           const Padding(
@@ -401,8 +435,37 @@ class FileInfoScreen extends StatelessWidget {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                                file.videoInfo!.audio!.sampleRate!.toString()),
+                            child: Text(widget
+                                .file.videoInfo!.audio!.sampleRate!
+                                .toString()),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ],
+              if ((_appData?.isNotEmpty ?? false)) ...[
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Text('Application data:'),
+                ),
+                Table(
+                  border: TableBorder.all(),
+                  columnWidths: const {
+                    0: IntrinsicColumnWidth(flex: 1),
+                    1: IntrinsicColumnWidth(flex: 3),
+                  },
+                  children: [
+                    for (MapEntry entry in _appData!.entries)
+                      TableRow(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(entry.key),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(jsonEncode(entry.value)),
                           ),
                         ],
                       ),

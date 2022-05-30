@@ -1,0 +1,15 @@
+{
+  "collaborators": [
+    {
+      "email": "email1@test.dev",
+      "name": "email1"
+    },
+    {
+      "email": "email2@test.dev",
+      "name": "email2"
+    }
+  ],
+  "name": "project1",
+  "pub_key": "pub_key_1",
+  "autostore_enabled": true
+}

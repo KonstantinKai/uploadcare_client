@@ -1,15 +1,24 @@
 import 'package:shelf/shelf.dart';
 
 Middleware versionMiddleware() => (innerHandler) => (request) {
-      final match =
+      final versionMatch =
           RegExp(r'(v\d+\.\d+)').firstMatch(request.headers['accept'] ?? '');
+      final pubKeyMatch = RegExp(r'Uploadcare.Simple\s(\w+):\w+')
+          .firstMatch(request.headers['authorization'] ?? '');
 
       Request modRequest = request;
 
-      if (match != null) {
+      if (versionMatch != null) {
         modRequest = request.change(context: {
           ...request.context,
-          'version': match[1]!,
+          'version': versionMatch[1]!,
+        });
+      }
+
+      if (pubKeyMatch != null) {
+        modRequest = modRequest.change(context: {
+          ...modRequest.context,
+          'pub_key': pubKeyMatch[1]!,
         });
       }
 

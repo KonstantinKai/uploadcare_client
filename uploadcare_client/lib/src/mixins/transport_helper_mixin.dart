@@ -4,7 +4,10 @@ import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 import '../authorization/scheme.dart';
 import '../mixins/mixins.dart';
+import '../pubspec.dart';
 import '../transport.dart';
+
+const _kUserAgent = 'X-UC-User-Agent';
 
 void assertAuthorization(bool authorizeRequest, AuthScheme scheme) {
   assert(authorizeRequest ? scheme.privateKey.isNotEmpty : true,
@@ -13,6 +16,12 @@ void assertAuthorization(bool authorizeRequest, AuthScheme scheme) {
 
 @internal
 mixin TransportHelperMixin on OptionsShortcutMixin {
+  String? _userAgent;
+
+  @visibleForTesting
+  String get useAgent => _userAgent ??=
+      'UploadcareDart/${Pubspec.versionFull}/$publicKey (${Pubspec.name})';
+
   @protected
   UcMultipartRequest createMultipartRequest(
     String method,
@@ -24,6 +33,7 @@ mixin TransportHelperMixin on OptionsShortcutMixin {
       scheme: authorizeRequest ? options.authorizationScheme : null,
       method: method,
       uri: uri,
+      headers: {_kUserAgent: useAgent},
     );
   }
 
@@ -38,6 +48,7 @@ mixin TransportHelperMixin on OptionsShortcutMixin {
       scheme: authorizeRequest ? options.authorizationScheme : null,
       method: method,
       uri: uri,
+      headers: {_kUserAgent: useAgent},
     );
   }
 

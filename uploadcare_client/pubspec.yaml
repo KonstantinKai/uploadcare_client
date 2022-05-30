@@ -22,3 +22,7 @@ dev_dependencies:
   mockito: 5.0.16
   lints: 2.0.0
   build_runner: 2.1.5
+  pubspec_extract:
+    git:
+      url: https://github.com/KonstantinKai/pubspec_extract
+      ref: feat/fields-filter

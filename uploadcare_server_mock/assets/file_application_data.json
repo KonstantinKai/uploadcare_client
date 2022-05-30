@@ -1,0 +1,10 @@
+{
+  "uc_clamav_virus_scan": {
+    "data": {
+      "infected": true,
+      "infected_with": "Win.Test.EICAR_HDB-1"
+    },
+    "datetime_created": "2021-09-21T11:24:33.159663Z",
+    "datetime_updated": "2021-09-21T11:24:33.159663Z"
+  }
+}
