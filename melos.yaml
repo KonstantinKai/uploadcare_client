@@ -12,7 +12,6 @@ ide:
 command:
   version:
     workspaceChangelog: false
-    updateGitTagRefs: false
     linkToCommits: false
     branch: master
 
