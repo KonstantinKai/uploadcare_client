@@ -22,11 +22,10 @@ jobs:
       # You can specify other versions if desired, see documentation here:
       # https://github.com/dart-lang/setup-dart/blob/main/README.md
       # - uses: dart-lang/setup-dart@v1
-      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
 
       - uses: flutter-actions/setup-flutter@v1
         with:
-          sdk: stable
+          version: 3.0.1
 
       - name: Install dependencies
         run: |
