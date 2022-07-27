@@ -12,7 +12,7 @@ enum ImageFormatTValue {
   /// Convert an image to WebP.
   Webp('webp'),
 
-  /// Try converting to WebP and fall back to JPEG when a user browser provides no WebP support.
+  /// Try converting to WebP or AVIF and fall back to JPEG when a user browser provides no WebP or AVIF support.
   Auto('auto');
 
   const ImageFormatTValue(this._value);

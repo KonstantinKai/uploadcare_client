@@ -1,3 +1,8 @@
+## [6.1.1] - Wed July 27 2022
+
+- Made `VideoStreamMetadata.bitrate` as `nullable`
+- Update android project for example folder
+
 ## [6.1.0] - Mon May 30 2022
 
 - Added `file's application data` methods to `ApiFiles` section. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Application-Data

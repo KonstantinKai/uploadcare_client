@@ -316,7 +316,7 @@ class VideoStreamMetadata extends Equatable {
   final num frameRate;
 
   /// Video stream's bitrate
-  final int bitrate;
+  final int? bitrate;
 
   /// Video stream codec
   final String codec;
@@ -324,8 +324,8 @@ class VideoStreamMetadata extends Equatable {
   const VideoStreamMetadata({
     required this.size,
     required this.frameRate,
-    required this.bitrate,
     required this.codec,
+    this.bitrate,
   });
 
   /// @nodoc

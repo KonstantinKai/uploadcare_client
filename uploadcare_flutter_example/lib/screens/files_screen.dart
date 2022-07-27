@@ -24,7 +24,7 @@ class FilesScreen extends StatefulWidget {
 }
 
 class _FilesScreenState extends State<FilesScreen> {
-  final int _limit = 100;
+  final int _limit = 200;
   late int _total;
   late final StreamController<List<FileInfoEntity>> _filesController;
 
