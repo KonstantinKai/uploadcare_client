@@ -47,6 +47,9 @@ class _FilesScreenState extends State<FilesScreen> {
           FilesFilterValue.DatetimeUploaded,
           direction: OrderDirection.Desc,
         ),
+        include: widget.uploadcareClient.options.apiVersion > 0.6
+            ? const FilesIncludeFields.withAppData()
+            : null,
       );
 
       setState(() {
@@ -164,7 +167,8 @@ class _FilesScreenState extends State<FilesScreen> {
                           context,
                           MaterialPageRoute(
                             fullscreenDialog: true,
-                            builder: (context) => PreviewScreen(file: file),
+                            builder: (context) =>
+                                PreviewScreen(fileId: file.id),
                           ),
                         ),
                       ),

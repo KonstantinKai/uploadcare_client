@@ -4,21 +4,19 @@ import 'package:uploadcare_flutter/uploadcare_flutter.dart';
 class PreviewScreen extends StatelessWidget {
   const PreviewScreen({
     Key? key,
-    required this.file,
+    required this.fileId,
   }) : super(key: key);
 
-  final FileInfoEntity file;
+  final String fileId;
 
   @override
   Widget build(BuildContext context) {
     Widget content = Container();
 
-    if (file.isImage) {
-      content = Image(
-        image: UploadcareImageProvider(file.id),
-        fit: BoxFit.contain,
-      );
-    }
+    content = Image(
+      image: UploadcareImageProvider(fileId),
+      fit: BoxFit.contain,
+    );
 
     return Scaffold(
       appBar: AppBar(

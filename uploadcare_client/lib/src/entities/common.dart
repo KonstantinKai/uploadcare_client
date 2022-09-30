@@ -43,3 +43,69 @@ class FilesOrdering extends Equatable {
     return '$_directionAsString$_fieldAsString';
   }
 }
+
+enum FilesIncludeFieldsValue {
+  AppData('appdata');
+
+  final String _value;
+
+  const FilesIncludeFieldsValue(this._value);
+
+  @override
+  String toString() => _value;
+}
+
+class FilesIncludeFields extends Equatable {
+  final List<FilesIncludeFieldsValue> predefined;
+
+  final List<String> custom;
+
+  const FilesIncludeFields({
+    this.predefined = const [],
+    this.custom = const [],
+  });
+
+  const FilesIncludeFields.withAppData()
+      : this(predefined: const [FilesIncludeFieldsValue.AppData]);
+
+  /// @nodoc
+  @protected
+  @override
+  List<Object?> get props => [
+        custom,
+        predefined,
+      ];
+
+  @override
+  String toString() => [
+        ...predefined.map((e) => e.toString()),
+        ...custom,
+      ].join(',');
+}
+
+enum FilesPatternValue {
+  /// ${uuid}/${auto_filename}
+  Default('\${default}'),
+
+  /// ${filename}${effects}${ext}
+  AutoFilename('\${auto_filename}'),
+
+  /// Processing operations put into a CDN URL
+  Effects('\${effects}'),
+
+  /// original filename without extension
+  Filename('\${filename}'),
+
+  /// File UUID
+  Uuid('\${uuid}'),
+
+  /// File extension, including period, e.g. .jpg
+  Ext('\${ext}');
+
+  const FilesPatternValue(this._value);
+
+  final String _value;
+
+  @override
+  String toString() => _value;
+}

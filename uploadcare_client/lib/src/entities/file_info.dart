@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+import 'addons.dart';
 
 import '../measures.dart' show Dimensions;
 
@@ -39,10 +40,12 @@ class FileInfoEntity extends Equatable {
   /// Video metadata. See [VideoInfo]
   final VideoInfo? videoInfo;
 
-  /// **Since v0.6**
+  /// **Only v0.6**
   ///
   /// Object Recognition allows categorizing and tagging images.
   /// When using Uploadcare Object Recognition, you get a list of objects detected in your image paired with confidence levels for every object class.
+  @Deprecated(
+      'Due to the API stabilizing recognition info moved to the [AppData.awsRecognition]')
   final Map<String, double>? recognitionInfo;
 
   /// **Since v0.7**
@@ -55,6 +58,11 @@ class FileInfoEntity extends Equatable {
   /// Dictionary of other files that were created using this file as a source. It's used for video processing and document conversion jobs.
   /// E.g., <conversion_path>: <uuid>.
   final Map<String, String>? variations;
+
+  /// **Since v0.7**
+  ///
+  /// Dictionary of application names and data associated with these applications.
+  final AppData? appData;
 
   const FileInfoEntity({
     required this.isStored,
@@ -71,6 +79,7 @@ class FileInfoEntity extends Equatable {
     this.recognitionInfo,
     this.metadata,
     this.variations,
+    this.appData,
   });
 
   /// If your file is an image and can be processed via Image Processing, Please note, our processing engine does not treat all image files as such.
@@ -94,61 +103,67 @@ class FileInfoEntity extends Equatable {
         datetimeUploaded,
         imageInfo,
         videoInfo,
+        // ignore: deprecated_member_use_from_same_package
         recognitionInfo,
         metadata,
         variations,
+        appData,
       ];
 
   factory FileInfoEntity.fromJson(Map<String, dynamic> json) => FileInfoEntity(
-        isStored: json['is_stored'] ?? json['datetime_stored'] != null,
-        id: json['uuid'],
-        filename: json['original_filename'],
-        mimeType: json['mime_type'],
-        isReady: json['is_ready'],
-        size: json['size'],
-        datetimeRemoved: json['datetime_removed'] != null
-            ? DateTime.parse(json['datetime_removed'])
-            : null,
-        datetimeStored: json['datetime_stored'] != null
-            ? DateTime.parse(json['datetime_stored'])
-            : null,
-        datetimeUploaded: json['datetime_uploaded'] != null
-            ? DateTime.parse(json['datetime_uploaded'])
-            : null,
-        imageInfo: json['image_info'] != null
-            ? ImageInfo.fromJson(
-                (json['image_info'] as Map).cast<String, dynamic>(),
-              )
-            : json['content_info'] != null &&
-                    json['content_info']['image'] != null
-                ? ImageInfo.fromJson(
-                    (json['content_info']['image'] as Map)
-                        .cast<String, dynamic>(),
-                  )
-                : null,
-        videoInfo: json['video_info'] != null
-            ? VideoInfo.fromJson(
-                (json['video_info'] as Map).cast<String, dynamic>(),
-              )
-            : json['content_info'] != null &&
-                    json['content_info']['video'] != null
-                ? VideoInfo.fromJson(
-                    (json['content_info']['video'] as Map)
-                        .cast<String, dynamic>(),
-                  )
-                : null,
-        recognitionInfo: json['rekognition_info'] != null
-            ? (json['rekognition_info'] as Map).cast<String, double>()
-            : null,
-        metadata: json['metadata'] != null
-            ? (json['metadata'] as Map).isNotEmpty
-                ? (json['metadata'] as Map).cast<String, String>()
-                : null
-            : null,
-        variations: json['variations'] != null
-            ? (json['variations'] as Map).cast<String, String>()
-            : null,
-      );
+      isStored: json['is_stored'] ?? json['datetime_stored'] != null,
+      id: json['uuid'],
+      filename: json['original_filename'],
+      mimeType: json['mime_type'],
+      isReady: json['is_ready'],
+      size: json['size'],
+      datetimeRemoved: json['datetime_removed'] != null
+          ? DateTime.parse(json['datetime_removed'])
+          : null,
+      datetimeStored: json['datetime_stored'] != null
+          ? DateTime.parse(json['datetime_stored'])
+          : null,
+      datetimeUploaded: json['datetime_uploaded'] != null
+          ? DateTime.parse(json['datetime_uploaded'])
+          : null,
+      imageInfo: json['image_info'] != null
+          ? ImageInfo.fromJson(
+              (json['image_info'] as Map).cast<String, dynamic>(),
+            )
+          : json['content_info'] != null &&
+                  json['content_info']['image'] != null
+              ? ImageInfo.fromJson(
+                  (json['content_info']['image'] as Map)
+                      .cast<String, dynamic>(),
+                )
+              : null,
+      videoInfo: json['video_info'] != null
+          ? VideoInfo.fromJson(
+              (json['video_info'] as Map).cast<String, dynamic>(),
+            )
+          : json['content_info'] != null &&
+                  json['content_info']['video'] != null
+              ? VideoInfo.fromJson(
+                  (json['content_info']['video'] as Map)
+                      .cast<String, dynamic>(),
+                )
+              : null,
+      recognitionInfo: json['rekognition_info'] != null
+          ? (json['rekognition_info'] as Map).cast<String, double>()
+          : null,
+      metadata: json['metadata'] != null
+          ? (json['metadata'] as Map).isNotEmpty
+              ? (json['metadata'] as Map).cast<String, String>()
+              : null
+          : null,
+      variations: json['variations'] != null
+          ? (json['variations'] as Map).cast<String, String>()
+          : null,
+      appData: json['appdata'] != null
+          ? AppData.fromJson(
+              (json['appdata'] as Map).cast<String, dynamic>(),
+            )
+          : null);
 }
 
 enum ImageColorMode {
@@ -406,6 +421,90 @@ class VideoInfo extends Equatable {
               sampleRate: audioMetadata['sample_rate'],
             )
           : null,
+    );
+  }
+}
+
+class AppData extends Equatable {
+  final AWSRekognitionAddonResult? awsRecognition;
+
+  final ClamAVAddonResult? clamAV;
+
+  final RemoveBgAddonResult? removeBg;
+
+  const AppData({
+    this.awsRecognition,
+    this.clamAV,
+    this.removeBg,
+  });
+
+  /// @nodoc
+  @protected
+  @override
+  List<Object?> get props => [
+        awsRecognition,
+        clamAV,
+        removeBg,
+      ];
+
+  factory AppData.fromJson(Map<String, dynamic> json) {
+    AWSRekognitionAddonResult? awsRecognition;
+    ClamAVAddonResult? clamAV;
+    RemoveBgAddonResult? removeBg;
+
+    if (json['aws_rekognition_detect_labels'] != null) {
+      awsRecognition = AWSRekognitionAddonResult(
+        info: AddonResultInfo.fromJson(json['aws_rekognition_detect_labels']),
+        labelModelVersion: json['aws_rekognition_detect_labels']['data']
+            ['LabelModelVersion'],
+        labels:
+            (json['aws_rekognition_detect_labels']['data']['Labels'] as List)
+                .map(
+                  (item) => AWSRecognitionLabel(
+                    confidence: item['Confidence'],
+                    name: item['Name'],
+                    instances: (item['Instances'] as List)
+                        .map(
+                          (instance) => AWSRecognitionInstance(
+                            boundingBox: ASWRecognitionBoundingBox(
+                              top: instance['BoundingBox']['Top'],
+                              left: instance['BoundingBox']['Left'],
+                              width: instance['BoundingBox']['Width'],
+                              height: instance['BoundingBox']['Height'],
+                            ),
+                            confidence: instance['Confidence'],
+                          ),
+                        )
+                        .toList(),
+                    parents: (item['Parents'] as List)
+                        .map((parent) => parent['Name'] as String)
+                        .toList(),
+                  ),
+                )
+                .toList(),
+      );
+    }
+
+    if (json['uc_clamav_virus_scan'] != null) {
+      clamAV = ClamAVAddonResult(
+        info: AddonResultInfo.fromJson(json['uc_clamav_virus_scan']),
+        infected: json['uc_clamav_virus_scan']['data']['infected'],
+        infectedWith:
+            json['uc_clamav_virus_scan']['data']['infected_with'] ?? '',
+      );
+    }
+
+    if (json['remove_bg'] != null) {
+      removeBg = RemoveBgAddonResult(
+        info: AddonResultInfo.fromJson(json['remove_bg']),
+        foregroundType: json['remove_bg']['data']['foreground_type'] as String,
+      );
+    }
+
+    return AppData(
+      awsRecognition: awsRecognition,
+      clamAV: clamAV,
+      removeBg: removeBg,
     );
   }
 }

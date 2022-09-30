@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+
 import 'package:test/test.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
 
@@ -78,6 +80,7 @@ void main() {
     expect(file1, TypeMatcher<FileInfoEntity>());
     expect(file1.imageInfo, isA<ImageInfo>());
     expect(file1.isImage, isTrue);
+    expect(file1.appData, isNull);
 
     expect(
         () => apiV05.file('3c269810-c17b-4e2c-92b6-25622464d866',
@@ -98,6 +101,7 @@ void main() {
     expect(file2, TypeMatcher<FileInfoEntity>());
     expect(file2.videoInfo, isA<VideoInfo>());
     expect(file2.isImage, isFalse);
+    expect(file2.appData, isNull);
     expect(file2.recognitionInfo, isNull);
   });
 
@@ -115,6 +119,12 @@ void main() {
     expect(file2.videoInfo, isA<VideoInfo>());
     expect(file2.isImage, isFalse);
     expect(file2.metadata, isNotNull);
+    expect(file2.appData, isNull);
+
+    expect(
+        () => apiV07.file('3c269810-c17b-4e2c-92b6-25622464d866',
+            includeRecognitionInfo: true),
+        throwsA(TypeMatcher<AssertionError>()));
   });
 
   test('Remove files', () async {
@@ -168,6 +178,30 @@ void main() {
         throwsA(TypeMatcher<AssertionError>()));
   });
 
+  test('Get file with AWSRecognition application data', () async {
+    final file = await apiV07.file('file-with-aws-recognition',
+        include: const FilesIncludeFields.withAppData());
+
+    expect(file.appData, isNotNull);
+    expect(file.appData!.awsRecognition, isA<AWSRekognitionAddonResult>());
+  });
+
+  test('Get file with ClamAV application data', () async {
+    final file = await apiV07.file('file-with-clamav',
+        include: const FilesIncludeFields.withAppData());
+
+    expect(file.appData, isNotNull);
+    expect(file.appData!.clamAV, isA<ClamAVAddonResult>());
+  });
+
+  test('Get file with RemoveBg application data', () async {
+    final file = await apiV07.file('file-with-removebg',
+        include: const FilesIncludeFields.withAppData());
+
+    expect(file.appData, isNotNull);
+    expect(file.appData!.removeBg, isA<RemoveBgAddonResult>());
+  });
+
   test('Get file application data', () async {
     final result = await apiV07.getApplicationData('file-id');
 
@@ -176,7 +210,7 @@ void main() {
 
     expect(() => apiV06.getApplicationData('file-id'),
         throwsA(TypeMatcher<AssertionError>()));
-  });
+  }, skip: 'Moved to addons section');
 
   test('Get file application data by appName', () async {
     final result = await apiV07.getApplicationDataByAppName(
@@ -190,6 +224,43 @@ void main() {
     expect(
         () => apiV06.getApplicationDataByAppName(
             'file-id', 'uc_clamav_virus_scan'),
+        throwsA(TypeMatcher<AssertionError>()));
+  }, skip: 'Moved to addons section');
+
+  test('Copy file to local storage', () async {
+    final result1 = await apiV06.copyToLocalStorage('file-id');
+    final result2 = await apiV07.copyToLocalStorage('file-id');
+
+    expect(result1, isA<FileInfoEntity>());
+    expect(result2, isA<FileInfoEntity>());
+  });
+
+  test('Copy file to local storage should throw errors', () async {
+    expect(() => apiV05.copyToLocalStorage('file-id'),
+        throwsA(TypeMatcher<AssertionError>()));
+    expect(
+        () => apiV06
+            .copyToLocalStorage('file-id', metadata: const {'key1': 'value1'}),
+        throwsA(TypeMatcher<AssertionError>()));
+  });
+
+  test('Copy file to remote storage', () async {
+    final result1 =
+        await apiV06.copyToRemoteStorage(fileId: 'file-id', target: 'remote');
+    final result2 =
+        await apiV07.copyToRemoteStorage(fileId: 'file-id', target: 'remote');
+
+    expect(result1,
+        equals('s3://mybucket/03ccf9ab-f266-43fb-973d-a6529c55c2ae/image.png'));
+    expect(result2,
+        equals('s3://mybucket/03ccf9ab-f266-43fb-973d-a6529c55c2ae/image.png'));
+
+    expect(FilesPatternValue.Default.toString(), equals('\${default}'));
+  });
+
+  test('Copy file to remote storage should throw errors', () async {
+    expect(
+        () => apiV05.copyToRemoteStorage(fileId: 'file-id', target: 'remote'),
         throwsA(TypeMatcher<AssertionError>()));
   });
 }

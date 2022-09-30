@@ -1,0 +1,47 @@
+{
+  "datetime_removed": null,
+  "datetime_stored": "2018-11-26T12:49:10.477888Z",
+  "datetime_uploaded": "2018-11-26T12:49:09.945335Z",
+  "is_image": true,
+  "is_ready": true,
+  "mime_type": "image/jpeg",
+  "original_file_url": "https://ucarecdn.com/22240276-2f06-41f8-9411-755c8ce926ed/pineapple.jpg",
+  "original_filename": "pineapple.jpg",
+  "size": 642,
+  "url": "https://api.uploadcare.com/files/22240276-2f06-41f8-9411-755c8ce926ed/",
+  "uuid": "22240276-2f06-41f8-9411-755c8ce926ed",
+  "variations": null,
+  "content_info": {
+    "mime": {
+      "mime": "image/jpeg",
+      "type": "image",
+      "subtype": "jpeg"
+    },
+    "image": {
+      "format": "JPEG",
+      "width": 500,
+      "height": 500,
+      "sequence": false,
+      "orientation": 6,
+      "geo_location": {
+        "latitude": 55.62013611111111,
+        "longitude": 37.66299166666666
+      },
+      "datetime_original": "2018-08-20T08:59:50",
+      "dpi": [
+        72,
+        72
+      ]
+    }
+  },
+  "appdata": {
+    "remove_bg": {
+      "data": {
+        "foreground_type": "person"
+      },
+      "version": "1.0",
+      "datetime_created": "2021-07-25T12:24:33.159663Z",
+      "datetime_updated": "2021-07-25T12:24:33.159663Z"
+    }
+  }
+}

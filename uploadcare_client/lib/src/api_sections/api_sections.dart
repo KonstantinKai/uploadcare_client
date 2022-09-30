@@ -8,3 +8,4 @@ export 'groups.dart';
 export 'webhooks.dart';
 export 'document_converting.dart';
 export 'project.dart';
+export 'addons.dart';

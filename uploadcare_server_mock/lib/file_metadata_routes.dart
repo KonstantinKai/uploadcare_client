@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
+import 'utils.dart';
+
 class FileMetadataRoutes {
   FileMetadataRoutes(Router router) {
     router
@@ -26,7 +28,7 @@ class FileMetadataRoutes {
 
   Future<Response> _updateFileMetadataValue(
       Request request, String fileId, String metadataKey) async {
-    final payload = jsonDecode(await request.readAsString());
+    final payload = await Utils.parseJsonBodyAsString(request);
     return Response.ok(jsonEncode('${payload}_${fileId}_$metadataKey'),
         headers: const {'Content-Type': 'application/json'});
   }

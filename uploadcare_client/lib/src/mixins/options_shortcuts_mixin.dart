@@ -19,10 +19,17 @@ mixin OptionsShortcutMixin {
   String get cdnUrl => options.cdnUrl;
 
   @protected
-  void ensureRightVersion(double since, String prefix) {
+  void ensureRightVersion(double expectedVersion, String prefix,
+      {bool? exact}) {
+    exact ??= false;
+
     assert(
-      options.apiVersion >= since,
-      '$prefix available since v$since version',
+      exact
+          ? options.apiVersion == expectedVersion
+          : options.apiVersion >= expectedVersion,
+      exact
+          ? '$prefix available only for v$expectedVersion version'
+          : '$prefix available since v$expectedVersion version',
     );
   }
 }

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:meta/meta.dart';
 import '../api_sections/cdn_file.dart';
 import '../entities/entities.dart';
 import '../mixins/mixins.dart';
@@ -18,15 +17,24 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   Future<FileInfoEntity> file(
     String fileId, {
 
-    /// Since v0.6
-    @experimental bool includeRecognitionInfo = false,
+    /// Since v0.7
+    /// Include additional fields to the file object, such as: appdata
+    FilesIncludeFields? include,
+
+    /// Only v0.6
+    @Deprecated('Due to the API stabilizing recognition feature moved to the [ApiAddons]')
+        bool includeRecognitionInfo = false,
   }) async {
     _ensureRightVersionForRecognitionApi(includeRecognitionInfo);
+
+    if (include != null) _ensureRightVersionForApplicationData();
+
     return FileInfoEntity.fromJson(
       await resolveStreamedResponse(
         createRequest(
           'GET',
           buildUri('$apiUrl/files/$fileId/', {
+            if (include != null) 'include': include.toString(),
             if (includeRecognitionInfo) 'add_fields': 'rekognition_info',
           }),
         ).send(),
@@ -72,11 +80,18 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
         const FilesOrdering(FilesFilterValue.DatetimeUploaded),
     dynamic fromFilter,
 
-    /// Since v0.6
-    @experimental bool includeRecognitionInfo = false,
+    /// Since v0.7
+    /// Include additional fields to the file object, such as: appdata
+    FilesIncludeFields? include,
+
+    /// Only v0.6
+    @Deprecated('Due to the API stabilizing recognition feature moved to the [ApiAddons]')
+        bool includeRecognitionInfo = false,
   }) async {
     assert(limit > 0 && limit <= 1000, 'Should be in 1..1000 range');
     _ensureRightVersionForRecognitionApi(includeRecognitionInfo);
+
+    if (include != null) _ensureRightVersionForApplicationData();
 
     if (fromFilter != null) {
       if (ordering.field == FilesFilterValue.DatetimeUploaded) {
@@ -104,6 +119,7 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
             'removed': removed.toString(),
             if (offset != null) 'offset': offset.toString(),
             if (fromFilter != null) 'from': fromFilter,
+            if (include != null) 'include': include.toString(),
             if (includeRecognitionInfo) 'add_fields': 'rekognition_info',
           })).send(),
     );
@@ -177,6 +193,7 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   }
 
   /// **Since v0.7**
+  /// Get file's metadata keys and values
   Future<Map<String, String>> getFileMetadata(String fileId) async {
     _ensureRightVersionForMetadataApi();
 
@@ -191,6 +208,7 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   }
 
   /// **Since v0.7**
+  /// Get the value of a single metadata key
   Future<String> getFileMetadataValue(String fileId, String metadataKey) async {
     _ensureRightVersionForMetadataApi();
 
@@ -205,6 +223,7 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   }
 
   /// **Since v0.7**
+  /// Update the value of a single metadata key. If the key does not exist, it will be created
   Future<String> updateFileMetadataValue(
       String fileId, String metadataKey, String value) async {
     _ensureRightVersionForMetadataApi();
@@ -219,6 +238,7 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   }
 
   /// **Since v0.7**
+  /// Delete a file's metadata key
   Future<void> deleteFileMetadataValue(
       String fileId, String metadataKey) async {
     _ensureRightVersionForMetadataApi();
@@ -231,10 +251,84 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
     );
   }
 
+  /// **Since v0.6**
+  ///
+  /// POST requests are used to copy original files or their modified versions to a default storage.
+  ///
+  /// Source files MAY either be stored or just uploaded and MUST NOT be deleted.
+  ///
+  /// Copying of large files is not supported at the moment.
+  /// If the file CDN URL includes transformation operators, its size MUST NOT exceed 100 MB. If not, the size MUST NOT exceed 5 GB.
+  Future<FileInfoEntity> copyToLocalStorage(
+    String fileId, {
+
+    /// The parameter only applies to the Uploadcare storage and MUST be either true or false.
+    ///
+    /// Default: false
+    bool? store,
+
+    /// **Since v0.7**
+    ///
+    /// Arbitrary additional metadata.
+    Map<String, String>? metadata,
+  }) async {
+    _ensureRightVersionForCopyApi();
+    if (metadata != null) _ensureRightVersionForMetadataApi();
+
+    final request = createRequest('POST', buildUri('$apiUrl/files/local_copy/'))
+      ..body = jsonEncode({
+        'source': fileId,
+        if (store != null) 'store': store.toString(),
+        if (metadata != null) 'metadata': metadata,
+      });
+
+    final response =
+        (await resolveStreamedResponse(request.send())) as Map<String, dynamic>;
+
+    return FileInfoEntity.fromJson(response['result']);
+  }
+
+  /// **Since: v0.6**
+  ///
+  /// POST requests are used to copy original files or their modified versions to a custom storage.
+  ///
+  /// Source files MAY either be stored or just uploaded and MUST NOT be deleted.
+  ///
+  /// Copying of large files is not supported at the moment. File size MUST NOT exceed 5 GB.
+  Future<String> copyToRemoteStorage({
+    required String fileId,
+    required String target,
+    bool? makePublic,
+
+    /// The parameter is used to specify file names Uploadcare passes to a custom storage.
+    /// If the parameter is omitted, your custom storages pattern is used. Use any combination of allowed values.
+    ///
+    /// Default: FilesPatternValue.Default
+    FilesPatternValue? pattern,
+  }) async {
+    _ensureRightVersionForCopyApi();
+
+    final request =
+        createRequest('POST', buildUri('$apiUrl/files/remote_copy/'))
+          ..body = jsonEncode({
+            'source': fileId,
+            'target': target,
+            if (makePublic != null) 'make_public': makePublic.toString(),
+            if (pattern != null) 'pattern': pattern.toString(),
+          });
+
+    final response =
+        (await resolveStreamedResponse(request.send())) as Map<String, dynamic>;
+
+    return response['result'];
+  }
+
   /// **Since v0.7**
   ///
   /// Get file's application data from all applications at once
   /// See https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/getAllApplicationData
+  @Deprecated(
+      'Moved to [ApiAddons] section. Will be removed in next major release. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Add-Ons')
   Future<Map<String, dynamic>> getApplicationData(String fileId) async {
     _ensureRightVersionForApplicationData();
 
@@ -252,6 +346,8 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   ///
   /// Get file's application data from a single application
   /// See https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/getSingleApplicationData
+  @Deprecated(
+      'Moved to [ApiAddons] section. Will be removed in next major release. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Add-Ons')
   Future<Map<String, dynamic>> getApplicationDataByAppName(
       String fileId, String appName) async {
     _ensureRightVersionForApplicationData();
@@ -269,7 +365,7 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   void _ensureRightVersionForRecognitionApi(bool includeRecognitionInfo) {
     if (!includeRecognitionInfo) return;
 
-    ensureRightVersion(0.6, 'Recognition API');
+    ensureRightVersion(0.6, 'Recognition API', exact: true);
   }
 
   void _ensureRightVersionForMetadataApi() {
@@ -278,5 +374,9 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
 
   void _ensureRightVersionForApplicationData() {
     ensureRightVersion(0.7, 'File application data API');
+  }
+
+  void _ensureRightVersionForCopyApi() {
+    ensureRightVersion(0.6, 'File copy API');
   }
 }

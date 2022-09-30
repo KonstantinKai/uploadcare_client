@@ -4,6 +4,7 @@ import 'package:path/path.dart' show join;
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
+import 'package:uploadcare_server_mock/addons_routes.dart';
 import 'package:uploadcare_server_mock/cdn_routes.dart';
 import 'package:uploadcare_server_mock/converting_routes.dart';
 import 'package:uploadcare_server_mock/file_metadata_routes.dart';
@@ -31,6 +32,7 @@ void main(List<String> args) async {
   FileMetadataRoutes(_router);
   UploadRoutes(_router, _assetsDir);
   ProjectRoutes(_router, _assetsDir);
+  AddonsRoutes(_router, _assetsDir);
 
   // Configure a pipeline that logs requests.
   final handler = (!args.contains('--disable-logs')

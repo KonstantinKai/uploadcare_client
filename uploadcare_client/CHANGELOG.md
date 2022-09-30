@@ -1,3 +1,15 @@
+## [6.2.0] - Fri Sep 30 2022
+
+- Added `ApiAddons` section. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Add-Ons
+- Added `ApiFiles.copyToLocalStorage` method. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/createLocalCopy
+- Added `ApiFiles.copyToRemoteStorage` method. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/createRemoteCopy
+- Added `include` parameter to `ApiFiles.file` & `ApiFiles.list` methods
+- Added `FileInfoEntity.appData` field
+- Marked `ApiFiles.getApplicationData` & `ApiFiles.getApplicationDataByAppName` as deprecated due the api changes
+- Marked `includeRecognitionInfo` for `ApiFiles.file` & `ApiFiles.list` methods as deprecated due the api changes (use `AWSRecognition` from `ApiAddons`)
+- Marked `FileInfoEntity.recognitionInfo` as deprecated
+- Added addons usage to the example project
+
 ## [6.1.1] - Wed July 27 2022
 
 - Made `VideoStreamMetadata.bitrate` as `nullable`

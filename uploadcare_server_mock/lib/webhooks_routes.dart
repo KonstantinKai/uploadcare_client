@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:shelf_multipart/form_data.dart';
 import 'package:path/path.dart' as path;
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
+
+import 'utils.dart';
 
 class WebhooksRoutes {
   WebhooksRoutes(Router router, this.assets) {
@@ -28,10 +29,7 @@ class WebhooksRoutes {
   }
 
   Future<Response> _create(Request request) async {
-    final payload = <String, String>{
-      await for (final formData in request.multipartFormData)
-        formData.name: await formData.part.readString(),
-    };
+    final payload = await Utils.parseMultipartBody(request);
 
     return Response.ok(
       jsonEncode({
@@ -51,10 +49,7 @@ class WebhooksRoutes {
   }
 
   Future<Response> _update(Request request, String hookId) async {
-    final payload = <String, String>{
-      await for (final formData in request.multipartFormData)
-        formData.name: await formData.part.readString(),
-    };
+    final payload = await Utils.parseMultipartBody(request);
 
     return Response.ok(
       jsonEncode({
@@ -74,10 +69,7 @@ class WebhooksRoutes {
   }
 
   Future<Response> _delete(Request request) async {
-    final payload = <String, String>{
-      await for (final formData in request.multipartFormData)
-        formData.name: await formData.part.readString(),
-    };
+    final payload = await Utils.parseMultipartBody(request);
 
     if ((payload['target_url'] ?? '').isEmpty) {
       return Response.badRequest(
