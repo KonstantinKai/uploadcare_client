@@ -1,3 +1,7 @@
+## [6.2.1] - Fri Nov 11 2022
+
+- Reduced `meta` dependency version to `1.7.0` because of version conflict with the `flutter_test` package in `uploadcare_flutter` lib
+
 ## [6.2.0] - Fri Sep 30 2022
 
 - Added `ApiAddons` section. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Add-Ons
