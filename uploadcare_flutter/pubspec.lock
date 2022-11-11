@@ -98,7 +98,7 @@ packages:
       name: equatable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.3"
+    version: "2.0.5"
   fake_async:
     dependency: transitive
     description:
@@ -143,7 +143,7 @@ packages:
       name: http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.13.4"
+    version: "0.13.5"
   http_parser:
     dependency: transitive
     description:
@@ -283,7 +283,7 @@ packages:
       path: "../uploadcare_client"
       relative: true
     source: path
-    version: "6.0.1"
+    version: "6.2.0"
   vector_math:
     dependency: transitive
     description:
