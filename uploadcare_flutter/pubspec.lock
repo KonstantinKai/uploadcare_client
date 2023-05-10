@@ -316,9 +316,10 @@ packages:
   uploadcare_client:
     dependency: "direct main"
     description:
-      path: "../uploadcare_client"
-      relative: true
-    source: path
+      name: uploadcare_client
+      sha256: "7caec854667c352539564e6c6d7f923dd5c8951fc553f781a957353d8333301b"
+      url: "https://pub.dev"
+    source: hosted
     version: "6.3.0"
   vector_math:
     dependency: transitive
