@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  uploadcare_client: ^6.2.1
+  uploadcare_client: ^6.3.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

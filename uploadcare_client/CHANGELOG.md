@@ -1,3 +1,15 @@
+## [6.3.0] - Wed May 10 2023
+
+- Fixed access with `AuthSchemeRegular` for the web due to the `Date` header limitation. Used the same header as in an official javascript library;
+- Added `RasterizeTransformation`. See https://uploadcare.com/docs/transformations/image/#svg
+- Added `BorderRadiusTransformation`. See https://uploadcare.com/docs/transformations/image/resize-crop/#operation-border-radius
+- Added `RectOverlayTransformation`. See https://uploadcare.com/docs/transformations/image/overlay/#overlay-solid
+- Added `TextOverlayTransformation`. See https://uploadcare.com/docs/transformations/image/overlay/#overlay-text
+- Added `useSmartResize` to the `ImageResizeTransformation`. See https://uploadcare.com/docs/transformations/image/resize-crop/#operation-smart-resize
+- Added `JsonpFileInfoTransformation`. See https://uploadcare.com/docs/delivery/cdn/#operation-jsonp
+- Added `ChangeFilenameTransformation`. See https://uploadcare.com/docs/delivery/cdn/#cdn-filename
+- Rewritten README.md
+
 ## [6.2.1] - Fri Nov 11 2022
 
 - Reduced `meta` dependency version to `1.7.0` because of version conflict with the `flutter_test` package in `uploadcare_flutter` lib
