@@ -16,15 +16,23 @@ class ClientOptions {
   final AuthScheme authorizationScheme;
 
   /// Enable signed uploads mechanism
+  ///
+  /// Default: false
   final bool useSignedUploads;
 
   /// Signed upload signature lifetime
+  ///
+  /// Default: '30 seconds'
   final Duration signedUploadsSignatureLifetime;
 
   /// Max concurrent request for mulipart uploads
+  ///
+  /// Default: 3
   final int multipartMaxConcurrentChunkRequests;
 
   /// Max concurrent running isolates. If you are using [ApiUpload.auto] with `runInIsolate` parameter
+  ///
+  /// Default: 3
   final int maxIsolatePoolSize;
 
   double? _apiVersion;

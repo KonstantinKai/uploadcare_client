@@ -88,7 +88,6 @@ class ApiAddons with OptionsShortcutMixin, TransportHelperMixin {
   /// See https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/removeBgExecute
   Future<String> executeRemoveBg(
     String fileId, {
-
     /// Whether to crop off all empty regions
     /// Default: false
     bool? crop,

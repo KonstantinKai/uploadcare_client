@@ -1,7 +1,7 @@
 import '../measures.dart';
 import 'base.dart';
-import 'video.dart';
 import 'image.dart';
+import 'video.dart';
 
 enum QualityTValue {
   /// Lowest visual quality yet minimal loading times; smaller than [QualityTValue.Lighter].
@@ -127,6 +127,14 @@ class JsonFileInfoTransformation extends NullParamTransformation {
   String get operation => 'json';
 }
 
+/// Get file info as `application/javascript`
+///
+/// /See https://uploadcare.com/docs/delivery/cdn/#operation-jsonp
+class JsonpFileInfoTransformation extends NullParamTransformation {
+  @override
+  String get operation => 'jsonp';
+}
+
 /// By default, CDN instructs browsers to show images and download other file types.
 /// The inline control allows you to change this behavior.
 ///
@@ -136,4 +144,20 @@ class InlineTransformation extends BooleanTransformation {
 
   @override
   String get operation => 'inline';
+}
+
+/// You can set an optional filename that users will see instead of the original name
+///
+/// See https://uploadcare.com/docs/delivery/cdn/#cdn-filename
+class ChangeFilenameTransformation extends NullParamTransformation {
+  ChangeFilenameTransformation(this.filename)
+      : assert(filename.isNotEmpty, 'New filename cannot be empty');
+
+  final String filename;
+
+  @override
+  String get delimiter => '';
+
+  @override
+  String get operation => filename;
 }

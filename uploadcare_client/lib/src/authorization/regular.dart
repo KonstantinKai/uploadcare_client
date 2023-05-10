@@ -51,7 +51,7 @@ class AuthSchemeRegular extends AuthScheme {
     request.headers.addAll(Map.fromEntries([
       acceptHeader,
       MapEntry(
-        'date',
+        'X-Uploadcare-Date',
         isoDate,
       ),
       MapEntry(

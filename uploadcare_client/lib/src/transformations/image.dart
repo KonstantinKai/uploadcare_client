@@ -373,7 +373,13 @@ class CropTransformation extends Transformation implements ImageTransformation {
 /// See https://uploadcare.com/docs/transformations/image/resize-crop/#operation-resize
 class ImageResizeTransformation extends ResizeTransformation
     implements ImageTransformation {
-  ImageResizeTransformation(Dimensions size) : super(size);
+  ImageResizeTransformation(Dimensions size, [this.useSmartResize = false])
+      : super(size);
+
+  final bool useSmartResize;
+
+  @override
+  String get operation => useSmartResize ? 'smart_resize' : super.operation;
 }
 
 /// The overlay operation allows to layer images one over another.
@@ -750,7 +756,8 @@ enum StripMetaTValue {
 /// Currently, you can keep only EXIF meta information. Other storages, such as XMP or IPTC, will always be stripped.
 ///
 /// See https://uploadcare.com/docs/transformations/image/compression/#meta-information-control
-class StripMetaTransformation extends EnumTransformation<StripMetaTValue> {
+class StripMetaTransformation extends EnumTransformation<StripMetaTValue>
+    implements ImageTransformation {
   const StripMetaTransformation([StripMetaTValue? value]) : super(value);
 
   @override
@@ -758,4 +765,220 @@ class StripMetaTransformation extends EnumTransformation<StripMetaTValue> {
 
   @override
   String get valueAsString => value?.toString() ?? '';
+}
+
+/// Any image transformation CDN URL is valid with an SVG file.
+/// Most operations don't affect the response SVG body, while geometric operations (crop, preview, resize, scale_crop) change SVG attributes and work as expected.
+/// To apply full range of operations on SVG file, it should be rasterized by applying /rasterize/ operation.
+///
+/// Note: Operation is safe to apply to any image. Not SVG images won't be affected by this operation.
+///
+/// Note: SVGs uploaded before May 26, 2021 still have `is_image: false` and adding processing operations to them will result in error.
+/// Contact support to batch process previously uploaded files.
+///
+/// See https://uploadcare.com/docs/transformations/image/#svg
+class RasterizeTransformation extends NullParamTransformation
+    implements ImageTransformation {
+  @override
+  String get operation => 'rasterize';
+}
+
+class BorderRadiusTransformation extends Transformation
+    implements ImageTransformation {
+  const BorderRadiusTransformation({
+    required this.radii,
+    this.verticalRadii,
+  });
+
+  final Radii radii;
+  final Radii? verticalRadii;
+
+  @override
+  String get operation => 'border_radius';
+
+  @override
+  List<String> get params => [
+        radii.toString(),
+        if (verticalRadii != null) verticalRadii.toString(),
+      ];
+}
+
+/// The rect operation allows to draw a solid color rectangle on top of an image.
+class RectOverlayTransformation extends Transformation
+    implements ImageTransformation {
+  RectOverlayTransformation({
+    required this.color,
+    required this.relativeDimensions,
+    required this.relativeCoordinates,
+  })  : assert(relativeCoordinates.units == MeasureUnits.Percent,
+            '`relativeCoordinates` should be specified in percent'),
+        assert(relativeDimensions.units == MeasureUnits.Percent,
+            '`relativeDimensions` should be specified in percent');
+
+  @override
+  String get operation => 'rect';
+
+  /// Color of the rectangle. It can have alpha channel specified for transparency
+  final String color;
+
+  /// Linear dimensions of the rectangle
+  final Dimensions relativeDimensions;
+
+  /// Posiiton of the rectangle over your input
+  final Offsets relativeCoordinates;
+
+  @override
+  List<String> get params => [
+        color,
+        relativeDimensions.toString(),
+        relativeCoordinates.toString(),
+      ];
+}
+
+/// NOTE: Permissions
+///
+/// Contact sales to enable text overlay features for your project.
+///
+/// Text overlay operation permits arbitrary, user provided content.
+/// This might be used for vandalism and serving of offensive and misleading messages from customer domain.
+/// Therefore, we recommend using it along with signed URLs.
+///
+/// The text operation allows placing arbitrary text on top of an image.
+class TextOverlayTransformation extends Transformation
+    implements ImageTransformation {
+  TextOverlayTransformation({
+    required this.relativeDimensions,
+    required this.relativeCoordinates,
+    required this.text,
+    this.font,
+    this.align,
+    this.background,
+  })  : assert(relativeCoordinates.units == MeasureUnits.Percent,
+            '`relativeCoordinates` should be specified in percent'),
+        assert(relativeDimensions.units == MeasureUnits.Percent,
+            '`relativeDimensions` should be specified in percent');
+
+  /// Linear dimensions of area allocated for text placement. These dimensions are used for text alignment, and width affects line wrapping
+  final Dimensions relativeDimensions;
+
+  /// Position of text area. Coordinates represent an offset along each of the axes in either pixel or percent format. In general, the coordinate system is similar to the CSS background-position.
+  /// For example, -/text/90px10p/10%,90%/... places text in bottom left corner
+  final Offsets relativeCoordinates;
+
+  /// Actual text to be placed
+  final String text;
+  final TextFontTransformation? font;
+  final TextAlignTransformation? align;
+  final TextBackgroundBoxTransformation? background;
+
+  @override
+  String get operation => 'text';
+
+  @override
+  List<String> get params => [
+        if (font != null) '${font.toString()}/-',
+        if (background != null) '${background.toString()}/-',
+        if (align != null) '${align.toString()}/-',
+        operation,
+        relativeDimensions.toString(),
+        relativeCoordinates.toString(),
+        Uri.encodeComponent(text),
+      ];
+
+  @override
+  String toString() {
+    return params.join('/');
+  }
+}
+
+/// NOTE: Use only with [TextOverlayTransformation]
+class TextAlignTransformation extends Transformation
+    implements ImageTransformation {
+  const TextAlignTransformation({
+    required this.hAlign,
+    required this.vAlign,
+  });
+
+  final Position hAlign;
+  final Position vAlign;
+
+  @override
+  String get operation => 'text_align';
+
+  @override
+  List<String> get params => [
+        hAlign.toString(),
+        vAlign.toString(),
+      ];
+}
+
+/// NOTE: Use only with [TextOverlayTransformation]
+class TextFontTransformation extends Transformation
+    implements ImageTransformation {
+  const TextFontTransformation({
+    required this.size,
+    required this.color,
+  });
+
+  /// Font size in pixels
+  final int size;
+
+  /// Font color in hexadecimal notation with optional transparency. Example: `99ff99, 9f9, 99ff9920`
+  final String color;
+
+  @override
+  String get operation => 'font';
+
+  @override
+  List<String> get params => [size.toString(), color];
+}
+
+enum TextBackgroundBoxTValue {
+  /// Disabled
+  None('none'),
+
+  /// One rectangle, under actual text
+  Fit('fit'),
+
+  /// Separate rectangle under each line
+  Line('line'),
+
+  /// Fill all space, allocated by [TextOverlayTransformation.relativeDimensions]
+  Fill('fill');
+
+  const TextBackgroundBoxTValue(this._value);
+
+  final String _value;
+
+  @override
+  String toString() => _value;
+}
+
+/// NOTE: Use only with [TextOverlayTransformation]
+class TextBackgroundBoxTransformation extends Transformation
+    implements ImageTransformation {
+  const TextBackgroundBoxTransformation({
+    required this.mode,
+    required this.color,
+    required this.padding,
+  });
+
+  @override
+  String get operation => 'text_box';
+
+  /// How background is placed
+  final TextBackgroundBoxTValue mode;
+
+  /// The background color in hexadecimal notation with optional transparency
+  final String color;
+
+  /// Increase background size by specified amount in pixels
+  final int padding;
+
+  @override
+  List<String> get params => [
+        mode.toString(),
+        color,
+        padding.toString(),
+      ];
 }

@@ -272,6 +272,8 @@ void main() {
       testDelimiter(ImageResizeTransformation(Dimensions.zero));
       expect(ImageResizeTransformation(Dimensions.zero).toString(),
           equals('resize/0x0'));
+      expect(ImageResizeTransformation(Dimensions(200, 100), true).toString(),
+          equals('smart_resize/200x100'));
     });
 
     test('OverlayTransformation', () {
@@ -462,6 +464,124 @@ void main() {
           equals('strip_meta/none'));
       expect(StripMetaTransformation(StripMetaTValue.Sensitive).toString(),
           equals('strip_meta/sensitive'));
+    });
+
+    test('RasterizeTransformation', () {
+      testDelimiter(RasterizeTransformation());
+      expect(RasterizeTransformation().toString(), equals('rasterize'));
+    });
+
+    test('BorderRadiusTransformation', () {
+      testDelimiter(BorderRadiusTransformation(radii: Radii.all(50)));
+
+      expect(
+          BorderRadiusTransformation(radii: Radii.diagonal(10, 20)).toString(),
+          equals('border_radius/10,20'));
+      expect(
+          BorderRadiusTransformation(radii: Radii.all(10, MeasureUnits.Percent))
+              .toString(),
+          equals('border_radius/10p'));
+      expect(
+          BorderRadiusTransformation(
+                  radii: Radii.all(10, MeasureUnits.Percent),
+                  verticalRadii: Radii.all(50))
+              .toString(),
+          equals('border_radius/10p/50'));
+    });
+
+    test('TextOverlayTransformation', () {
+      testDelimiter(TextOverlayTransformation(
+        relativeDimensions: Dimensions(10, 10, units: MeasureUnits.Percent),
+        relativeCoordinates: Offsets(10, 10, units: MeasureUnits.Percent),
+        text: 'text',
+      ));
+
+      expect(
+        TextOverlayTransformation(
+          relativeDimensions: Dimensions(100, 100, units: MeasureUnits.Percent),
+          relativeCoordinates: Offsets(1, 1, units: MeasureUnits.Percent),
+          text: 'just text',
+        ).toString(),
+        equals('text/100px100p/1p,1p/just%20text'),
+      );
+
+      expect(
+        TextOverlayTransformation(
+          relativeDimensions: Dimensions(200, 100, units: MeasureUnits.Percent),
+          relativeCoordinates: Offsets(0, 0, units: MeasureUnits.Percent),
+          text: 'some text',
+          align: TextAlignTransformation(
+            hAlign: Position.Center,
+            vAlign: Position.Center,
+          ),
+        ).toString(),
+        equals('text_align/center/center/-/text/200px100p/0p,0p/some%20text'),
+      );
+
+      expect(
+        TextOverlayTransformation(
+          relativeDimensions: Dimensions(100, 100, units: MeasureUnits.Percent),
+          relativeCoordinates: Offsets(0, 0, units: MeasureUnits.Percent),
+          text: 'text',
+          font: TextFontTransformation(
+            size: 10,
+            color: '000000',
+          ),
+          align: TextAlignTransformation(
+            hAlign: Position.Top,
+            vAlign: Position.Left,
+          ),
+          background: TextBackgroundBoxTransformation(
+            mode: TextBackgroundBoxTValue.Line,
+            color: '000000',
+            padding: 20,
+          ),
+        ).toString(),
+        equals(
+            'font/10/000000/-/text_box/line/000000/20/-/text_align/top/left/-/text/100px100p/0p,0p/text'),
+      );
+
+      expect(
+          () => TextOverlayTransformation(
+                relativeDimensions: Dimensions(10, 10),
+                relativeCoordinates: Offsets.zero,
+                text: 'text',
+              ),
+          throwsA(TypeMatcher<AssertionError>()));
+    });
+
+    test('RectOverlayTransformation', () {
+      var transformation = RectOverlayTransformation(
+        color: 'bbffoo',
+        relativeDimensions: Dimensions(100, 50, units: MeasureUnits.Percent),
+        relativeCoordinates: Offsets(50, 50, units: MeasureUnits.Percent),
+      );
+      testDelimiter(transformation);
+
+      expect(transformation.toString(), equals('rect/bbffoo/100px50p/50p,50p'));
+
+      expect(
+          () => RectOverlayTransformation(
+                color: 'bbffbb',
+                relativeDimensions: Dimensions(10, 10),
+                relativeCoordinates: Offsets.zero,
+              ),
+          throwsA(TypeMatcher<AssertionError>()));
+    });
+
+    test('JsonpFileInfoTransformation', () {
+      testDelimiter(JsonpFileInfoTransformation());
+
+      expect(JsonpFileInfoTransformation().toString(), equals('jsonp'));
+    });
+
+    test('ChangeFilenameTransformation', () {
+      testDelimiter(ChangeFilenameTransformation('new_filename'), '');
+      expect(ChangeFilenameTransformation('new_filename').toString(),
+          equals('new_filename'));
+
+      expect(() => ChangeFilenameTransformation(''),
+          throwsA(TypeMatcher<AssertionError>()));
     });
   });
 

@@ -16,7 +16,6 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   /// Retreive file by [fileId]
   Future<FileInfoEntity> file(
     String fileId, {
-
     /// Since v0.7
     /// Include additional fields to the file object, such as: appdata
     FilesIncludeFields? include,
@@ -261,7 +260,6 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
   /// If the file CDN URL includes transformation operators, its size MUST NOT exceed 100 MB. If not, the size MUST NOT exceed 5 GB.
   Future<FileInfoEntity> copyToLocalStorage(
     String fileId, {
-
     /// The parameter only applies to the Uploadcare storage and MUST be either true or false.
     ///
     /// Default: false

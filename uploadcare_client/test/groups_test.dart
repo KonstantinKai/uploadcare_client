@@ -41,7 +41,7 @@ void main() {
     expect(group, TypeMatcher<GroupInfoEntity>());
   });
 
-  test('Delete webhook', () async {
+  test('Delete group', () async {
     await api.delete('dd43982b-5447-44b2-86f6-1c3b52afa0ff~1');
   });
 }

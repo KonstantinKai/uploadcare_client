@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
       privateKey: dot_env.env['UPLOADCARE_PRIVATE_KEY']!,
       apiVersion: 'v0.6',
     );
-    _apiV07 = UploadcareClient.withSimpleAuth(
+    _apiV07 = UploadcareClient.withRegularAuth(
       publicKey: dot_env.env['UPLOADCARE_PUBLIC_KEY']!,
       privateKey: dot_env.env['UPLOADCARE_PRIVATE_KEY']!,
       apiVersion: 'v0.7',

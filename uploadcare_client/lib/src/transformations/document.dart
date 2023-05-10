@@ -21,6 +21,7 @@ enum DucumentOutFormatTValue {
   String toString() => _value;
 }
 
+/// See https://uploadcare.com/docs/transformations/document-conversion/#process
 class DocumentFormatTransformation
     extends EnumTransformation<DucumentOutFormatTValue>
     implements DocumentTransformation {

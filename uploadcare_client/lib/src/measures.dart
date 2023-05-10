@@ -2,8 +2,32 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 enum MeasureUnits {
-  Percent,
-  Pixel,
+  Percent('p'),
+  Pixel('');
+
+  const MeasureUnits(this._value);
+
+  final String _value;
+
+  @override
+  String toString() {
+    return _value;
+  }
+}
+
+enum Position {
+  Top('top'),
+  Bottom('bottom'),
+  Center('center'),
+  Left('left'),
+  Right('right');
+
+  const Position(this._value);
+
+  final String _value;
+
+  @override
+  String toString() => _value;
 }
 
 /// dart:ui [Size] replacement for non flutter project
@@ -58,13 +82,7 @@ class Dimensions extends Equatable {
       ];
 
   @override
-  String toString() {
-    if (units == MeasureUnits.Percent) {
-      return '${_width}px${_height}p';
-    }
-
-    return '${_width}x$_height';
-  }
+  String toString() => '$_width${units}x$_height$units';
 }
 
 /// dart:ui [Offset] replacement for non flutter project
@@ -91,13 +109,7 @@ class Offsets extends Equatable {
       ];
 
   @override
-  String toString() {
-    if (units == MeasureUnits.Percent) {
-      return '${dx}p,${dy}p';
-    }
-
-    return '$dx,$dy';
-  }
+  String toString() => '$dx$units,$dy$units';
 }
 
 /// Provides uploadcare face shape
@@ -126,16 +138,16 @@ class Coordinates extends Equatable {
   const Coordinates(this.offset) : predefined = null;
 
   final Offsets offset;
-  final String? predefined;
+  final Position? predefined;
 
-  static const top = Coordinates._(predefined: 'top');
-  static const bottom = Coordinates._(predefined: 'bottom');
-  static const left = Coordinates._(predefined: 'left');
-  static const right = Coordinates._(predefined: 'right');
-  static const center = Coordinates._(predefined: 'center');
+  static const top = Coordinates._(predefined: Position.Top);
+  static const bottom = Coordinates._(predefined: Position.Bottom);
+  static const left = Coordinates._(predefined: Position.Left);
+  static const right = Coordinates._(predefined: Position.Right);
+  static const center = Coordinates._(predefined: Position.Center);
 
   @override
-  String toString() => predefined ?? offset.toString();
+  String toString() => predefined?.toString() ?? offset.toString();
 
   /// @nodoc
   @protected
@@ -163,5 +175,62 @@ class AspectRatio extends Equatable {
   List<Object?> get props => [
         sideA,
         sideB,
+      ];
+}
+
+class Radii extends Equatable {
+  const Radii({
+    required this.topLeft,
+    this.topRight,
+    this.bottomRight,
+    this.bottomLeft,
+    this.units = MeasureUnits.Pixel,
+  }) : assert(
+          bottomLeft != null ? bottomRight != null : true,
+          '"bottomRight" should be specified if "bottomLeft" is present',
+        );
+
+  const Radii.all(
+    int value, [
+    MeasureUnits units = MeasureUnits.Pixel,
+  ]) : this(
+          topLeft: value,
+          units: units,
+        );
+
+  const Radii.diagonal(
+    int topLeftToBottomRight,
+    int topRightToBottomLeft, [
+    MeasureUnits units = MeasureUnits.Pixel,
+  ]) : this(
+          topLeft: topLeftToBottomRight,
+          topRight: topRightToBottomLeft,
+          units: units,
+        );
+
+  final int topLeft;
+  final int? topRight;
+  final int? bottomRight;
+  final int? bottomLeft;
+  final MeasureUnits units;
+
+  List<int?> get _values => [topLeft, topRight, bottomRight, bottomLeft];
+
+  @override
+  String toString() {
+    return _values.where((element) => element != null).map((value) {
+      return '$value$units';
+    }).join(',');
+  }
+
+  /// @nodoc
+  @protected
+  @override
+  List<Object?> get props => [
+        topLeft,
+        topRight,
+        bottomRight,
+        bottomLeft,
+        units,
       ];
 }
