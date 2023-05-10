@@ -23,9 +23,9 @@ jobs:
       # https://github.com/dart-lang/setup-dart/blob/main/README.md
       # - uses: dart-lang/setup-dart@v1
 
-      - uses: flutter-actions/setup-flutter@v1
+      - uses: flutter-actions/setup-flutter@v2
         with:
-          version: 3.0.1
+          version: 3.7.12
 
       - name: Install dependencies
         run: |
