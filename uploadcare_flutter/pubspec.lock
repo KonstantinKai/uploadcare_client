@@ -317,10 +317,10 @@ packages:
     dependency: "direct main"
     description:
       name: uploadcare_client
-      sha256: "7caec854667c352539564e6c6d7f923dd5c8951fc553f781a957353d8333301b"
+      sha256: "2e1e75a7bce46423c46ed76195e38ccc15615cfeb1093e0b49f84321b6bc735d"
       url: "https://pub.dev"
     source: hosted
-    version: "6.3.0"
+    version: "6.3.1"
   vector_math:
     dependency: transitive
     description:

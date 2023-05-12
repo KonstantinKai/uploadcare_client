@@ -5,8 +5,17 @@ homepage: https://github.com/KonstantinKai/uploadcare_client
 repository: https://github.com/KonstantinKai/uploadcare_client
 issue_tracker: https://github.com/KonstantinKai/uploadcare_client/issues
 
+topics:
+  - uploadcare
+  - file-uploading
+  - image-transformations
+  - file-analysis
+  - video-encoding
+  - document-converting
+  - uploader
+
 environment:
-  sdk: '>=2.17.0 <3.0.0'
+  sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
   flutter:
