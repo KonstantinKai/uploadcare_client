@@ -1,3 +1,11 @@
+## [4.3.2] - Fri May 12 2023
+
+- Updated `uploadcare_client` dependency. See https://pub.dev/packages/uploadcare_client/changelog
+
+## [4.3.1] - Thu May 11 2023
+
+- Updated `uploadcare_client` dependency. See https://pub.dev/packages/uploadcare_client/changelog
+
 ## [4.3.0] - Wed May 10 2023
 
 - Changed `load` method to `loadBuffer` for `UploadcareImageProvider` due the deprecation warning
