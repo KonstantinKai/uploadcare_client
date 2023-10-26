@@ -6,10 +6,6 @@ Uploadcare is a complete file handling platform that helps you ship products fas
 
 A dart/flutter library for working with Uploadcare REST API. File uploads, media processing, and adaptive delivery for web and mobile.
 
-Do you like the package? Buy me a coffee :)
-
-<a href="https://www.buymeacoffee.com/konstantinkai" target="_blank"><img src="https://github.com/KonstantinKai/uploadcare_client/blob/master/assets/button.png?raw=true" alt="Buy Me A Coffee"></a>
-
 ## Features
 
 - [**Upload**](#upload)
@@ -545,3 +541,7 @@ final ProjectEntity info = await client.project.info();
 
 - How to pick files on different platforms?
   - [See uploadcare example project](https://github.com/KonstantinKai/uploadcare_client/blob/master/uploadcare_flutter_example/lib/screens/home_screen.dart#L4)
+
+Do you like the package? Buy me a coffee :)
+
+<a href="https://www.buymeacoffee.com/konstantinkai" target="_blank"><img src="https://github.com/KonstantinKai/uploadcare_client/blob/master/assets/button.png?raw=true" alt="Buy Me A Coffee"></a>
