@@ -1,3 +1,8 @@
+## [5.0.0] - Thu Oct 26 2023
+
+- Updated `uploadcare_client` dependency. Dart 3 compatible. See https://pub.dev/packages/uploadcare_client/changelog
+- Overridden `loadImage` instead `loadBuffer` in `UploadcareImageProvider` due to the deprecation
+
 ## [4.3.2] - Fri May 12 2023
 
 - Updated `uploadcare_client` dependency. See https://pub.dev/packages/uploadcare_client/changelog
