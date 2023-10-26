@@ -1,4 +1,3 @@
-import '../measures.dart';
 import 'base.dart';
 import 'common.dart';
 
@@ -32,8 +31,8 @@ enum VideoFormatTValue {
 /// See https://uploadcare.com/docs/transformations/video-encoding/#operation-format
 class VideoFormatTransformation extends EnumTransformation<VideoFormatTValue>
     implements VideoTransformation {
-  VideoFormatTransformation([VideoFormatTValue value = VideoFormatTValue.Mp4])
-      : super(value);
+  VideoFormatTransformation(
+      [VideoFormatTValue super.value = VideoFormatTValue.Mp4]);
 
   @override
   String get valueAsString => value?.toString() ?? '';
@@ -71,12 +70,11 @@ class VideoResizeTransformation extends ResizeTransformation
   @override
   final VideoResizeTValue? value;
 
-  VideoResizeTransformation(Dimensions size, [this.value])
+  VideoResizeTransformation(super.size, [this.value])
       : assert(size.width > -1 ? size.width % 4 == 0 : true,
             'Should be a non-zero integer divisible by 4'),
         assert(size.height > -1 ? size.height % 4 == 0 : true,
-            'Should be a non-zero integer divisible by 4'),
-        super(size);
+            'Should be a non-zero integer divisible by 4');
 
   @override
   String get valueAsString => value?.toString() ?? '';

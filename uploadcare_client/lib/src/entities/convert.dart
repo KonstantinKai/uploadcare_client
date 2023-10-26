@@ -19,16 +19,15 @@ enum ConvertJobStatusValue {
   /// The conversion was canceled
   Canceled;
 
-  factory ConvertJobStatusValue.parse(String? status) {
-    if (status == 'pending') return ConvertJobStatusValue.Pending;
-    if (status == 'processing') return ConvertJobStatusValue.Processing;
-    if (status == 'failed') return ConvertJobStatusValue.Failed;
-    if (status == 'finished') return ConvertJobStatusValue.Finished;
-    if (status == 'canceled') return ConvertJobStatusValue.Canceled;
-    if (status == 'cancelled') return ConvertJobStatusValue.Canceled;
-
-    throw ArgumentError('Unknown status: "$status"');
-  }
+  factory ConvertJobStatusValue.parse(String? status) => switch (status) {
+        'pending' => ConvertJobStatusValue.Pending,
+        'processing' => ConvertJobStatusValue.Processing,
+        'failed' => ConvertJobStatusValue.Failed,
+        'finished' => ConvertJobStatusValue.Finished,
+        'canceled' => ConvertJobStatusValue.Canceled,
+        'cancelled' => ConvertJobStatusValue.Canceled,
+        _ => throw ArgumentError('Unknown status: "$status"'),
+      };
 }
 
 /// Provides status data for converting job

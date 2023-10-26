@@ -18,14 +18,13 @@ enum UrlUploadStatusValue {
   /// everything went smoothly
   Success;
 
-  factory UrlUploadStatusValue.parse(String? value) {
-    if (value == 'waiting') return UrlUploadStatusValue.Waiting;
-    if (value == 'progress') return UrlUploadStatusValue.Progress;
-    if (value == 'error') return UrlUploadStatusValue.Error;
-    if (value == 'success') return UrlUploadStatusValue.Success;
-
-    throw ArgumentError('Unknown stats "$value"');
-  }
+  factory UrlUploadStatusValue.parse(String? value) => switch (value) {
+        'waiting' => UrlUploadStatusValue.Waiting,
+        'progress' => UrlUploadStatusValue.Progress,
+        'error' => UrlUploadStatusValue.Error,
+        'success' => UrlUploadStatusValue.Success,
+        _ => throw ArgumentError('Unknown status: "$value"'),
+      };
 }
 
 /// Provides status data from `fromUrl` uploading

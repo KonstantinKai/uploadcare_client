@@ -12,8 +12,7 @@ class CdnImage extends CndEntity with CdnPathBuilderMixin<ImageTransformation> {
   final PathTransformer<ImageTransformation> pathTransformer;
 
   CdnImage(
-    String id, {
+    super.id, {
     this.cdnUrl = kCDNEndpoint,
-  })  : pathTransformer = PathTransformer(id),
-        super(id);
+  }) : pathTransformer = PathTransformer(id);
 }

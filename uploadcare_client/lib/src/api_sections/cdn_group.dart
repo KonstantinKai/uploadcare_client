@@ -13,10 +13,9 @@ class CdnGroup extends CndEntity with CdnPathBuilderMixin<GroupTransformation> {
   final PathTransformer<GroupTransformation> pathTransformer;
 
   CdnGroup(
-    String id, {
+    super.id, {
     this.cdnUrl = kCDNEndpoint,
-  })  : pathTransformer = PathTransformer(id),
-        super(id);
+  }) : pathTransformer = PathTransformer(id);
 
   /// Retreive [CdnImage] from group
   /// Throws `RangeError` if index greater than [filesCount]

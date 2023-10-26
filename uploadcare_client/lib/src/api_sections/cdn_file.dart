@@ -12,8 +12,7 @@ class CdnFile extends CndEntity with CdnPathBuilderMixin<Transformation> {
   final PathTransformer<Transformation> pathTransformer;
 
   CdnFile(
-    String id, {
+    super.id, {
     this.cdnUrl = kCDNEndpoint,
-  })  : pathTransformer = PathTransformer(id),
-        super(id);
+  }) : pathTransformer = PathTransformer(id);
 }

@@ -2,15 +2,23 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 enum WebhookEvent {
-  Uploaded('file.uploaded');
+  Uploaded('file.uploaded'),
+
+  InfoUpdated('file.info_updated'),
+
+  Stored('file.stored'),
+
+  Deleted('file.deleted');
 
   const WebhookEvent(this._value);
 
-  factory WebhookEvent.parse(String event) {
-    if (event == 'file.uploaded') return WebhookEvent.Uploaded;
-
-    throw ArgumentError('Unknown event received "$event"');
-  }
+  factory WebhookEvent.parse(String event) => switch (event) {
+        'file.uploaded' => WebhookEvent.Uploaded,
+        'file.info_updated' => WebhookEvent.InfoUpdated,
+        'file.stored' => WebhookEvent.Stored,
+        'file.deleted' => WebhookEvent.Deleted,
+        _ => throw ArgumentError('Unknown event received: "$event"'),
+      };
 
   final String _value;
 

@@ -21,8 +21,9 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
     FilesIncludeFields? include,
 
     /// Only v0.6
-    @Deprecated('Due to the API stabilizing recognition feature moved to the [ApiAddons]')
-        bool includeRecognitionInfo = false,
+    @Deprecated(
+        'Due to the API stabilizing recognition feature moved to the [ApiAddons]')
+    bool includeRecognitionInfo = false,
   }) async {
     _ensureRightVersionForRecognitionApi(includeRecognitionInfo);
 
@@ -84,8 +85,9 @@ class ApiFiles with OptionsShortcutMixin, TransportHelperMixin {
     FilesIncludeFields? include,
 
     /// Only v0.6
-    @Deprecated('Due to the API stabilizing recognition feature moved to the [ApiAddons]')
-        bool includeRecognitionInfo = false,
+    @Deprecated(
+        'Due to the API stabilizing recognition feature moved to the [ApiAddons]')
+    bool includeRecognitionInfo = false,
   }) async {
     assert(limit > 0 && limit <= 1000, 'Should be in 1..1000 range');
     _ensureRightVersionForRecognitionApi(includeRecognitionInfo);

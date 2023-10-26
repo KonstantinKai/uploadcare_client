@@ -34,14 +34,10 @@ class AuthSchemeRegular extends AuthScheme {
   static const String _name = 'Uploadcare';
 
   AuthSchemeRegular({
-    required String publicKey,
-    required String apiVersion,
-    required String privateKey,
-  }) : super(
-          apiVersion: apiVersion,
-          publicKey: publicKey,
-          privateKey: privateKey,
-        );
+    required super.publicKey,
+    required super.apiVersion,
+    required super.privateKey,
+  });
 
   @protected
   @override

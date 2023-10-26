@@ -26,7 +26,7 @@ class DocumentFormatTransformation
     extends EnumTransformation<DucumentOutFormatTValue>
     implements DocumentTransformation {
   DocumentFormatTransformation(
-    DucumentOutFormatTValue output, {
+    DucumentOutFormatTValue super.output, {
     int? page,
   })  : assert(
             page != null
@@ -34,8 +34,7 @@ class DocumentFormatTransformation
                     .contains(output)
                 : true,
             'Page convert works only for "${DucumentOutFormatTValue.PNG}" and "${DucumentOutFormatTValue.JPG}" formats'),
-        _page = page != null ? _DocumentFormatPageTransformation(page) : null,
-        super(output);
+        _page = page != null ? _DocumentFormatPageTransformation(page) : null;
 
   final _DocumentFormatPageTransformation? _page;
 
@@ -54,7 +53,7 @@ class DocumentFormatTransformation
 
 class _DocumentFormatPageTransformation extends IntTransformation
     implements DocumentTransformation {
-  const _DocumentFormatPageTransformation(int? page) : super(page);
+  const _DocumentFormatPageTransformation(super.page);
 
   @override
   String get operation => 'page';

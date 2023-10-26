@@ -13,14 +13,13 @@ enum AddonExecutionStatusValue {
 
   Unknown;
 
-  factory AddonExecutionStatusValue.parse(String? status) {
-    if (status == 'in_progress') return AddonExecutionStatusValue.InProgress;
-    if (status == 'error') return AddonExecutionStatusValue.Error;
-    if (status == 'done') return AddonExecutionStatusValue.Done;
-    if (status == 'unknown') return AddonExecutionStatusValue.Unknown;
-
-    throw ArgumentError('Unknown status: "$status"');
-  }
+  factory AddonExecutionStatusValue.parse(String? status) => switch (status) {
+        'in_progress' => AddonExecutionStatusValue.InProgress,
+        'error' => AddonExecutionStatusValue.Error,
+        'done' => AddonExecutionStatusValue.Done,
+        'unknown' => AddonExecutionStatusValue.Unknown,
+        _ => throw ArgumentError('Unknown status: "$status"'),
+      };
 }
 
 class AddonExecutionStatus<T> extends Equatable {

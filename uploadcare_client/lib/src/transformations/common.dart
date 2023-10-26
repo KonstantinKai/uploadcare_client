@@ -37,8 +37,7 @@ enum QualityTValue {
 /// Sets the level of source quality that affects file sizes and hence loading times and volumes of generated traffic.
 class QualityTransformation extends EnumTransformation<QualityTValue>
     implements ImageTransformation, VideoTransformation {
-  QualityTransformation([QualityTValue value = QualityTValue.Normal])
-      : super(value);
+  QualityTransformation([QualityTValue super.value = QualityTValue.Normal]);
 
   @override
   String get valueAsString => value.toString();
@@ -140,7 +139,7 @@ class JsonpFileInfoTransformation extends NullParamTransformation {
 ///
 /// See https://uploadcare.com/docs/delivery/cdn/#inline
 class InlineTransformation extends BooleanTransformation {
-  const InlineTransformation(bool inline) : super(inline);
+  const InlineTransformation(super.inline);
 
   @override
   String get operation => 'inline';

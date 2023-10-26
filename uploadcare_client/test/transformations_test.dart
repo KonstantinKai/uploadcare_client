@@ -96,6 +96,8 @@ void main() {
           equals('format/png'));
       expect(ImageFormatTransformation(ImageFormatTValue.Webp).toString(),
           equals('format/webp'));
+      expect(ImageFormatTransformation(ImageFormatTValue.Preserve).toString(),
+          equals('format/preserve'));
     });
 
     test('ProgressiveTransformation', () {

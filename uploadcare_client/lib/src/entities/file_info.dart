@@ -181,23 +181,22 @@ enum ImageColorMode {
   HSV,
   LAB;
 
-  factory ImageColorMode.parse(String? color) {
-    if (color == 'RGB') return ImageColorMode.RGB;
-    if (color == 'RGBA') return ImageColorMode.RGBA;
-    if (color == 'RGBa') return ImageColorMode.RGBa;
-    if (color == 'RGBX') return ImageColorMode.RGBX;
-    if (color == 'L') return ImageColorMode.L;
-    if (color == 'LA') return ImageColorMode.LA;
-    if (color == 'La') return ImageColorMode.La;
-    if (color == 'P') return ImageColorMode.P;
-    if (color == 'PA') return ImageColorMode.PA;
-    if (color == 'CMYK') return ImageColorMode.CMYK;
-    if (color == 'YCbCr') return ImageColorMode.YCbCr;
-    if (color == 'HSV') return ImageColorMode.HSV;
-    if (color == 'LAB') return ImageColorMode.LAB;
-
-    throw ArgumentError('Unknown color mode "color"');
-  }
+  factory ImageColorMode.parse(String? color) => switch (color) {
+        'RGB' => ImageColorMode.RGB,
+        'RGBA' => ImageColorMode.RGBA,
+        'RGBa' => ImageColorMode.RGBa,
+        'RGBX' => ImageColorMode.RGBX,
+        'L' => ImageColorMode.L,
+        'LA' => ImageColorMode.LA,
+        'La' => ImageColorMode.La,
+        'P' => ImageColorMode.P,
+        'PA' => ImageColorMode.PA,
+        'CMYK' => ImageColorMode.CMYK,
+        'YCbCr' => ImageColorMode.YCbCr,
+        'HSV' => ImageColorMode.HSV,
+        'LAB' => ImageColorMode.LAB,
+        _ => throw ArgumentError('Unknown color mode: "$color"'),
+      };
 }
 
 class ImageInfoGeoLocation extends Equatable {

@@ -13,7 +13,11 @@ enum ImageFormatTValue {
   Webp('webp'),
 
   /// Try converting to WebP or AVIF and fall back to JPEG when a user browser provides no WebP or AVIF support.
-  Auto('auto');
+  Auto('auto'),
+
+  /// Returns the image in the original format if it is PNG or JPEG, otherwise coerces to PNG or JPEG.
+  /// This option is useful when you need to save the image, rather than display it to the end-user.
+  Preserve('preserve');
 
   const ImageFormatTValue(this._value);
 
@@ -28,7 +32,7 @@ enum ImageFormatTValue {
 /// See https://uploadcare.com/docs/transformations/image/compression/#operation-format
 class ImageFormatTransformation extends EnumTransformation<ImageFormatTValue>
     implements ImageTransformation {
-  const ImageFormatTransformation(ImageFormatTValue value) : super(value);
+  const ImageFormatTransformation(ImageFormatTValue super.value);
 
   @override
   String get valueAsString => value?.toString() ?? '';
@@ -43,7 +47,7 @@ class ImageFormatTransformation extends EnumTransformation<ImageFormatTValue>
 /// See https://uploadcare.com/docs/transformations/image/compression/#operation-progressive
 class ProgressiveTransformation extends BooleanTransformation
     implements ImageTransformation {
-  const ProgressiveTransformation([bool value = false]) : super(value);
+  const ProgressiveTransformation([super.value = false]);
 
   @override
   String get operation => 'progressive';
@@ -54,7 +58,7 @@ class ProgressiveTransformation extends BooleanTransformation
 /// See https://uploadcare.com/docs/transformations/image/rotate-flip/#operation-autorotate
 class AutoRotateTransformation extends BooleanTransformation
     implements ImageTransformation {
-  const AutoRotateTransformation([bool value = true]) : super(value);
+  const AutoRotateTransformation([super.value = true]);
 
   @override
   String get operation => 'autorotate';
@@ -66,9 +70,8 @@ class AutoRotateTransformation extends BooleanTransformation
 /// See https://uploadcare.com/docs/transformations/image/rotate-flip/#operation-rotate
 class RotateTransformation extends IntTransformation
     implements ImageTransformation {
-  const RotateTransformation(int value)
-      : assert(value >= -360 && value <= 360, 'Should be in -360..360 range'),
-        super(value);
+  const RotateTransformation(int super.value)
+      : assert(value >= -360 && value <= 360, 'Should be in -360..360 range');
 
   @override
   String get operation => 'rotate';
@@ -116,9 +119,8 @@ class InvertTransformation extends NullParamTransformation
 /// See https://uploadcare.com/docs/transformations/image/colors/#operation-enhance
 class EnhanceTransformation extends IntTransformation
     implements ImageTransformation {
-  const EnhanceTransformation([int value = 50])
-      : assert(value >= 0 && value <= 100, 'Should be in 0..100 range'),
-        super(value);
+  const EnhanceTransformation([int super.value = 50])
+      : assert(value >= 0 && value <= 100, 'Should be in 0..100 range');
 
   @override
   String get operation => 'enhance';
@@ -130,9 +132,8 @@ class EnhanceTransformation extends IntTransformation
 /// See https://uploadcare.com/docs/transformations/image/blur-sharpen/#operation-sharp
 class SharpTransformation extends IntTransformation
     implements ImageTransformation {
-  const SharpTransformation([int value = 5])
-      : assert(value >= 0 && value <= 20, 'Should be in 0..20 range'),
-        super(value);
+  const SharpTransformation([int super.value = 5])
+      : assert(value >= 0 && value <= 20, 'Should be in 0..20 range');
 
   @override
   String get operation => 'sharp';
@@ -146,10 +147,9 @@ class SharpTransformation extends IntTransformation
 /// See https://uploadcare.com/docs/transformations/image/blur-sharpen/#operation-blur
 class BlurTransformation extends IntTransformation
     implements ImageTransformation {
-  const BlurTransformation([int? value = 10])
+  const BlurTransformation([super.value = 10])
       : assert(value != null ? value >= 0 && value <= 5000 : true,
-            'Should be in 0..5000 range'),
-        super(value);
+            'Should be in 0..5000 range');
 
   @override
   String get operation => 'blur';
@@ -161,9 +161,8 @@ class BlurTransformation extends IntTransformation
 /// See https://uploadcare.com/docs/transformations/image/colors/#operation-max-icc-size
 class MaxIccSizeTransformation extends IntTransformation
     implements ImageTransformation {
-  const MaxIccSizeTransformation([int value = 10])
-      : assert(value >= 0, 'Should be positive int'),
-        super(value);
+  const MaxIccSizeTransformation([int super.value = 10])
+      : assert(value >= 0, 'Should be positive int');
 
   @override
   String get operation => 'max_icc_size';
@@ -193,8 +192,7 @@ enum StretchTValue {
 /// See https://uploadcare.com/docs/transformations/image/resize-crop/#operation-stretch
 class StretchTransformation extends EnumTransformation<StretchTValue>
     implements ImageTransformation {
-  const StretchTransformation([StretchTValue value = StretchTValue.On])
-      : super(value);
+  const StretchTransformation([StretchTValue super.value = StretchTValue.On]);
 
   @override
   String get valueAsString => value?.toString() ?? '';
@@ -267,12 +265,11 @@ enum ScaleCropTypeTValue {
 class ScaleCropTransformation extends ResizeTransformation
     implements EnumTransformation<ScaleCropTypeTValue>, ImageTransformation {
   ScaleCropTransformation(
-    Dimensions size, {
+    super.size, {
     ScaleCropTypeTValue? type,
     this.offset,
     this.center = false,
-  })  : value = type,
-        super(size);
+  }) : value = type;
 
   /// an optional [ScaleCropTypeTValue] which enables smart image analysis.
   /// Each smart analysis mode combines various methods for detecting areas of interest in an image.
@@ -307,8 +304,7 @@ class ScaleCropTransformation extends ResizeTransformation
 /// See https://uploadcare.com/docs/transformations/image/resize-crop/#operation-preview
 class PreviewTransformation extends ResizeTransformation
     implements ImageTransformation {
-  PreviewTransformation([Dimensions size = const Dimensions.square(2048)])
-      : super(size);
+  PreviewTransformation([super.size = const Dimensions.square(2048)]);
 
   @override
   String get operation => 'preview';
@@ -373,8 +369,7 @@ class CropTransformation extends Transformation implements ImageTransformation {
 /// See https://uploadcare.com/docs/transformations/image/resize-crop/#operation-resize
 class ImageResizeTransformation extends ResizeTransformation
     implements ImageTransformation {
-  ImageResizeTransformation(Dimensions size, [this.useSmartResize = false])
-      : super(size);
+  ImageResizeTransformation(super.size, [this.useSmartResize = false]);
 
   final bool useSmartResize;
 
@@ -519,9 +514,8 @@ class BlurRegionTransformation extends BlurTransformation {
 
 /// See: https://uploadcare.com/docs/transformations/image/blur-sharpen/#operation-blur-mask
 class UnsharpMaskingTransformation extends BlurTransformation {
-  const UnsharpMaskingTransformation([this.amount = 100, int radius = 10])
-      : assert(amount >= -200 && amount <= 100, 'Should be in -200..100 range'),
-        super(radius);
+  const UnsharpMaskingTransformation([this.amount = 100, int super.radius])
+      : assert(amount >= -200 && amount <= 100, 'Should be in -200..100 range');
 
   /// - 100 stands for the opaque blur image.
   /// - 0 stands for no changes in the image, the output is equal to the original.
@@ -586,9 +580,8 @@ enum FilterTValue {
 /// See https://uploadcare.com/docs/transformations/image/colors/#operation-filter
 class FilterTransformation extends EnumTransformation<FilterTValue>
     implements ImageTransformation {
-  const FilterTransformation(FilterTValue name, [this.amount = 100])
-      : assert(amount >= -100 && amount <= 200, 'Should be in -100..200 range'),
-        super(name);
+  const FilterTransformation(FilterTValue super.name, [this.amount = 100])
+      : assert(amount >= -100 && amount <= 200, 'Should be in -100..200 range');
 
   /// can be set in the range from -100 to 200 and defaults to 100. The :amount of:
   ///
@@ -618,9 +611,8 @@ class FilterTransformation extends EnumTransformation<FilterTValue>
 /// See https://uploadcare.com/docs/transformations/image/resize-crop/#operation-zoom-objects
 class ZoomObjectTransformation extends IntTransformation
     implements ImageTransformation {
-  const ZoomObjectTransformation(int zoom)
-      : assert(zoom >= 0 && zoom <= 100, 'Should be in 0..100 range'),
-        super(zoom);
+  const ZoomObjectTransformation(int super.zoom)
+      : assert(zoom >= 0 && zoom <= 100, 'Should be in 0..100 range');
 
   @override
   String get operation => 'zoom_objects';
@@ -629,9 +621,8 @@ class ZoomObjectTransformation extends IntTransformation
 /// See https://uploadcare.com/docs/transformations/image/colors/#image-colors-operations
 class ColorBrightnessTransformation extends IntTransformation
     implements ImageTransformation {
-  const ColorBrightnessTransformation(int value)
-      : assert(value >= -100 && value <= 100, 'Should be in -100..100 range'),
-        super(value);
+  const ColorBrightnessTransformation(int super.value)
+      : assert(value >= -100 && value <= 100, 'Should be in -100..100 range');
 
   @override
   String get operation => 'brightness';
@@ -640,9 +631,8 @@ class ColorBrightnessTransformation extends IntTransformation
 /// See https://uploadcare.com/docs/transformations/image/colors/#image-colors-operations
 class ColorExposureTransformation extends IntTransformation
     implements ImageTransformation {
-  const ColorExposureTransformation(int value)
-      : assert(value >= -500 && value <= 500, 'Should be in -500..500 range'),
-        super(value);
+  const ColorExposureTransformation(int super.value)
+      : assert(value >= -500 && value <= 500, 'Should be in -500..500 range');
 
   @override
   String get operation => 'exposure';
@@ -651,9 +641,8 @@ class ColorExposureTransformation extends IntTransformation
 /// See https://uploadcare.com/docs/transformations/image/colors/#image-colors-operations
 class ColorGammaTransformation extends IntTransformation
     implements ImageTransformation {
-  const ColorGammaTransformation(int value)
-      : assert(value >= 0 && value <= 1000, 'Should be in 0..1000 range'),
-        super(value);
+  const ColorGammaTransformation(int super.value)
+      : assert(value >= 0 && value <= 1000, 'Should be in 0..1000 range');
 
   @override
   String get operation => 'gamma';
@@ -662,9 +651,8 @@ class ColorGammaTransformation extends IntTransformation
 /// See https://uploadcare.com/docs/transformations/image/colors/#image-colors-operations
 class ColorContrastTransformation extends IntTransformation
     implements ImageTransformation {
-  const ColorContrastTransformation(int value)
-      : assert(value >= -100 && value <= 500, 'Should be in -100..500 range'),
-        super(value);
+  const ColorContrastTransformation(int super.value)
+      : assert(value >= -100 && value <= 500, 'Should be in -100..500 range');
 
   @override
   String get operation => 'contrast';
@@ -673,9 +661,8 @@ class ColorContrastTransformation extends IntTransformation
 /// See https://uploadcare.com/docs/transformations/image/colors/#image-colors-operations
 class ColorSaturationTransformation extends IntTransformation
     implements ImageTransformation {
-  const ColorSaturationTransformation(int value)
-      : assert(value >= -100 && value <= 500, 'Should be in -100..500 range'),
-        super(value);
+  const ColorSaturationTransformation(int super.value)
+      : assert(value >= -100 && value <= 500, 'Should be in -100..500 range');
 
   @override
   String get operation => 'saturation';
@@ -684,9 +671,8 @@ class ColorSaturationTransformation extends IntTransformation
 /// See https://uploadcare.com/docs/transformations/image/colors/#image-colors-operations
 class ColorVibranceTransformation extends IntTransformation
     implements ImageTransformation {
-  const ColorVibranceTransformation(int value)
-      : assert(value >= -100 && value <= 500, 'Should be in -100..500 range'),
-        super(value);
+  const ColorVibranceTransformation(int super.value)
+      : assert(value >= -100 && value <= 500, 'Should be in -100..500 range');
 
   @override
   String get operation => 'vibrance';
@@ -695,9 +681,8 @@ class ColorVibranceTransformation extends IntTransformation
 /// See https://uploadcare.com/docs/transformations/image/colors/#image-colors-operations
 class ColorWarmthTransformation extends IntTransformation
     implements ImageTransformation {
-  const ColorWarmthTransformation(int value)
-      : assert(value >= -100 && value <= 100, 'Should be in -100..100 range'),
-        super(value);
+  const ColorWarmthTransformation(int super.value)
+      : assert(value >= -100 && value <= 100, 'Should be in -100..100 range');
 
   @override
   String get operation => 'warmth';
@@ -721,7 +706,7 @@ enum SrgbTValue {
 /// See https://uploadcare.com/docs/transformations/image/colors/#operation-srgb
 class SrgbTransformation extends EnumTransformation<SrgbTValue>
     implements ImageTransformation {
-  const SrgbTransformation(SrgbTValue value) : super(value);
+  const SrgbTransformation(SrgbTValue super.value);
 
   @override
   String get operation => 'srgb';
@@ -758,7 +743,7 @@ enum StripMetaTValue {
 /// See https://uploadcare.com/docs/transformations/image/compression/#meta-information-control
 class StripMetaTransformation extends EnumTransformation<StripMetaTValue>
     implements ImageTransformation {
-  const StripMetaTransformation([StripMetaTValue? value]) : super(value);
+  const StripMetaTransformation([super.value]);
 
   @override
   String get operation => 'strip_meta';
