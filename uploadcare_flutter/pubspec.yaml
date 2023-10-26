@@ -15,15 +15,13 @@ topics:
   - uploader
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  uploadcare_client: ^6.3.2
+  uploadcare_client: ^7.0.0
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
   flutter_lints: ^1.0.4
   pubspec_extract:
     git:

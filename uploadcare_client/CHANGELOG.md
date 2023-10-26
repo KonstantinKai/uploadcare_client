@@ -1,3 +1,13 @@
+## [7.0.0] - Thu Oct 26 2023
+
+- Updated SDK constraints to add the ability to work with Dart 3
+- Updated dependencies
+- Added new values to the `WebhookEvent`. See https://uploadcare.com/docs/webhooks
+- Added `ImageFormatTValue.Preserve` value. See https://uploadcare.com/docs/transformations/image/compression/#operation-format
+- Minor code styles changes according to the analyzer
+- Minor typos fixes
+- Use pattern matching instead of `if` in `enum`s `parse` methods
+
 ## [6.3.2] - Fri May 12 2023
 
 - Added package topics to the pubspec
