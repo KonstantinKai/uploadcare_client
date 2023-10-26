@@ -250,7 +250,7 @@ packages:
       path: "../uploadcare_client"
       relative: true
     source: path
-    version: "6.3.2"
+    version: "7.0.0"
   vector_math:
     dependency: transitive
     description:

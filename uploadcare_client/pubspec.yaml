@@ -10,9 +10,7 @@ topics:
   - file-uploading
   - image-transformations
   - file-analysis
-  - video-encoding
-  - document-converting
-  - uploader
+  - file-converting
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
