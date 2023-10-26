@@ -2,10 +2,6 @@
 
 ## Flutter Uploadcare Client
 
-Do you like the package? Buy me a coffee :)
-
-<a href="https://www.buymeacoffee.com/konstantinkai" target="_blank"><img src="https://github.com/KonstantinKai/uploadcare_client/blob/master/assets/button.png?raw=true" alt="Buy Me A Coffee"></a>
-
 ## How to use
 
 Please see this package [`uploadcare_client`](https://pub.dev/packages/uploadcare_client) for instructions
@@ -57,3 +53,7 @@ dependencies:
 dependencies:
   uploadcare_flutter: ^1.0.0
 ```
+
+Do you like the package? Buy me a coffee :)
+
+<a href="https://www.buymeacoffee.com/konstantinkai" target="_blank"><img src="https://github.com/KonstantinKai/uploadcare_client/blob/master/assets/button.png?raw=true" alt="Buy Me A Coffee"></a>
