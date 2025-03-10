@@ -15,7 +15,7 @@ abstract class Transformation {
   String toString() => [operation, ...params].join('/');
 
   @override
-  bool operator ==(dynamic other) => runtimeType == other.runtimeType;
+  bool operator ==(Object other) => runtimeType == other.runtimeType;
 
   @override
   int get hashCode => runtimeType.hashCode;

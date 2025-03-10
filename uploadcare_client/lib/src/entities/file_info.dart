@@ -56,7 +56,7 @@ class FileInfoEntity extends Equatable {
   /// **Since v0.6**
   ///
   /// Dictionary of other files that were created using this file as a source. It's used for video processing and document conversion jobs.
-  /// E.g., <conversion_path>: <uuid>.
+  /// E.g., `<`conversion_path`>`: `<`uuid`>`.
   final Map<String, String>? variations;
 
   /// **Since v0.7**
@@ -427,12 +427,15 @@ class VideoInfo extends Equatable {
 class AppData extends Equatable {
   final AWSRekognitionAddonResult? awsRecognition;
 
+  final AWSRekognitionModerationAddonResult? awsRecognitionModeration;
+
   final ClamAVAddonResult? clamAV;
 
   final RemoveBgAddonResult? removeBg;
 
   const AppData({
     this.awsRecognition,
+    this.awsRecognitionModeration,
     this.clamAV,
     this.removeBg,
   });
@@ -442,12 +445,14 @@ class AppData extends Equatable {
   @override
   List<Object?> get props => [
         awsRecognition,
+        awsRecognitionModeration,
         clamAV,
         removeBg,
       ];
 
   factory AppData.fromJson(Map<String, dynamic> json) {
     AWSRekognitionAddonResult? awsRecognition;
+    AWSRekognitionModerationAddonResult? awsRecognitionModeration;
     ClamAVAddonResult? clamAV;
     RemoveBgAddonResult? removeBg;
 
@@ -484,6 +489,23 @@ class AppData extends Equatable {
       );
     }
 
+    if (json['aws_rekognition_detect_moderation_labels'] != null) {
+      awsRecognitionModeration = AWSRekognitionModerationAddonResult(
+        info: AddonResultInfo.fromJson(
+            json['aws_rekognition_detect_moderation_labels']),
+        modelVersion: json['aws_rekognition_detect_moderation_labels']['data']
+            ['ModerationModelVersion'],
+        labels: (json['aws_rekognition_detect_moderation_labels']['data']
+                ['ModerationLabels'] as List)
+            .map((item) => AWSRecognitionModerationLabel(
+                  confidence: item['Confidence'],
+                  name: item['Name'],
+                  parentName: item['ParentName'],
+                ))
+            .toList(),
+      );
+    }
+
     if (json['uc_clamav_virus_scan'] != null) {
       clamAV = ClamAVAddonResult(
         info: AddonResultInfo.fromJson(json['uc_clamav_virus_scan']),
@@ -502,6 +524,7 @@ class AppData extends Equatable {
 
     return AppData(
       awsRecognition: awsRecognition,
+      awsRecognitionModeration: awsRecognitionModeration,
       clamAV: clamAV,
       removeBg: removeBg,
     );

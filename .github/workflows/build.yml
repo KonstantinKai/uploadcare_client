@@ -25,7 +25,7 @@ jobs:
 
       - uses: flutter-actions/setup-flutter@v2
         with:
-          version: 3.13.8
+          version: 3.29.1
 
       - name: Install dependencies
         run: |

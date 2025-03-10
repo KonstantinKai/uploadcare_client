@@ -11,6 +11,10 @@ class AddonsRoutes {
           _executeAwsRecognition)
       ..get('/addons/aws_rekognition_detect_labels/execute/status/',
           _statusAwsRecognition)
+      ..post('/addons/aws_rekognition_detect_moderation_labels/execute/',
+          _executeAwsRecognition)
+      ..get('/addons/aws_rekognition_detect_moderation_labels/execute/status/',
+          _statusAwsRecognition)
       ..post('/addons/uc_clamav_virus_scan/execute/', _executeClamAV)
       ..get('/addons/uc_clamav_virus_scan/execute/status/', _statusClamAV)
       ..post('/addons/remove_bg/execute/', _executeRemoveBg)

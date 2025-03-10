@@ -55,6 +55,48 @@ void main() {
         ]));
   });
 
+  test('Execute AWS recognition moderation task', () async {
+    final response = await api.executeAWSRekognitionModeration('file-id');
+
+    expect(response, equals('8db3c8b4-2dea-4146-bcdb-63387e2b33c1'));
+  });
+
+  test('Get status about AWS recognition moderation', () async {
+    final response1 =
+        await api.checkAWSRekognitionModerationExecutionStatus('done');
+    expect(response1, isA<AddonExecutionStatus>());
+    expect(response1.status, equals(AddonExecutionStatusValue.InProgress));
+    final response2 =
+        await api.checkAWSRekognitionModerationExecutionStatus('done');
+    expect(response2.status, equals(AddonExecutionStatusValue.Done));
+
+    await api.checkAWSRekognitionModerationExecutionStatus('unknown');
+    final response3 =
+        await api.checkAWSRekognitionModerationExecutionStatus('unknown');
+    expect(response3.status, equals(AddonExecutionStatusValue.Unknown));
+
+    await api.checkAWSRekognitionModerationExecutionStatus('error');
+    final response4 =
+        await api.checkAWSRekognitionModerationExecutionStatus('error');
+    expect(response4.status, equals(AddonExecutionStatusValue.Error));
+  });
+
+  test('Get status about AWS recognition moderation as Stream with done', () {
+    final stream = api.checkTaskExecutionStatusAsStream(
+        requestId: 'done',
+        task: api.checkAWSRekognitionModerationExecutionStatus,
+        checkInterval: Duration(milliseconds: 10));
+
+    expect(
+        stream,
+        emitsInOrder([
+          isA<AddonExecutionStatus>(),
+          isA<AddonExecutionStatus>().having((p0) => p0.status, 'status',
+              equals(AddonExecutionStatusValue.Done)),
+          emitsDone,
+        ]));
+  });
+
   test('Execute ClamAV task', () async {
     final response1 = await api.executeClamAV('file-id');
     expect(response1, equals('8db3c8b4-2dea-4146-bcdb-63387e2b33c1'));
@@ -162,6 +204,11 @@ void main() {
     expect(() => apiV06.executeAWSRekognition('file'),
         throwsA(TypeMatcher<AssertionError>()));
     expect(() => apiV06.checkAWSRekognitionExecutionStatus('request'),
+        throwsA(TypeMatcher<AssertionError>()));
+
+    expect(() => apiV06.executeAWSRekognitionModeration('file'),
+        throwsA(TypeMatcher<AssertionError>()));
+    expect(() => apiV06.checkAWSRekognitionModerationExecutionStatus('request'),
         throwsA(TypeMatcher<AssertionError>()));
 
     expect(() => apiV06.executeClamAV('file'),

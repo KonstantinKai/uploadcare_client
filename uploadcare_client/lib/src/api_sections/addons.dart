@@ -171,6 +171,37 @@ class ApiAddons with OptionsShortcutMixin, TransportHelperMixin {
     );
   }
 
+  /// Execute AWS Rekognition Moderation Add-On for a given target to detect moderation labels in an image.
+  /// Note: Detected moderation labels are stored in the file's appdata.
+  ///
+  /// See https://uploadcare.com/docs/unsafe-content/?utm_source=subscribers&utm_medium=email&utm_campaign=product_newsletter_mar&utm_content=image_content_moderation
+  /// See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Add-Ons/operation/awsRekognitionDetectModerationLabelsExecute
+  Future<String> executeAWSRekognitionModeration(String fileId) async {
+    return await _execute(
+      pathname: '/addons/aws_rekognition_detect_moderation_labels/execute/',
+      params: {
+        'target': fileId,
+      },
+    );
+  }
+
+  /// Check the status of an Add-On execution request that had been started using the Execute Add-On operation.
+  ///
+  /// See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Add-Ons/operation/awsRekognitionDetectModerationLabelsExecutionStatus
+  Future<AddonExecutionStatus<void>>
+      checkAWSRekognitionModerationExecutionStatus(String requestId) async {
+    final response = await _checkStatus(
+        requestId: requestId,
+        pathname:
+            '/addons/aws_rekognition_detect_moderation_labels/execute/status/');
+
+    return AddonExecutionStatus(
+      status: AddonExecutionStatusValue.parse(
+        response['status'],
+      ),
+    );
+  }
+
   Stream<AddonExecutionStatus<T>> checkTaskExecutionStatusAsStream<T>({
     required String requestId,
     required Future<AddonExecutionStatus<T>> Function(String requestId) task,

@@ -19,7 +19,7 @@ void main() {
 
   test('Ensure right user agent value', () async {
     expect(
-        api.files.useAgent,
+        api.files.userAgent,
         matches(RegExp(
             r'UploadcareDart\/\d{1}\.\d{1}\.\d{1}\/public_key\s\(uploadcare_client\)')));
   });

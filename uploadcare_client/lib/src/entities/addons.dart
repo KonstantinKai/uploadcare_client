@@ -262,3 +262,51 @@ class ASWRecognitionBoundingBox extends Equatable {
         height,
       ];
 }
+
+/// See https://uploadcare.com/docs/unsafe-content/?utm_source=subscribers&utm_medium=email&utm_campaign=product_newsletter_mar&utm_content=image_content_moderation
+class AWSRekognitionModerationAddonResult extends Equatable {
+  final AddonResultInfo info;
+
+  final String modelVersion;
+
+  final List<AWSRecognitionModerationLabel> labels;
+
+  const AWSRekognitionModerationAddonResult({
+    required this.info,
+    required this.modelVersion,
+    required this.labels,
+  });
+
+  /// @nodoc
+  @protected
+  @override
+  List<Object?> get props => [
+        info,
+        modelVersion,
+        labels,
+      ];
+}
+
+/// See https://docs.aws.amazon.com/rekognition/latest/dg/moderation.html
+class AWSRecognitionModerationLabel extends Equatable {
+  final num confidence;
+
+  final String name;
+
+  final String parentName;
+
+  const AWSRecognitionModerationLabel({
+    required this.confidence,
+    required this.name,
+    required this.parentName,
+  });
+
+  /// @nodoc
+  @protected
+  @override
+  List<Object?> get props => [
+        confidence,
+        name,
+        parentName,
+      ];
+}

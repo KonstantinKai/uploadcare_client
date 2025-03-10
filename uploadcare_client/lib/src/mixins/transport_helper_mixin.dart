@@ -19,7 +19,7 @@ mixin TransportHelperMixin on OptionsShortcutMixin {
   String? _userAgent;
 
   @visibleForTesting
-  String get useAgent => _userAgent ??=
+  String get userAgent => _userAgent ??=
       'UploadcareDart/${Pubspec.versionFull}/$publicKey (${Pubspec.name})';
 
   @protected
@@ -33,7 +33,7 @@ mixin TransportHelperMixin on OptionsShortcutMixin {
       scheme: authorizeRequest ? options.authorizationScheme : null,
       method: method,
       uri: uri,
-      headers: {_kUserAgent: useAgent},
+      headers: {_kUserAgent: userAgent},
     );
   }
 
@@ -48,7 +48,7 @@ mixin TransportHelperMixin on OptionsShortcutMixin {
       scheme: authorizeRequest ? options.authorizationScheme : null,
       method: method,
       uri: uri,
-      headers: {_kUserAgent: useAgent},
+      headers: {_kUserAgent: userAgent},
     );
   }
 

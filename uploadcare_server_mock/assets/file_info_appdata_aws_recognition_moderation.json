@@ -1,0 +1,59 @@
+{
+  "datetime_removed": null,
+  "datetime_stored": "2018-11-26T12:49:10.477888Z",
+  "datetime_uploaded": "2018-11-26T12:49:09.945335Z",
+  "variations": null,
+  "is_image": true,
+  "is_ready": true,
+  "mime_type": "image/jpeg",
+  "original_file_url": "https://ucarecdn.com/22240276-2f06-41f8-9411-755c8ce926ed/pineapple.jpg",
+  "original_filename": "pineapple.jpg",
+  "size": 642,
+  "url": "https://api.uploadcare.com/files/22240276-2f06-41f8-9411-755c8ce926ed/",
+  "uuid": "22240276-2f06-41f8-9411-755c8ce926ed",
+  "content_info": {
+    "mime": {
+      "mime": "image/jpeg",
+      "type": "image",
+      "subtype": "jpeg"
+    },
+    "image": {
+      "format": "JPEG",
+      "width": 500,
+      "height": 500,
+      "sequence": false,
+      "color_mode": "RGB",
+      "orientation": 6,
+      "geo_location": {
+        "latitude": 55.62013611111111,
+        "longitude": 37.66299166666666
+      },
+      "datetime_original": "2018-08-20T08:59:50",
+      "dpi": [
+        72,
+        72
+      ]
+    }
+  },
+  "metadata": {
+    "subsystem": "uploader",
+    "pet": "cat"
+  },
+  "appdata": {
+    "aws_rekognition_detect_moderation_labels": {
+      "data": {
+        "ModerationModelVersion": "6.0",
+        "ModerationLabels": [
+          {
+            "Confidence": 93.41645812988281,
+            "Name": "Weapons",
+            "ParentName": "Violence"
+          }
+        ]
+      },
+      "version": "2016-06-27",
+      "datetime_created": "2023-02-21T11:25:31.259763Z",
+      "datetime_updated": "2023-02-21T11:27:33.359763Z"
+    }
+  }
+}

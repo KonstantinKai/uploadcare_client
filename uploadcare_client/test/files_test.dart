@@ -186,6 +186,15 @@ void main() {
     expect(file.appData!.awsRecognition, isA<AWSRekognitionAddonResult>());
   });
 
+  test('Get file with AWSRecognitionModeration application data', () async {
+    final file = await apiV07.file('file-with-aws-recognition-moderation',
+        include: const FilesIncludeFields.withAppData());
+
+    expect(file.appData, isNotNull);
+    expect(file.appData!.awsRecognitionModeration,
+        isA<AWSRekognitionModerationAddonResult>());
+  });
+
   test('Get file with ClamAV application data', () async {
     final file = await apiV07.file('file-with-clamav',
         include: const FilesIncludeFields.withAppData());

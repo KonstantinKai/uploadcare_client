@@ -16,19 +16,20 @@ environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  http: ^1.1.0
-  crypto: ^3.0.3
-  meta: ^1.9.1
-  mime: ^1.0.4
-  http_parser: ^4.0.2
-  equatable: ^2.0.5
+  web: ^1.1.1
+  http: ^1.3.0
+  crypto: ^3.0.6
+  meta: ^1.16.0
+  mime: ^2.0.0
+  http_parser: ^4.1.2
+  equatable: ^2.0.7
 
 dev_dependencies:
   test: 1.24.8
-  mockito: 5.4.2
-  lints: 3.0.0
-  build_runner: 2.4.6
-  path: 1.8.3
+  mockito: 5.4.5
+  lints: 5.1.1
+  build_runner: 2.4.15
+  path: 1.9.1
   pubspec_extract:
     git:
       url: https://github.com/KonstantinKai/pubspec_extract

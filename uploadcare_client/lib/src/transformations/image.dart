@@ -450,7 +450,7 @@ class OverlayTransformation extends Transformation
       ];
 
   @override
-  bool operator ==(dynamic other) =>
+  bool operator ==(Object other) =>
       other is OverlayTransformation &&
       runtimeType == other.runtimeType &&
       imageId == other.imageId &&

@@ -33,29 +33,36 @@ class FileRoutes {
 
   Future<Response> _fileInfo(Request request, String fileId) async {
     final version = request.context['version']!;
-    late String res = 'file_info_image_$version.json';
     final include =
         request.requestedUri.queryParameters['include']?.split(',') ?? [];
 
-    switch (fileId) {
-      case '7ed2aed0-0482-4c13-921b-0557b193edc2':
-        res = 'file_info_video_$version.json';
-        break;
-      case 'file-with-aws-recognition':
-        if (!include.contains('appdata')) return Response.badRequest();
-        res = 'file_info_appdata_aws_recognition.json';
-        break;
-      case 'file-with-clamav':
-        if (!include.contains('appdata')) return Response.badRequest();
-        res = 'file_info_appdata_clamav.json';
-        break;
-      case 'file-with-removebg':
-        if (!include.contains('appdata')) return Response.badRequest();
-        res = 'file_info_appdata_remove_bg.json';
-        break;
+    final (String, Response?) res = switch (fileId) {
+      '7ed2aed0-0482-4c13-921b-0557b193edc2' => (
+          'file_info_video_$version.json',
+          null
+        ),
+      'file-with-aws-recognition' => !include.contains('appdata')
+          ? ('', Response.badRequest())
+          : ('file_info_appdata_aws_recognition.json', null),
+      'file-with-aws-recognition-moderation' => !include.contains('appdata')
+          ? ('', Response.badRequest())
+          : ('file_info_appdata_aws_recognition_moderation.json', null),
+      'file-with-clamav' => !include.contains('appdata')
+          ? ('', Response.badRequest())
+          : ('file_info_appdata_clamav.json', null),
+      'file-with-removebg' => !include.contains('appdata')
+          ? ('', Response.badRequest())
+          : ('file_info_appdata_remove_bg.json', null),
+      _ => ('file_info_image_$version.json', null),
+    };
+
+    final (filename, bad) = res;
+
+    if (bad != null) {
+      return bad;
     }
 
-    final file = File(path.join(assets, res));
+    final file = File(path.join(assets, filename));
     final json = await file.readAsString();
 
     return Response.ok(json,

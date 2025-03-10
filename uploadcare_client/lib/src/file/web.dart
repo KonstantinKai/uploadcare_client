@@ -1,12 +1,14 @@
 import 'dart:async';
-import 'dart:html';
+import 'dart:js_interop';
 import 'dart:typed_data';
+import 'package:web/web.dart';
+
 import 'uc_file.dart';
 
 UCFile createFile(Object file) => _WebFile(file as File);
 
 UCFile createFileFromUri(Uri uri) =>
-    throw UnsupportedError('Cannot create a file from uri with dart:html');
+    throw UnsupportedError('Cannot create a file from uri in WEB invironment');
 
 class _WebFile implements UCFile {
   final File _file;
@@ -27,23 +29,26 @@ class _WebFile implements UCFile {
     final controller = StreamController<List<int>>();
     final reader = FileReader();
 
-    reader
-      ..onLoadEnd.listen((data) {
-        if (reader.result is Uint8List) {
-          controller.add(reader.result as Uint8List);
-        } else {
-          throw Exception('Unknown [Reader.result]');
-        }
-        if (!controller.isClosed) {
-          controller.close();
-        }
-      })
-      ..onError.listen((data) {
-        controller.addError(reader.error ?? 'Unknown error');
-        if (!controller.isClosed) {
-          controller.close();
-        }
-      });
+    reader.addEventListener(
+        'loadend',
+        () {
+          controller
+              .add(Uint8List.view((reader.result as JSArrayBuffer).toDart));
+
+          if (!controller.isClosed) {
+            controller.close();
+          }
+        }.toJS);
+
+    reader.addEventListener(
+        'error',
+        () {
+          controller.addError(reader.error ?? 'Unknown error');
+
+          if (!controller.isClosed) {
+            controller.close();
+          }
+        }.toJS);
 
     Blob blob = _file;
 

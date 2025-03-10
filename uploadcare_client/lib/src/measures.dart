@@ -130,7 +130,7 @@ class FaceRect extends Equatable {
 
 class Coordinates extends Equatable {
   const Coordinates._({
-    // ignore: unused_element
+    // ignore: unused_element_parameter
     this.offset = Offsets.zero,
     this.predefined,
   });

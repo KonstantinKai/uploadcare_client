@@ -1,9 +1,19 @@
+## [7.1.0] - Mon Mar 10 2025
+
+- Added feature for unsafe content detection via addons. See <https://uploadcare.com/docs/unsafe-content/>
+  - Added the relevant API to `ApiAddons`
+  - Added the relevant entities
+  - Added field `AWSRekognitionModerationAddonResult? awsRecognitionModeration` to the file's `AppData`
+- Replaced `dart:html` with `package:web` and `dart:js_interop` due the deprecation
+- Updated dependencies
+- Minor changes according to the analyzer
+
 ## [7.0.0] - Thu Oct 26 2023
 
 - Updated SDK constraints to add the ability to work with Dart 3
 - Updated dependencies
-- Added new values to the `WebhookEvent`. See https://uploadcare.com/docs/webhooks
-- Added `ImageFormatTValue.Preserve` value. See https://uploadcare.com/docs/transformations/image/compression/#operation-format
+- Added new values to the `WebhookEvent`. See <https://uploadcare.com/docs/webhooks>
+- Added `ImageFormatTValue.Preserve` value. See <https://uploadcare.com/docs/transformations/image/compression/#operation-format>
 - Minor code styles changes according to the analyzer
 - Minor typos fixes
 - Use pattern matching instead of `if` in `enum`s `parse` methods
@@ -19,13 +29,13 @@
 ## [6.3.0] - Wed May 10 2023
 
 - Fixed access with `AuthSchemeRegular` for the web due to the `Date` header limitation. Used the same header as in an official javascript library;
-- Added `RasterizeTransformation`. See https://uploadcare.com/docs/transformations/image/#svg
-- Added `BorderRadiusTransformation`. See https://uploadcare.com/docs/transformations/image/resize-crop/#operation-border-radius
-- Added `RectOverlayTransformation`. See https://uploadcare.com/docs/transformations/image/overlay/#overlay-solid
-- Added `TextOverlayTransformation`. See https://uploadcare.com/docs/transformations/image/overlay/#overlay-text
-- Added `useSmartResize` to the `ImageResizeTransformation`. See https://uploadcare.com/docs/transformations/image/resize-crop/#operation-smart-resize
-- Added `JsonpFileInfoTransformation`. See https://uploadcare.com/docs/delivery/cdn/#operation-jsonp
-- Added `ChangeFilenameTransformation`. See https://uploadcare.com/docs/delivery/cdn/#cdn-filename
+- Added `RasterizeTransformation`. See <https://uploadcare.com/docs/transformations/image/#svg>
+- Added `BorderRadiusTransformation`. See <https://uploadcare.com/docs/transformations/image/resize-crop/#operation-border-radius>
+- Added `RectOverlayTransformation`. See <https://uploadcare.com/docs/transformations/image/overlay/#overlay-solid>
+- Added `TextOverlayTransformation`. See <https://uploadcare.com/docs/transformations/image/overlay/#overlay-text>
+- Added `useSmartResize` to the `ImageResizeTransformation`. See <https://uploadcare.com/docs/transformations/image/resize-crop/#operation-smart-resize>
+- Added `JsonpFileInfoTransformation`. See <https://uploadcare.com/docs/delivery/cdn/#operation-jsonp>
+- Added `ChangeFilenameTransformation`. See <https://uploadcare.com/docs/delivery/cdn/#cdn-filename>
 - Rewritten README.md
 
 ## [6.2.1] - Fri Nov 11 2022
@@ -34,9 +44,9 @@
 
 ## [6.2.0] - Fri Sep 30 2022
 
-- Added `ApiAddons` section. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Add-Ons
-- Added `ApiFiles.copyToLocalStorage` method. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/createLocalCopy
-- Added `ApiFiles.copyToRemoteStorage` method. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/createRemoteCopy
+- Added `ApiAddons` section. See <https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Add-Ons>
+- Added `ApiFiles.copyToLocalStorage` method. See <https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/createLocalCopy>
+- Added `ApiFiles.copyToRemoteStorage` method. See <https://uploadcare.com/api-refs/rest-api/v0.7.0/#operation/createRemoteCopy>
 - Added `include` parameter to `ApiFiles.file` & `ApiFiles.list` methods
 - Added `FileInfoEntity.appData` field
 - Marked `ApiFiles.getApplicationData` & `ApiFiles.getApplicationDataByAppName` as deprecated due the api changes
@@ -51,8 +61,8 @@
 
 ## [6.1.0] - Mon May 30 2022
 
-- Added `file's application data` methods to `ApiFiles` section. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Application-Data
-- Added `ApiProject` section. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Project
+- Added `file's application data` methods to `ApiFiles` section. See <https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Application-Data>
+- Added `ApiProject` section. See <https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/Project>
 - Added `X-UC-User-Agent` header to requests
 
 ## [6.0.1] - Thu May 26 2022
@@ -76,11 +86,11 @@
     - Removed `VideoEncodingConvertEntity` use `ConvertEntity<VideoEncodingResultEntity>` instead
     - Createt `ConvertMixin` that simplify creating of conversion API
 - **Features**
-  - Added `ApiWebhooks` section, respectively added as a field to `UploadcareClient.webhooks`. See https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Webhook
-  - Added `ApiDocumentConverting` section, respectively added as a field to `UploadcareClient.documentConverting`. See https://uploadcare.com/docs/transformations/document-conversion/
+  - Added `ApiWebhooks` section, respectively added as a field to `UploadcareClient.webhooks`. See <https://uploadcare.com/api-refs/rest-api/v0.6.0/#tag/Webhook>
+  - Added `ApiDocumentConverting` section, respectively added as a field to `UploadcareClient.documentConverting`. See <https://uploadcare.com/docs/transformations/document-conversion/>
   - Added `DocumentTransformation` as a base transformation for documents
   - Added `DocumentFormatTransformation`
-  - Added metadata methods to the `ApiFiles` section. See https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/File-Metadata, respectively added `metadata` field to the `FileInfoEntity`
+  - Added metadata methods to the `ApiFiles` section. See <https://uploadcare.com/api-refs/rest-api/v0.7.0/#tag/File-Metadata>, respectively added `metadata` field to the `FileInfoEntity`
   - Added ability to save file metadata while uploading
   - Added `checkURLDuplicates` and `saveURLDuplicates` parameters for `ApiUploads.fromUrl` method
   - Added `VideoInfo` to the `FileInfoEntity`. Works since `v0.6` API
@@ -110,8 +120,8 @@
 
 - **Breaking changes with 4.x.x**
   - `CropTransformation` changed constructor parameters according to the last transform API changes
-- Added ability to crop image by ratio for the `CropTransformation`. See https://uploadcare.com/docs/transformations/image/resize-crop/#operation-crop-aspect-ratio
-- Added ability to crop image by objects for the `CropTransformation`. See https://uploadcare.com/docs/transformations/image/resize-crop/#operation-crop-tags
+- Added ability to crop image by ratio for the `CropTransformation`. See <https://uploadcare.com/docs/transformations/image/resize-crop/#operation-crop-aspect-ratio>
+- Added ability to crop image by objects for the `CropTransformation`. See <https://uploadcare.com/docs/transformations/image/resize-crop/#operation-crop-tags>
 - Added `StripMetaTransformation`
 - Added `QualityTValue.SmartRetina` value for the `QualityTransformation`.
 - Added the following tarnsformation `PreviewTransformation, ResizeTransformation, CropTransformation, ScaleCropTransformation` to the `GifToVideoTransformation`
@@ -144,7 +154,7 @@
   - `ColorWarmthTransformation`
 - Added `SrgbTransformation`
 - Added `InlineTransformation`
-- You can use overlay transformation to the source image, see https://uploadcare.com/docs/transformations/image/overlay/#overlay-self
+- You can use overlay transformation to the source image, see <https://uploadcare.com/docs/transformations/image/overlay/#overlay-self>
 - Made `Transformation` constructor `const`;
 - Added `MeasureUnits` enum to specify units in `Dimensions` and `Offsets` types
 - Added units restrictions for transformations that works with `Dimensions` and `Offsets` types

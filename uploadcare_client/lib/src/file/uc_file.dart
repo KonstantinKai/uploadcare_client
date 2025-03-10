@@ -1,6 +1,6 @@
 import 'stub.dart'
-    if (dart.library.html) 'web.dart'
-    if (dart.library.io) 'io.dart';
+    if (dart.library.io) 'io.dart'
+    if (dart.library.js_interop) 'web.dart';
 
 /// Base class which describes cross-platform file implementation
 abstract class UCFile {
