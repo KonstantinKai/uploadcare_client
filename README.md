@@ -476,6 +476,24 @@ if (result.status == AddonExecutionStatusValue.Done) {
 }
 ```
 
+#### Unsafe content moderation
+
+[Official documentation](https://uploadcare.com/docs/unsafe-content/)
+
+```dart
+final taskId = await client.addons.executeAWSRekognitionModeration('<image-uuid>');
+
+final result = await client.addons.checkAWSRekognitionModerationExecutionStatus(taskId);
+
+if (result.status == AddonExecutionStatusValue.Done) {
+  /// Retrieve file info with appdata fields
+  final file = await client.files.file('<image-uuid>', include: FilesIncludeFields.withAppData());
+
+  /// Now you can access recognition info with the following field
+  final recognitionData = file.appData.awsRecognitionModeration;
+}
+```
+
 #### Malware protection
 
 [Official documentation](https://uploadcare.com/docs/security/malware-protection/)
