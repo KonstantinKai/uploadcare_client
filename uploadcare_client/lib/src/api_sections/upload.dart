@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
-import 'package:http_parser/http_parser.dart';
+import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:mime/mime.dart';
 
 import '../cancel_token.dart';
@@ -56,6 +56,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     bool? storeMode,
     ProgressListener? onProgress,
     CancelToken? cancelToken,
+    String? overrideFilename,
 
     /// **Since v0.7**
     Map<String, String>? metadata,
@@ -69,6 +70,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
         storeMode: storeMode,
         onProgress: onProgress,
         cancelToken: cancelToken,
+        overrideFilename: overrideFilename,
         metadata: metadata,
       );
     }
@@ -103,6 +105,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
           onProgress: onProgress,
           cancelToken: cancelToken,
           metadata: metadata,
+          overrideFilename: overrideFilename,
         );
       }
 
@@ -112,6 +115,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
         onProgress: onProgress,
         cancelToken: cancelToken,
         metadata: metadata,
+        overrideFilename: overrideFilename,
       );
     }
 
@@ -130,14 +134,18 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     bool? storeMode,
     ProgressListener? onProgress,
     CancelToken? cancelToken,
+    String? overrideFilename,
 
     /// **Since v0.7**
     Map<String, String>? metadata,
   }) async {
     _ensureRightVersionForMetadata(metadata);
 
-    final filename = file.name;
+    final filename = overrideFilename ?? file.name;
     final filesize = await file.length();
+    final mimeType = file.mimeType.isNotEmpty
+        ? file.mimeType
+        : (lookupMimeType(filename.toLowerCase()) ?? '');
 
     metadata ??= {};
 
@@ -173,9 +181,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
                   ),
               filesize,
               filename: filename,
-              contentType: MediaType.parse(
-                lookupMimeType(filename.toLowerCase()) ?? '',
-              ),
+              contentType: MediaType.parse(mimeType),
             ),
           );
 
@@ -209,6 +215,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     ProgressListener? onProgress,
     CancelToken? cancelToken,
     int? maxConcurrentChunkRequests,
+    String? overrideFilename,
 
     /// **Since v0.7**
     Map<String, String>? metadata,
@@ -218,9 +225,11 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     maxConcurrentChunkRequests ??= options.multipartMaxConcurrentChunkRequests;
     metadata ??= {};
 
-    final filename = file.name;
+    final filename = overrideFilename ?? file.name;
     final filesize = await file.length();
-    final mimeType = file.mimeType;
+    final mimeType = file.mimeType.isNotEmpty
+        ? file.mimeType
+        : (lookupMimeType(filename.toLowerCase()) ?? '');
 
     assert(filesize > _kRecomendedMaxFilesizeForBaseUpload,
         'Minimum file size to use with Multipart Uploads is 10MB');
@@ -477,6 +486,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     bool? storeMode,
     ProgressListener? onProgress,
     CancelToken? cancelToken,
+    String? overrideFilename,
 
     /// **Since v0.7**
     Map<String, String>? metadata,
@@ -492,6 +502,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
       storeMode: storeMode,
       onProgress: onProgress,
       cancelToken: cancelToken,
+      overrideFilename: overrideFilename,
       metadata: metadata,
     );
   }

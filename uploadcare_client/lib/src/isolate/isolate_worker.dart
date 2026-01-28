@@ -31,6 +31,7 @@ class IsolateWorker {
     bool? storeMode,
     ProgressListener? onProgress,
     CancelToken? cancelToken,
+    String? overrideFilename,
 
     /// **Since v0.7**
     Map<String, String>? metadata,
@@ -44,6 +45,7 @@ class IsolateWorker {
           storeMode: storeMode,
           onProgress: onProgress,
           cancelToken: cancelToken,
+          overrideFilename: overrideFilename,
           metadata: metadata,
         ).then((id) {
           if (!completer.isCompleted) completer.complete(id);
@@ -73,6 +75,7 @@ class IsolateWorker {
     bool? storeMode,
     ProgressListener? onProgress,
     CancelToken? cancelToken,
+    String? overrideFilename,
 
     /// **Since v0.7**
     Map<String, String>? metadata,
@@ -89,6 +92,7 @@ class IsolateWorker {
         cancellable: cancellable,
         resource: resource,
         storeMode: storeMode,
+        overrideFilename: overrideFilename,
         metadata: metadata,
       ),
       errorsAreFatal: true,
@@ -147,6 +151,7 @@ class _UploadConfiguration {
     required this.resource,
     required this.cancellable,
     this.storeMode,
+    this.overrideFilename,
     this.metadata,
   });
 
@@ -155,6 +160,7 @@ class _UploadConfiguration {
   final Object resource;
   final bool cancellable;
   final bool? storeMode;
+  final String? overrideFilename;
   final Map<String, String>? metadata;
 }
 
@@ -179,6 +185,7 @@ Future<void> _upload(_UploadConfiguration configuration) async {
       storeMode: configuration.storeMode,
       onProgress: configuration.resultSendPort.send,
       cancelToken: cancelToken,
+      overrideFilename: configuration.overrideFilename,
       metadata: configuration.metadata,
     );
 

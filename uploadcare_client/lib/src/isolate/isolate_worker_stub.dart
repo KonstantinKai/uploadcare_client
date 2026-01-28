@@ -13,6 +13,7 @@ class IsolateWorker {
     bool? storeMode,
     ProgressListener? onProgress,
     CancelToken? cancelToken,
+    String? overrideFilename,
 
     /// **Since v0.7**
     Map<String, String>? metadata,
