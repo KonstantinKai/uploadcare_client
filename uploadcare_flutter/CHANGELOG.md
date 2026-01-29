@@ -1,3 +1,7 @@
+## [5.0.2] - Wed Jan 29 2026
+
+- Updated `uploadcare_client` dependency. See <https://pub.dev/packages/uploadcare_client/changelog>
+
 ## [5.0.1] - Mon Mar 10 2025
 
 - Updated `uploadcare_client` dependency. See <https://pub.dev/packages/uploadcare_client/changelog>
