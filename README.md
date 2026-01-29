@@ -41,6 +41,10 @@ A dart/flutter library for working with Uploadcare REST API. File uploads, media
 
 The `uploadcare_flutter` package introduced a few extensions for the base package (`Dimensions`, `Offsets`, `FaceRect`, `FacesEntityExtension`), `UploadcareImageProvider`. If you don't need these features, you can use `uploadcare_client` directly
 
+### Example Project
+
+Check out the [uploadcare_flutter_example](./uploadcare_flutter_example) for a complete Flutter application demonstrating library features including file uploads, image transformations, face detection, and more.
+
 ### Installation
 
 Dart:

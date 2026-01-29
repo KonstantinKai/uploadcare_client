@@ -8,6 +8,7 @@ import 'package:uploadcare_flutter/uploadcare_flutter.dart';
 import 'face_detect_screen.dart';
 import 'file_info_screen.dart';
 import 'preview_screen.dart';
+import 'transformations_screen.dart';
 
 enum View { ListView, CardView }
 
@@ -169,6 +170,20 @@ class _FilesScreenState extends State<FilesScreen> {
                             fullscreenDialog: true,
                             builder: (context) =>
                                 PreviewScreen(fileId: file.id),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        splashRadius: 25,
+                        icon: const Icon(Icons.auto_fix_high),
+                        tooltip: 'Transformations',
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            fullscreenDialog: true,
+                            builder: (context) => TransformationsScreen(
+                              file: file,
+                            ),
                           ),
                         ),
                       ),

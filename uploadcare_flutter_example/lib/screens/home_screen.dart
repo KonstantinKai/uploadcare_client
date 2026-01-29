@@ -7,6 +7,7 @@ import '../picker_stub.dart'
 import 'files_screen.dart';
 import 'upload_screen.dart';
 import 'project_info_screen.dart';
+import 'transformations_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key, required this.title}) : super(key: key);
@@ -86,6 +87,11 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Text('Files with v0.7'),
               onPressed: () => _onFiles(_apiV07),
             ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              child: const Text('Transformations'),
+              onPressed: () => _onTransformations(_apiV06),
+            ),
           ],
         ),
       ),
@@ -129,4 +135,64 @@ class _HomeScreenState extends State<HomeScreen> {
           uploadcareClient: client,
         ),
       ));
+
+  Future _onTransformations(UploadcareClient client) async {
+    final files = await client.files.list(
+      limit: 100,
+      stored: false,
+      ordering: const FilesOrdering(
+        FilesFilterValue.DatetimeUploaded,
+        direction: OrderDirection.Desc,
+      ),
+    );
+
+    final imageFiles = files.results.where((f) => f.isImage).toList();
+
+    if (imageFiles.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No images found. Upload an image first.')),
+      );
+      return;
+    }
+
+    final selectedFile = await showDialog<FileInfoEntity>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select an image'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: imageFiles.length,
+            itemBuilder: (context, index) {
+              final file = imageFiles[index];
+              return ListTile(
+                title: Text(file.filename),
+                subtitle: Text(file.id),
+                onTap: () => Navigator.pop(context, file),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+
+    if (selectedFile != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          fullscreenDialog: true,
+          builder: (context) => TransformationsScreen(
+            file: selectedFile,
+          ),
+        ),
+      );
+    }
+  }
 }
