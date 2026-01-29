@@ -4,7 +4,6 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
-import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:mime/mime.dart';
 
 import '../cancel_token.dart';
@@ -228,7 +227,8 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
       }
     }
 
-    throw lastException ?? ClientException('Upload failed after $maxRetries attempts');
+    throw lastException ??
+        ClientException('Upload failed after $maxRetries attempts');
   }
 
   /// Make upload to `/multipart` endpoint
@@ -448,7 +448,8 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
       }
     }
 
-    throw lastException ?? ClientException('Chunk upload failed after $maxRetries attempts');
+    throw lastException ??
+        ClientException('Chunk upload failed after $maxRetries attempts');
   }
 
   /// Make upload to `/fromUrl` endpoint

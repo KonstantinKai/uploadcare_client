@@ -621,7 +621,8 @@ void main() {
             family: TextFontFamily.Noto,
           ),
         ).toString(),
-        equals('font/bold/italic/32/ffffff/Noto/-/text/100px100p/0p,0p/styled%20text'),
+        equals(
+            'font/bold/italic/32/ffffff/Noto/-/text/100px100p/0p,0p/styled%20text'),
       );
     });
 

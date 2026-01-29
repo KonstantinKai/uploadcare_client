@@ -6,7 +6,7 @@
   - Memory-efficient byte collection using pre-allocated `Uint8List`
   - Simplified chunk action generation
   - Extracted chunk upload logic to dedicated methods
-- Extended `TextFontTransformation` with new font properties. See https://uploadcare.com/docs/transformations/image/overlay/#font-properties
+- Extended `TextFontTransformation` with new font properties. See <https://uploadcare.com/docs/transformations/image/overlay/#font-properties>
   - Added `reset` parameter to reset font properties to default
   - Added `weight` parameter (`TextFontWeight`: regular, bold)
   - Added `style` parameter (`TextFontStyle`: normal, italic)

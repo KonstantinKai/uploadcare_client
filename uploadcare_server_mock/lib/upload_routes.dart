@@ -17,7 +17,8 @@ class UploadRoutes {
       ..post('/upload/multipart/complete/', _multipartComplete)
       ..post('/upload-retry/multipart/complete/', _multipartComplete)
       ..put('/upload/multipart/<individualFile>/', _multipartIndividual)
-      ..put('/upload-retry/multipart/<individualFile>/', _multipartIndividualRetry)
+      ..put('/upload-retry/multipart/<individualFile>/',
+          _multipartIndividualRetry)
       ..post('/upload/from_url/', _fromUrl)
       ..get('/upload/from_url/status/', _fromUrlStatus)
       ..post('/upload/retry/reset/', _resetRetryCounters);
@@ -81,7 +82,8 @@ class UploadRoutes {
     // Fail first attempt for each chunk, succeed on 2nd
     if (count < 1) {
       return Response.internalServerError(
-          body: jsonEncode({'error': 'Chunk $individualFile transient failure'}),
+          body:
+              jsonEncode({'error': 'Chunk $individualFile transient failure'}),
           headers: const {'Content-Type': 'application/json'});
     }
     return Response.ok(jsonEncode({}),
