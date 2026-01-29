@@ -1,3 +1,8 @@
+## [7.2.1] - Wed Jan 29 2026
+
+- Locked `meta` package version for flutter compatibility
+- Fixed analyzer error
+
 ## [7.2.0] - Wed Jan 29 2026
 
 - Added `overrideFilename` parameter to upload API (`auto`, `base`, `multipart` methods and isolate upload)
