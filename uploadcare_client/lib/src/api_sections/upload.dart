@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:math' show min;
+import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart';
@@ -18,6 +20,8 @@ import '../isolate/isolate_worker_stub.dart'
 
 const int _kChunkSize = 5242880;
 const int _kRecomendedMaxFilesizeForBaseUpload = 10000000;
+const int _kDefaultMaxRetries = 3;
+const Duration _kInitialRetryDelay = Duration(seconds: 1);
 
 typedef ProgressListener = void Function(ProgressEntity progress);
 
@@ -57,6 +61,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     ProgressListener? onProgress,
     CancelToken? cancelToken,
     String? overrideFilename,
+    int? maxRetries,
 
     /// **Since v0.7**
     Map<String, String>? metadata,
@@ -71,6 +76,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
         onProgress: onProgress,
         cancelToken: cancelToken,
         overrideFilename: overrideFilename,
+        maxRetries: maxRetries,
         metadata: metadata,
       );
     }
@@ -106,6 +112,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
           cancelToken: cancelToken,
           metadata: metadata,
           overrideFilename: overrideFilename,
+          maxRetries: maxRetries,
         );
       }
 
@@ -116,6 +123,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
         cancelToken: cancelToken,
         metadata: metadata,
         overrideFilename: overrideFilename,
+        maxRetries: maxRetries,
       );
     }
 
@@ -129,17 +137,21 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
   /// [storeMode]`=false` - keep file for 24h in storage
   /// [onProgress] subscribe to progress event
   /// [cancelToken] make cancelable request
+  /// [maxRetries] maximum retry attempts for failed uploads (default: 3)
   Future<String> base(
     UCFile file, {
     bool? storeMode,
     ProgressListener? onProgress,
     CancelToken? cancelToken,
     String? overrideFilename,
+    int? maxRetries,
 
     /// **Since v0.7**
     Map<String, String>? metadata,
   }) async {
     _ensureRightVersionForMetadata(metadata);
+
+    maxRetries ??= _kDefaultMaxRetries;
 
     final filename = overrideFilename ?? file.name;
     final filesize = await file.length();
@@ -149,66 +161,80 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
 
     metadata ??= {};
 
-    ProgressEntity progress = ProgressEntity(0, filesize);
+    Exception? lastException;
+    UcMultipartRequest? currentRequest;
 
-    final client =
-        createMultipartRequest('POST', buildUri('$uploadUrl/base/'), false)
-          ..fields.addAll({
-            'UPLOADCARE_PUB_KEY': publicKey,
-            'UPLOADCARE_STORE': resolveStoreModeParam(storeMode),
-            if (options.useSignedUploads) ..._signUpload(),
-            for (MapEntry entry in metadata.entries)
-              'metadata[${entry.key}]': entry.value,
-          })
-          ..files.add(
-            MultipartFile(
-              'file',
-              file.openRead().transform(
-                    StreamTransformer.fromHandlers(
-                      handleData: (data, sink) {
-                        final next = progress.copyWith(
-                            uploaded: progress.uploaded + data.length);
-                        final shouldCall = next.value > progress.value;
-                        progress = next;
-
-                        if (onProgress != null && shouldCall) {
-                          onProgress(progress);
-                        }
-                        sink.add(data);
-                      },
-                      handleDone: (sink) => sink.close(),
-                    ),
-                  ),
-              filesize,
-              filename: filename,
-              contentType: MediaType.parse(mimeType),
-            ),
-          );
-
-    final completer = Completer<String>();
     if (cancelToken != null) {
-      cancelToken.onCancel = _completeWithError(
-        completer: completer,
-        action: () => client.cancel(),
-        cancelMessage: cancelToken.cancelMessage,
-      );
+      cancelToken.onCancel = () {
+        currentRequest?.cancel();
+      };
     }
 
-    // ignore: unawaited_futures
-    resolveStreamedResponse(client.send())
-        .then((data) => completer.complete(data['file'] as String))
-        .catchError((e) {
-      if (!completer.isCompleted) {
-        completer.completeError(e);
+    for (var attempt = 0; attempt < maxRetries; attempt++) {
+      if (cancelToken != null && cancelToken.isCanceled) {
+        throw CancelUploadException(cancelToken.cancelMessage);
       }
-    });
 
-    return completer.future;
+      ProgressEntity progress = ProgressEntity(0, filesize);
+
+      final client =
+          createMultipartRequest('POST', buildUri('$uploadUrl/base/'), false)
+            ..fields.addAll({
+              'UPLOADCARE_PUB_KEY': publicKey,
+              'UPLOADCARE_STORE': resolveStoreModeParam(storeMode),
+              if (options.useSignedUploads) ..._signUpload(),
+              for (MapEntry entry in metadata.entries)
+                'metadata[${entry.key}]': entry.value,
+            })
+            ..files.add(
+              MultipartFile(
+                'file',
+                file.openRead().transform(
+                      StreamTransformer.fromHandlers(
+                        handleData: (data, sink) {
+                          final next = progress.copyWith(
+                              uploaded: progress.uploaded + data.length);
+                          final shouldCall = next.value > progress.value;
+                          progress = next;
+
+                          if (onProgress != null && shouldCall) {
+                            onProgress(progress);
+                          }
+                          sink.add(data);
+                        },
+                        handleDone: (sink) => sink.close(),
+                      ),
+                    ),
+                filesize,
+                filename: filename,
+                contentType: MediaType.parse(mimeType),
+              ),
+            );
+
+      currentRequest = client;
+
+      try {
+        final data = await resolveStreamedResponse(client.send());
+        return data['file'] as String;
+      } on ClientException catch (e) {
+        if (cancelToken != null && cancelToken.isCanceled) {
+          throw CancelUploadException(cancelToken.cancelMessage);
+        }
+        lastException = e;
+        if (attempt < maxRetries - 1) {
+          // Exponential backoff: 1s, 2s, 4s, ...
+          await Future.delayed(_kInitialRetryDelay * (1 << attempt));
+        }
+      }
+    }
+
+    throw lastException ?? ClientException('Upload failed after $maxRetries attempts');
   }
 
   /// Make upload to `/multipart` endpoint
   /// [maxConcurrentChunkRequests] maximum concurrent requests
   /// [cancelToken] make cancelable request
+  /// [maxRetries] maximum retry attempts for failed chunk uploads (default: 3)
   Future<String> multipart(
     UCFile file, {
     bool? storeMode,
@@ -216,6 +242,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     CancelToken? cancelToken,
     int? maxConcurrentChunkRequests,
     String? overrideFilename,
+    int? maxRetries,
 
     /// **Since v0.7**
     Map<String, String>? metadata,
@@ -223,6 +250,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     _ensureRightVersionForMetadata(metadata);
 
     maxConcurrentChunkRequests ??= options.multipartMaxConcurrentChunkRequests;
+    maxRetries ??= _kDefaultMaxRetries;
     metadata ??= {};
 
     final filename = overrideFilename ?? file.name;
@@ -258,79 +286,68 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     }
 
     // ignore: unawaited_futures
-    resolveStreamedResponse(startTransaction.send()).then((map) {
+    resolveStreamedResponse(startTransaction.send()).then((map) async {
       final urls = (map['parts'] as List).cast<String>();
       final uuid = map['uuid'] as String;
-      final inProgressActions = <UcRequest>[];
+      final inProgressRequests = <UcRequest>[];
 
       ProgressEntity progress = ProgressEntity(0, filesize);
 
       if (onProgress != null) onProgress(progress);
 
-      return Future.wait(List.generate(urls.length, (index) {
-        final url = urls[index];
+      final actions = urls.asMap().entries.map((entry) {
+        final index = entry.key;
+        final url = entry.value;
         final offset = index * _kChunkSize;
-        final diff = filesize - offset;
-        final bytesToRead = _kChunkSize < diff ? _kChunkSize : diff;
+        final bytesToRead = min(_kChunkSize, filesize - offset);
 
-        return Future.value(() {
-          if (cancelToken != null && cancelToken.isCanceled) {
-            return Future.value(null);
-          }
+        return () => _uploadChunkWithRetry(
+              file: file,
+              url: url,
+              offset: offset,
+              bytesToRead: bytesToRead,
+              mimeType: mimeType,
+              cancelToken: cancelToken,
+              maxRetries: maxRetries!,
+              inProgressRequests: inProgressRequests,
+              onChunkComplete: () {
+                if (onProgress != null) {
+                  onProgress(progress = progress.copyWith(
+                    uploaded: progress.uploaded + bytesToRead,
+                  ));
+                }
+              },
+            );
+      }).toList();
 
-          return file
-              .openRead(offset, offset + bytesToRead)
-              .toList()
-              .then((bytesList) => bytesList.expand((list) => list).toList())
-              .then((bytes) => createRequest('PUT', buildUri(url), false)
-                ..bodyBytes = bytes
-                ..headers.addAll({
-                  'Content-Type': mimeType,
-                }))
-              .then((request) {
-            inProgressActions.add(request);
+      if (cancelToken != null) {
+        cancelToken.onCancel = _completeWithError(
+          completer: completer,
+          action: () {
+            for (var request in inProgressRequests) {
+              request.cancel();
+            }
+          },
+          cancelMessage: cancelToken.cancelMessage,
+        );
+      }
 
-            return resolveStreamedResponseStatusCode(request.send())
-                .then((response) {
-              inProgressActions.remove(request);
-              if (onProgress != null) {
-                onProgress(progress = progress.copyWith(
-                  uploaded: progress.uploaded + bytesToRead,
-                ));
-              }
-              return response;
-            });
-          });
+      await ConcurrentRunner<Response?>(maxConcurrentChunkRequests!, actions)
+          .run();
+
+      final finishTransaction = createMultipartRequest(
+          'POST', buildUri('$uploadUrl/multipart/complete/'), false)
+        ..fields.addAll({
+          'UPLOADCARE_PUB_KEY': publicKey,
+          'uuid': uuid,
+          if (options.useSignedUploads) ..._signUpload(),
         });
-      })).then((actions) {
-        if (cancelToken != null) {
-          cancelToken.onCancel = _completeWithError(
-            completer: completer,
-            action: () {
-              for (var request in inProgressActions) {
-                request.cancel();
-              }
-            },
-            cancelMessage: cancelToken.cancelMessage,
-          );
-        }
-        return ConcurrentRunner<Response?>(maxConcurrentChunkRequests!, actions)
-            .run();
-      }).then((_) {
-        final finishTransaction = createMultipartRequest(
-            'POST', buildUri('$uploadUrl/multipart/complete/'), false)
-          ..fields.addAll({
-            'UPLOADCARE_PUB_KEY': publicKey,
-            'uuid': uuid,
-            if (options.useSignedUploads) ..._signUpload(),
-          });
 
-        if (!completer.isCompleted) {
-          completer.complete(
-            resolveStreamedResponse(finishTransaction.send()).then((_) => uuid),
-          );
-        }
-      });
+      if (!completer.isCompleted) {
+        completer.complete(
+          resolveStreamedResponse(finishTransaction.send()).then((_) => uuid),
+        );
+      }
     }).catchError((e) {
       if (!completer.isCompleted) {
         completer.completeError(e);
@@ -338,6 +355,100 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     });
 
     return completer.future;
+  }
+
+  /// Collects bytes from a stream into a single [Uint8List] efficiently.
+  /// Avoids multiple allocations by pre-calculating total size.
+  Future<Uint8List> _collectBytes(
+    Stream<List<int>> stream,
+    int expectedSize,
+  ) async {
+    final bytes = Uint8List(expectedSize);
+    var offset = 0;
+    await for (final chunk in stream) {
+      bytes.setRange(offset, offset + chunk.length, chunk);
+      offset += chunk.length;
+    }
+    return bytes;
+  }
+
+  /// Uploads a single chunk to the specified URL.
+  Future<Response> _uploadChunk({
+    required UCFile file,
+    required String url,
+    required int offset,
+    required int bytesToRead,
+    required String mimeType,
+    required CancelToken? cancelToken,
+    required List<UcRequest> inProgressRequests,
+    required void Function() onChunkComplete,
+  }) async {
+    if (cancelToken != null && cancelToken.isCanceled) {
+      throw CancelUploadException(cancelToken.cancelMessage);
+    }
+
+    final bytes = await _collectBytes(
+      file.openRead(offset, offset + bytesToRead),
+      bytesToRead,
+    );
+
+    final request = createRequest('PUT', buildUri(url), false)
+      ..bodyBytes = bytes
+      ..headers.addAll({'Content-Type': mimeType});
+
+    inProgressRequests.add(request);
+
+    try {
+      final response = await resolveStreamedResponseStatusCode(request.send());
+      onChunkComplete();
+      return response;
+    } finally {
+      inProgressRequests.remove(request);
+    }
+  }
+
+  /// Uploads a chunk with retry logic and exponential backoff.
+  Future<Response?> _uploadChunkWithRetry({
+    required UCFile file,
+    required String url,
+    required int offset,
+    required int bytesToRead,
+    required String mimeType,
+    required CancelToken? cancelToken,
+    required int maxRetries,
+    required List<UcRequest> inProgressRequests,
+    required void Function() onChunkComplete,
+  }) async {
+    if (cancelToken != null && cancelToken.isCanceled) {
+      return null;
+    }
+
+    Exception? lastException;
+
+    for (var attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        return await _uploadChunk(
+          file: file,
+          url: url,
+          offset: offset,
+          bytesToRead: bytesToRead,
+          mimeType: mimeType,
+          cancelToken: cancelToken,
+          inProgressRequests: inProgressRequests,
+          onChunkComplete: onChunkComplete,
+        );
+      } on CancelUploadException {
+        return null;
+      } on ClientException catch (e) {
+        lastException = e;
+        if (attempt < maxRetries - 1) {
+          // Exponential backoff: 1s, 2s, 4s, ...
+          await Future.delayed(_kInitialRetryDelay * (1 << attempt));
+        }
+      }
+    }
+
+    throw lastException ?? ClientException('Chunk upload failed after $maxRetries attempts');
   }
 
   /// Make upload to `/fromUrl` endpoint
@@ -487,6 +598,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
     ProgressListener? onProgress,
     CancelToken? cancelToken,
     String? overrideFilename,
+    int? maxRetries,
 
     /// **Since v0.7**
     Map<String, String>? metadata,
@@ -503,6 +615,7 @@ class ApiUpload with OptionsShortcutMixin, TransportHelperMixin {
       onProgress: onProgress,
       cancelToken: cancelToken,
       overrideFilename: overrideFilename,
+      maxRetries: maxRetries,
       metadata: metadata,
     );
   }

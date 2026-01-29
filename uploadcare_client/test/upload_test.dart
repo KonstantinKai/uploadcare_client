@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 import 'package:uploadcare_client/uploadcare_client.dart';
@@ -7,11 +8,16 @@ void main() {
   late ApiUpload apiV05;
   late ApiUpload apiV05Signed;
   late ApiUpload apiV07;
+  late ApiUpload apiRetry;
   late String assets;
 
   late String uploadBase;
   late String uploadMultipart;
   final String uploadUrl = 'http://localhost:7070/fakefile/base.jpeg';
+
+  Future<void> resetRetryCounters() async {
+    await http.post(Uri.parse('http://localhost:7070/upload/retry/reset/'));
+  }
 
   setUpAll(() {
     assets = path.normalize(
@@ -52,6 +58,17 @@ void main() {
           privateKey: 'private_key',
         ),
         useSignedUploads: true,
+      ),
+    );
+
+    apiRetry = ApiUpload(
+      options: ClientOptions(
+        uploadUrl: 'http://localhost:7070/upload/base/retry',
+        authorizationScheme: AuthSchemeRegular(
+          apiVersion: 'v0.5',
+          publicKey: 'public_key',
+          privateKey: 'private_key',
+        ),
       ),
     );
   });
@@ -324,5 +341,93 @@ void main() {
         checkURLDuplicates: false);
 
     expect(id, isA<String>());
+  });
+
+  group('Retry logic', () {
+    late ApiUpload apiBaseRetry;
+    late ApiUpload apiBaseAlwaysFail;
+    late ApiUpload apiMultipartRetry;
+
+    setUpAll(() {
+      apiBaseRetry = ApiUpload(
+        options: ClientOptions(
+          uploadUrl: 'http://localhost:7070/upload-retry',
+          authorizationScheme: AuthSchemeRegular(
+            apiVersion: 'v0.5',
+            publicKey: 'public_key',
+            privateKey: 'private_key',
+          ),
+        ),
+      );
+
+      apiBaseAlwaysFail = ApiUpload(
+        options: ClientOptions(
+          uploadUrl: 'http://localhost:7070/upload-always-fail',
+          authorizationScheme: AuthSchemeRegular(
+            apiVersion: 'v0.5',
+            publicKey: 'public_key',
+            privateKey: 'private_key',
+          ),
+        ),
+      );
+
+      apiMultipartRetry = ApiUpload(
+        options: ClientOptions(
+          uploadUrl: 'http://localhost:7070/upload-retry',
+          authorizationScheme: AuthSchemeRegular(
+            apiVersion: 'v0.5',
+            publicKey: 'public_key',
+            privateKey: 'private_key',
+          ),
+        ),
+      );
+    });
+
+    setUp(() async {
+      await resetRetryCounters();
+    });
+
+    test('Base upload retries on transient failure and succeeds', () async {
+      final id = await apiBaseRetry.base(
+        UCFile(File(uploadBase)),
+        storeMode: false,
+        maxRetries: 3,
+      );
+
+      expect(id, isA<String>());
+    });
+
+    test('Base upload fails after max retries exceeded', () async {
+      expect(
+        () => apiBaseAlwaysFail.base(
+          UCFile(File(uploadBase)),
+          storeMode: false,
+          maxRetries: 2,
+        ),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('Base upload respects maxRetries parameter', () async {
+      // With maxRetries: 1, should fail (needs 3 attempts)
+      expect(
+        () => apiBaseRetry.base(
+          UCFile(File(uploadBase)),
+          storeMode: false,
+          maxRetries: 1,
+        ),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('Multipart upload retries chunks on transient failure', () async {
+      final id = await apiMultipartRetry.multipart(
+        UCFile(File(uploadMultipart)),
+        storeMode: false,
+        maxRetries: 3,
+      );
+
+      expect(id, isA<String>());
+    });
   });
 }

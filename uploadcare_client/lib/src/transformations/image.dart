@@ -897,25 +897,108 @@ class TextAlignTransformation extends Transformation
       ];
 }
 
+/// Font weight for text overlay
+///
+/// See https://uploadcare.com/docs/transformations/image/overlay/#font-properties
+enum TextFontWeight {
+  Regular('regular'),
+  Bold('bold');
+
+  const TextFontWeight(this._value);
+  final String _value;
+
+  @override
+  String toString() => _value;
+}
+
+/// Font style for text overlay
+///
+/// See https://uploadcare.com/docs/transformations/image/overlay/#font-properties
+enum TextFontStyle {
+  Normal('normal'),
+  Italic('italic');
+
+  const TextFontStyle(this._value);
+  final String _value;
+
+  @override
+  String toString() => _value;
+}
+
+/// Font family for text overlay
+///
+/// See https://uploadcare.com/docs/transformations/image/overlay/#font-properties
+enum TextFontFamily {
+  DejaVu('DejaVu'),
+  DejaVuMono('DejaVuMono'),
+  DejaVuSerif('DejaVuSerif'),
+  Noto('Noto'),
+  NotoMono('NotoMono'),
+  NotoSerif('NotoSerif');
+
+  const TextFontFamily(this._value);
+  final String _value;
+
+  @override
+  String toString() => _value;
+}
+
 /// NOTE: Use only with [TextOverlayTransformation]
+///
+/// The font operation allows to configure weight, style, size, color, and family.
+/// Parameters must follow this order: reset, weight, style, size, color, family.
+/// You can skip any parameters, but the ones you include must maintain this order.
+///
+/// See https://uploadcare.com/docs/transformations/image/overlay/#font-properties
 class TextFontTransformation extends Transformation
     implements ImageTransformation {
   const TextFontTransformation({
-    required this.size,
-    required this.color,
-  });
+    this.reset,
+    this.weight,
+    this.style,
+    this.size,
+    this.color,
+    this.family,
+  }) : assert(
+          reset != null ||
+              weight != null ||
+              style != null ||
+              size != null ||
+              color != null ||
+              family != null,
+          'At least one font parameter must be specified',
+        );
+
+  /// Resets font properties to default values
+  final bool? reset;
+
+  /// Font weight
+  final TextFontWeight? weight;
+
+  /// Font style
+  final TextFontStyle? style;
 
   /// Font size in pixels
-  final int size;
+  final int? size;
 
   /// Font color in hexadecimal notation with optional transparency. Example: `99ff99, 9f9, 99ff9920`
-  final String color;
+  final String? color;
+
+  /// Font family
+  final TextFontFamily? family;
 
   @override
   String get operation => 'font';
 
   @override
-  List<String> get params => [size.toString(), color];
+  List<String> get params => [
+        if (reset == true) 'reset',
+        if (weight != null) weight.toString(),
+        if (style != null) style.toString(),
+        if (size != null) size.toString(),
+        if (color != null) color!,
+        if (family != null) family.toString(),
+      ];
 }
 
 enum TextBackgroundBoxTValue {

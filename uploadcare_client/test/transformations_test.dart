@@ -552,6 +552,79 @@ void main() {
           throwsA(TypeMatcher<AssertionError>()));
     });
 
+    test('TextFontTransformation with all properties', () {
+      // Test font with all new properties
+      expect(
+        TextFontTransformation(
+          reset: true,
+          weight: TextFontWeight.Bold,
+          style: TextFontStyle.Italic,
+          size: 24,
+          color: 'ff0000',
+          family: TextFontFamily.NotoSerif,
+        ).toString(),
+        equals('font/reset/bold/italic/24/ff0000/NotoSerif'),
+      );
+
+      // Test font with only weight and family
+      expect(
+        TextFontTransformation(
+          weight: TextFontWeight.Regular,
+          family: TextFontFamily.DejaVuMono,
+        ).toString(),
+        equals('font/regular/DejaVuMono'),
+      );
+
+      // Test font with only size and color (backward compatible)
+      expect(
+        TextFontTransformation(
+          size: 16,
+          color: '000000',
+        ).toString(),
+        equals('font/16/000000'),
+      );
+
+      // Test font with style only
+      expect(
+        TextFontTransformation(
+          style: TextFontStyle.Italic,
+        ).toString(),
+        equals('font/italic'),
+      );
+
+      // Test font with reset only
+      expect(
+        TextFontTransformation(
+          reset: true,
+        ).toString(),
+        equals('font/reset'),
+      );
+
+      // Test assertion when no parameters provided
+      expect(
+        () => TextFontTransformation(),
+        throwsA(TypeMatcher<AssertionError>()),
+      );
+    });
+
+    test('TextOverlayTransformation with new font properties', () {
+      expect(
+        TextOverlayTransformation(
+          relativeDimensions: Dimensions(100, 100, units: MeasureUnits.Percent),
+          relativeCoordinates: Offsets(0, 0, units: MeasureUnits.Percent),
+          text: 'styled text',
+          font: TextFontTransformation(
+            weight: TextFontWeight.Bold,
+            style: TextFontStyle.Italic,
+            size: 32,
+            color: 'ffffff',
+            family: TextFontFamily.Noto,
+          ),
+        ).toString(),
+        equals('font/bold/italic/32/ffffff/Noto/-/text/100px100p/0p,0p/styled%20text'),
+      );
+    });
+
     test('RectOverlayTransformation', () {
       var transformation = RectOverlayTransformation(
         color: 'bbffoo',

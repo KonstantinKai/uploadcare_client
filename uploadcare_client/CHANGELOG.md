@@ -1,3 +1,18 @@
+## [7.2.0] - Wed Jan 29 2026
+
+- Added `overrideFilename` parameter to upload API (`auto`, `base`, `multipart` methods and isolate upload)
+- Added `maxRetries` parameter to `auto`, `base`, and `multipart` upload methods with exponential backoff for transient failures (default: 3 retries)
+- Optimized multipart upload:
+  - Memory-efficient byte collection using pre-allocated `Uint8List`
+  - Simplified chunk action generation
+  - Extracted chunk upload logic to dedicated methods
+- Extended `TextFontTransformation` with new font properties. See https://uploadcare.com/docs/transformations/image/overlay/#font-properties
+  - Added `reset` parameter to reset font properties to default
+  - Added `weight` parameter (`TextFontWeight`: regular, bold)
+  - Added `style` parameter (`TextFontStyle`: normal, italic)
+  - Added `family` parameter (`TextFontFamily`: DejaVu, DejaVuMono, DejaVuSerif, Noto, NotoMono, NotoSerif)
+  - Made `size` and `color` parameters optional
+
 ## [7.1.0] - Mon Mar 10 2025
 
 - Added feature for unsafe content detection via addons. See <https://uploadcare.com/docs/unsafe-content/>

@@ -14,6 +14,7 @@ class IsolateWorker {
     ProgressListener? onProgress,
     CancelToken? cancelToken,
     String? overrideFilename,
+    int? maxRetries,
 
     /// **Since v0.7**
     Map<String, String>? metadata,
