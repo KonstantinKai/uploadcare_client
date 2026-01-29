@@ -8,7 +8,6 @@ void main() {
   late ApiUpload apiV05;
   late ApiUpload apiV05Signed;
   late ApiUpload apiV07;
-  late ApiUpload apiRetry;
   late String assets;
 
   late String uploadBase;
@@ -61,16 +60,6 @@ void main() {
       ),
     );
 
-    apiRetry = ApiUpload(
-      options: ClientOptions(
-        uploadUrl: 'http://localhost:7070/upload/base/retry',
-        authorizationScheme: AuthSchemeRegular(
-          apiVersion: 'v0.5',
-          publicKey: 'public_key',
-          privateKey: 'private_key',
-        ),
-      ),
-    );
   });
 
   test('Simple auto upload', () async {

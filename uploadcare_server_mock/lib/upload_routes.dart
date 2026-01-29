@@ -30,12 +30,10 @@ class UploadRoutes {
 
   // Retry counters for testing
   int _baseRetryCount = 0;
-  int _multipartStartRetryCount = 0;
   final Map<String, int> _multipartChunkRetryCount = {};
 
   Future<Response> _resetRetryCounters(Request request) async {
     _baseRetryCount = 0;
-    _multipartStartRetryCount = 0;
     _multipartChunkRetryCount.clear();
     return Response.ok(jsonEncode({'status': 'reset'}),
         headers: const {'Content-Type': 'application/json'});
